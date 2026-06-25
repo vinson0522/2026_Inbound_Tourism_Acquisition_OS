@@ -7,7 +7,7 @@ const setting: DefaultSettings = {
    */
   title: import.meta.env.VITE_APP_TITLE,
 
-  theme: '#409EFF',
+  theme: '#1677A0',
 
   /**
    * 侧边栏主题 深色主题theme-dark，浅色主题theme-light

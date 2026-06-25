@@ -45,6 +45,44 @@
   --el-box-shadow-light: var(--app-shadow-sm);
   --el-box-shadow: var(--app-shadow-md);
   --el-bg-color-page: #f5f7fb;
+
+  /* TourGEO brand tokens — docs/design/tokens.md */
+  --tg-color-primary: #1677a0;
+  --tg-color-primary-light: #e8f4fa;
+  --tg-color-primary-dark: #0f5575;
+  --tg-color-accent: #d4920a;
+  --tg-color-accent-light: #fef6e6;
+  --tg-color-text-primary: #1f2937;
+  --tg-color-text-regular: #4b5563;
+  --tg-color-text-secondary: #6b7280;
+  --tg-color-text-placeholder: #9ca3af;
+  --tg-color-border: #e5e7eb;
+  --tg-color-border-light: #f3f4f6;
+  --tg-color-bg-page: #f5f7fb;
+  --tg-color-bg-surface: #ffffff;
+  --tg-color-success: #059669;
+  --tg-color-warning: #d97706;
+  --tg-color-danger: #dc2626;
+  --tg-color-info: #64748b;
+  --tg-color-running: #1677a0;
+  --tg-score-high: #059669;
+  --tg-score-mid: #d97706;
+  --tg-score-low: #dc2626;
+  --tg-font-family-base: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  --tg-font-size-xs: 12px;
+  --tg-font-size-sm: 13px;
+  --tg-font-size-base: 14px;
+  --tg-font-size-md: 16px;
+  --tg-font-size-lg: 20px;
+  --tg-font-size-xl: 24px;
+  --tg-space-1: 4px;
+  --tg-space-2: 8px;
+  --tg-space-3: 12px;
+  --tg-space-4: 16px;
+  --tg-space-5: 20px;
+  --tg-space-6: 24px;
+  --tg-space-8: 32px;
+  --tg-space-10: 40px;
 }
 
 html.dark {
@@ -341,7 +379,7 @@ $fixed-header-bg: var(--fixedHeaderBg);
 $table-header-bg: var(--tableHeaderBg);
 $table-header-text-color: var(--tableHeaderTextColor);
 
-$--color-primary: #409eff;
+$--color-primary: #1677a0;
 $--color-success: #67c23a;
 $--color-warning: #e6a23c;
 $--color-danger: #f56c6c;

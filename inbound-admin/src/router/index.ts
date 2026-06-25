@@ -65,13 +65,36 @@ export const constantRoutes: RouteRecordRaw[] = [
   {
     path: '',
     component: Layout,
-    redirect: '/index',
+    redirect: '/dashboard',
     children: [
       {
+        path: '/dashboard',
+        component: () => import('@/views/tourgeo/dashboard/index.vue'),
+        name: 'TourgeoDashboard',
+        meta: { title: '工作台', icon: 'dashboard', affix: true }
+      },
+      {
         path: '/index',
-        component: () => import('@/views/index.vue'),
+        redirect: '/dashboard',
         name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        meta: { title: '首页', icon: 'dashboard' },
+        hidden: true
+      }
+    ]
+  },
+  {
+    path: '/diagnostics',
+    component: Layout,
+    redirect: '/diagnostics/runs',
+    name: 'TourgeoDiagnostics',
+    meta: { title: 'GEO 诊断', icon: 'chart' },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'runs',
+        component: () => import('@/views/tourgeo/diagnostics/index.vue'),
+        name: 'DiagnosticRuns',
+        meta: { title: '诊断任务', icon: 'list' }
       }
     ]
   },

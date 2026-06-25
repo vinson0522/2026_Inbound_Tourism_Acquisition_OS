@@ -38,7 +38,7 @@
 
 | 任务 | 角色 | 状态 |
 |------|------|:----:|
-| Admin 页实现（token/工作台/GEO 列表） | 开发 | ⏳ mock 可并行 |
+| Admin 页实现（token/工作台/GEO 列表） | 开发 | ✅ mock |
 | 项目列表 + FR-001 线框 | UI | ⏳ [→UI HANDOFF](HANDOFFS/2026-06-25-tech-director-to-ui-projects-list.md) |
 
 ### Story 2（Sprint-1 关 Sprint 后）
@@ -105,10 +105,11 @@
   - `application-dev.yml` PG + `INBOUND_*` 环境变量；`snail-job.enabled: false`
   - `ruoyi-admin/pom.xml` postgresql 驱动
   - 服务器若依系统表 `sys_user|64`（`import_ruoyi_pg.py`）
-  - **P0 启动验通** ✅：`Started DromaraApplication`；Hikari `master - Start completed`；Redisson 6380；8080 HTTP 200
+  - **P0 启动验通** ✅：`Started DromaraApplication`；Hikari/Redisson/8080 OK
+  - **P1 Admin 页** ✅：品牌 token + `/dashboard` + `/diagnostics/runs`（mock API，见 [UI HANDOFF Done](HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md)）
 - **待办**：
-  - P1 Admin 页按 [UI HANDOFF](HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md)
-  - P2 `ruoyi-generator` anyline 切 postgresql；本机 Docker compose
+  - P2 Story 2 FR-001 项目 API + 替换 mock（[HANDOFF](HANDOFFS/2026-06-25-tech-director-to-dev-story2-fr001.md)）
+  - P3 `ruoyi-generator` anyline 切 postgresql；本机 Docker compose
 - **HANDOFF 进度**：[ops→dev PG 联调](HANDOFFS/2026-06-25-ops-to-dev-pg-ruoyi.md) — **Done ✅**
 
 ### 开发联调步骤（隧道方案，本机无 Docker）
@@ -153,9 +154,9 @@
 | 优先级 | 窗口 | 动作 | 产出 / 消阻塞 |
 |:------:|------|------|----------------|
 | **P0** | ~~**开发**~~ | ~~SSH 隧道 → spring-boot 验通~~ | ✅ **B-02 已消** |
-| **P1** | **开发** | 按 [UI→Admin HANDOFF](HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md) 实现 token/工作台/GEO 列表 | Sprint-1 Admin 可视 |
+| **P1** | ~~**开发**~~ | ~~UI→Admin HANDOFF 工作台/GEO 列表~~ | ✅ |
 | **P1** | **UI** | 按 [→UI 项目线框 HANDOFF](HANDOFFS/2026-06-25-tech-director-to-ui-projects-list.md) 输出 `projects-list.md` | Story 2 设计就绪 |
-| **P2** | **开发** | P0 验通后执行 [Story 2 FR-001](HANDOFFS/2026-06-25-tech-director-to-dev-story2-fr001.md) | EPIC-1 最小闭环 |
+| **P2** | **开发** | [Story 2 FR-001](HANDOFFS/2026-06-25-tech-director-to-dev-story2-fr001.md) 项目 API + 换 mock | EPIC-1 最小闭环 |
 | **P3** | **运维** | 安装 Docker Desktop → 本地 compose 验收 | 消 B-01；补本地 dev 体验 |
 
 ---
@@ -164,7 +165,7 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-06-25 | 开发 | P0 验通：隧道+INBOUND_*→spring-boot 8080；Hikari/Redisson OK；消 B-02；Sprint-1 开发项关 |
+| 2026-06-25 | 开发 | P1 Admin：#1677A0 token、工作台、GEO 诊断列表+抽屉（mock）；vite build OK |
 | 2026-06-25 | 技术总监 | 复核 Sprint-1：服务器 sys_user 已存在(64表)；瓶颈改为 spring-boot 验通；更新联调步骤 |
 | 2026-06-25 | 开发 | application-dev.yml 切 Docker PG + pom postgresql 驱动；Redis/SnailJob 对齐；待系统表导入与启动验通 |
 | 2026-06-25 | 运维 | 服务器 PG/Redis/MinIO/RabbitMQ 全绿；本机无 Docker；HANDOFF 开发 PG 联调 |

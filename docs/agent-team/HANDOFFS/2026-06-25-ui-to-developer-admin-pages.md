@@ -65,6 +65,15 @@
 
 ## Done（由 To 角色填写）
 
-- **完成时间**：
+- **完成时间**：2026-06-25
 - **结果摘要**：
+  - Token：`settings.ts` `#1677A0`；`variables.module.scss` 追加 `--tg-*`
+  - 路由：`/dashboard` 工作台、`/diagnostics/runs` 诊断列表（constantRoutes 侧栏可见）
+  - 视图：`src/views/tourgeo/dashboard/index.vue`、`diagnostics/index.vue`
+  - Mock API：`src/api/tourgeo/*` + `useProjectStore` 项目切换
+  - 组件：ProjectSelector、DiagnosticStatusTag、GeoScoreDisplay
+  - 新建抽屉：默认 grounded-api + 合规 el-alert；状态 Tag 对齐枚举
 - **遗留**：
+  - [ ] 后端 API 就绪后替换 mock（`VITE_TOURGEO_MOCK=false`）
+  - [ ] 若依后台菜单 SQL 与权限（当前用前端 constantRoutes）
+  - [ ] 截图归档（开发本地验通）
