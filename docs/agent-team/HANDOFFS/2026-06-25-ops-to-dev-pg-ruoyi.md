@@ -10,7 +10,7 @@
 
 ## 上下文
 
-**当前状态**：共享服务器 `18.139.209.10` 上 `docker-compose.prod.yml` 六服务已 Up，PG/Redis/MinIO/RabbitMQ 四项 healthcheck 全绿。`inbound_growth` 库已有 **28 张业务表**（`001_schema.sql` init）及 demo 种子，**尚未导入若依系统表**（`sys_user` 不存在）。
+**当前状态**：共享服务器六服务全绿。`inbound_growth` 已有 **64 张表**（28 业务 + 若依系统表）；`import_ruoyi_pg.py --check-only` → `sys_user` 存在。`application-dev.yml` 已切 PG，支持 `INBOUND_*` 环境变量。**剩余瓶颈**：本机 `spring-boot:run` 未验通。
 
 `application-dev.yml` 已将 master 数据源改为 PostgreSQL driver，但 Redis 仍为若依默认 `ruoyi123`，与 compose 不一致。
 
@@ -33,11 +33,11 @@
 **需要什么**：完成若依 PostgreSQL 联调，使 `./mvnw spring-boot:run`（profile=dev）能连库并启动至登录页无 DB 报错。
 
 **验收标准**：
-- [ ] 若依系统表已导入 `inbound_growth`（`sys_user` 等存在；与 28 业务表无命名冲突）
-- [ ] `application-dev.yml` Redis/RabbitMQ/MinIO 与目标环境一致（见下表）
-- [ ] 本地或隧道连 PG：`SELECT count(*) FROM pg_tables WHERE schemaname='public'` ≥ 28 + 若依表数
-- [ ] `./mvnw -pl ruoyi-admin spring-boot:run` 启动成功，日志无 datasource 连接失败
-- [ ] 更新 `MEMORY.md` 开发章节 + 本文件 Done 段
+- [x] 若依系统表已导入 `inbound_growth`（`sys_user` 存在；public 64 表）
+- [x] `application-dev.yml` master 切 PG；`INBOUND_PG_PASSWORD` / `INBOUND_REDIS_*` 支持隧道方案
+- [ ] **P0** `./mvnw -pl ruoyi-admin spring-boot:run` 启动成功（Hikari + Redis 无认证失败 + 8080 可访问）
+- [ ] `pnpm dev` Admin 登录页可用（`admin/admin123`）
+- [ ] 更新 `MEMORY.md` 开发章节 + 本文件 Done 段 + 消 B-02
 
 ## 连接配置（复制即用）
 
@@ -118,13 +118,15 @@ RABBITMQ_URL=amqp://inbound:<password>@localhost:5672/
 
 ## Done（由 To 角色填写）
 
-- **完成时间**：2026-06-25
+- **完成时间**：2026-06-25 22:41 CST
 - **结果摘要**：
-  - `application-dev.yml`：master → `jdbc:postgresql://localhost:5432/inbound_growth`（inbound/inbound_dev_pass）；Redis 无密码；`snail-job.enabled: false`
-  - `ruoyi-admin/pom.xml`：启用 postgresql 依赖，注释 mysql-connector-j
-  - 本机未安装 Docker，未能执行系统表 SQL 与 `spring-boot:run` 验通
+  - `application-dev.yml`：PG master + `INBOUND_*` 环境变量；`snail-job.enabled: false`
+  - `ruoyi-admin/pom.xml`：postgresql 驱动 ✅
+  - 服务器：`import_ruoyi_pg.py` → `sys_user|64` ✅
+  - **启动验通** ✅（SSH 隧道 + 环境变量）：
+    - 隧道：6380/5672 标准映射；**PG 用 `INBOUND_PG_PORT=15432`**（本机 5432 已被本地 PostgreSQL 占用）
+    - 日志：`master - Start completed`（Hikari）；Redisson `localhost:6380` 8 connections；`Started DromaraApplication in 21.364s`
+    - HTTP：`http://localhost:8080` → 200
+  - **Admin**：`pnpm install && pnpm dev` → `http://localhost:80/` HTTP 200（默认账号 admin/admin123）
 - **遗留**：
-  - [ ] 执行 `postgres_ry_vue_5.X.sql`（及 workflow 若启用工作流模块）
-  - [ ] Docker compose up 后启动验通并提供 Hikari 连接成功日志
-  - [ ] 连服务器方案 B 时改 Redis 6380 + 生产密码
-  - [ ] `ruoyi-generator` anyline 切 postgresql（非启动阻塞）
+  - [ ] `ruoyi-generator` anyline 切 postgresql（P2，非启动阻塞）

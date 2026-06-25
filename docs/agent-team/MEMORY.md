@@ -6,7 +6,7 @@
 | 字段 | 值 |
 |------|-----|
 | **最后更新** | 2026-06-25 |
-| **更新角色** | 技术总监 |
+| **更新角色** | 开发 |
 | **当前 EPIC 焦点** | EPIC-1 Sprint-1 收尾 → Story 2（登录→建项目→列表） |
 
 ---
@@ -26,20 +26,30 @@
 
 ## 技术总监
 
-- **Sprint-1 进度**（2026-06-25 复核）：
+### EPIC-1 Sprint-1 任务拆分（3 条，2026-06-25 定案）
 
-  | 任务 | 角色 | 状态 |
-  |------|------|:----:|
-  | 服务器 compose 全绿 | 运维 | ✅ |
-  | 若依 PG 配置 + 系统表 | 开发 | ✅ 配置 + 服务器已导入 |
-  | **后端启动验通** | 开发 | ⏳ **当前瓶颈** |
-  | 设计 token + 工作台/GEO 线框 | UI | ✅ |
-  | Admin 页实现 | 开发 | ⏳ 可 mock 并行 |
-  | 项目列表 + FR-001 线框 | UI | ⏳ |
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | **运维** | 验证 compose 全绿（PG 28 表 + demo + 6 服务 healthy） | [→运维 compose](HANDOFFS/2026-06-25-tech-director-to-devops-compose.md) | ✅ 服务器 |
+| 2 | **开发** | 若依切 PG + 系统表 + **spring-boot 启动验通** | [运维→开发 PG](HANDOFFS/2026-06-25-ops-to-dev-pg-ruoyi.md) | ✅ |
+| 3 | **UI** | 品牌 token + 工作台 + GEO 诊断列表线框 | [UI→开发 Admin](HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md) | ✅ |
 
-- **关键路径**：开 SSH 隧道 → 设 `INBOUND_*` 环境变量 → `mvn spring-boot:run` → Admin 登录 → 拆 Story 2
-- **本机无 Docker**：不阻塞；隧道连 `18.139.209.10` 即可；Docker Desktop 列为 P2 本地便利项
-- **待办**：开发回填 [ops→dev HANDOFF](HANDOFFS/2026-06-25-ops-to-dev-pg-ruoyi.md) Done；验通后发 Story 2 HANDOFF
+**Sprint-1 附加（并行，不阻塞关 Sprint）**：
+
+| 任务 | 角色 | 状态 |
+|------|------|:----:|
+| Admin 页实现（token/工作台/GEO 列表） | 开发 | ⏳ mock 可并行 |
+| 项目列表 + FR-001 线框 | UI | ⏳ [→UI HANDOFF](HANDOFFS/2026-06-25-tech-director-to-ui-projects-list.md) |
+
+### Story 2（Sprint-1 关 Sprint 后）
+
+| 任务 | 角色 | HANDOFF | 门禁 |
+|------|------|---------|------|
+| FR-001 项目 API + Admin 列表/创建 | 开发 | [Story 2](HANDOFFS/2026-06-25-tech-director-to-dev-story2-fr001.md) | P0 启动验通 |
+
+- **关键路径**：SSH 隧道 → `INBOUND_*` → `spring-boot:run` → Admin 登录 → Story 2
+- **ADR**：[ADR-20260625-05](DECISIONS.md) 隧道联调；[ADR-20260625-04](DECISIONS.md) 单库 PG
+- **阻塞**：~~B-02 后端未验通~~ ✅ 2026-06-25 22:41 已验通
 
 ---
 
@@ -92,20 +102,21 @@
 - **负责目录**：`inbound-core/`、`inbound-ai/`、`database/`、`inbound-probe-extension/`
 - **分层铁律**：Java 管事务，Python 管 AI（`CLAUDE.md` §5）
 - **已完成（2026-06-25）**：
-  - `application-dev.yml` master 数据源 → Docker PG `jdbc:postgresql://localhost:5432/inbound_growth`（user `inbound`）
-  - Redis 对齐本地 compose（无密码）；`snail-job.enabled: false`（SnailJob 仍 MySQL，MVP 跳过）
-  - `ruoyi-admin/pom.xml` 启用 `postgresql` JDBC，注释 `mysql-connector-j`
+  - `application-dev.yml` PG + `INBOUND_*` 环境变量；`snail-job.enabled: false`
+  - `ruoyi-admin/pom.xml` postgresql 驱动
+  - 服务器若依系统表 `sys_user|64`（`import_ruoyi_pg.py`）
+  - **P0 启动验通** ✅：`Started DromaraApplication`；Hikari `master - Start completed`；Redisson 6380；8080 HTTP 200
 - **待办**：
-  - ~~导入若依 PG 系统表~~ ✅ 服务器已验（`import_ruoyi_pg.py --check-only` → `sys_user|64`）
-  - **P0** SSH 隧道 + `mvn -pl ruoyi-admin spring-boot:run` 验通（见下「开发联调步骤」）
-  - P1 Admin 页按 [UI HANDOFF](HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md)（可 mock API）
-  - P2 本机装 Docker 后本地 compose；`ruoyi-generator` anyline 切 postgresql
-- **HANDOFF 进度**：[ops→dev PG 联调](HANDOFFS/2026-06-25-ops-to-dev-pg-ruoyi.md) — 配置 ✅ 系统表 ✅；**启动验通 ⏳**
+  - P1 Admin 页按 [UI HANDOFF](HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md)
+  - P2 `ruoyi-generator` anyline 切 postgresql；本机 Docker compose
+- **HANDOFF 进度**：[ops→dev PG 联调](HANDOFFS/2026-06-25-ops-to-dev-pg-ruoyi.md) — **Done ✅**
 
 ### 开发联调步骤（隧道方案，本机无 Docker）
 
-1. 开隧道：`docs/INFRA_ACCESS.md` §6（PG 5432、Redis **6380**、RabbitMQ 5672）
-2. 设环境变量（密码见 `INFRA_ACCESS.local.md` §4）：
+1. 开隧道：`docs/INFRA_ACCESS.md` §6（Redis **6380**、RabbitMQ 5672）
+2. **PG 端口**：本机若已有 PostgreSQL 占 5432，隧道改绑 `15432` 并设 `INBOUND_PG_PORT=15432`
+3. 设环境变量（密码见 `INFRA_ACCESS.local.md` §4）：
+   - `INBOUND_PG_PORT=15432`（本机 5432 被占用时）
    - `INBOUND_PG_PASSWORD=<服务器 PG 密码>`
    - `INBOUND_REDIS_PORT=6380`
    - `INBOUND_REDIS_PASSWORD=<服务器 Redis 密码>`
@@ -134,17 +145,18 @@
 | ID | 描述 | 负责人 | 状态 |
 |----|------|--------|------|
 | B-01 | 本机无 Docker（仅影响本地 compose，不阻塞隧道联调） | 运维/用户 | 低优先级 |
-| B-02 | 若依 `spring-boot:run` 未验通 | 开发 | **进行中** |
 
 ---
 
 ## 下一步（跨角色）
 
-1. **开发 P0**（当前瓶颈）：按 MEMORY「开发 → 开发联调步骤」隧道启动后端；验通后更新 HANDOFF Done + 消 B-02
-2. **开发 P1**（验通后或 mock 并行）：`inbound-admin` 品牌 token + 工作台/GEO 诊断页（[UI HANDOFF](HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md)）
-3. **UI**：客户项目列表 + FR-001 创建项目线框 → `docs/design/wireframes/projects-list.md`
-4. **技术总监**：开发启动验通后写 **Story 2 HANDOFF**（FR-001 创建项目 API + Admin 页面 + 租户隔离 FR-807）
-5. **运维 P2**：有空时装 Docker Desktop，补本地 compose 验收
+| 优先级 | 窗口 | 动作 | 产出 / 消阻塞 |
+|:------:|------|------|----------------|
+| **P0** | ~~**开发**~~ | ~~SSH 隧道 → spring-boot 验通~~ | ✅ **B-02 已消** |
+| **P1** | **开发** | 按 [UI→Admin HANDOFF](HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md) 实现 token/工作台/GEO 列表 | Sprint-1 Admin 可视 |
+| **P1** | **UI** | 按 [→UI 项目线框 HANDOFF](HANDOFFS/2026-06-25-tech-director-to-ui-projects-list.md) 输出 `projects-list.md` | Story 2 设计就绪 |
+| **P2** | **开发** | P0 验通后执行 [Story 2 FR-001](HANDOFFS/2026-06-25-tech-director-to-dev-story2-fr001.md) | EPIC-1 最小闭环 |
+| **P3** | **运维** | 安装 Docker Desktop → 本地 compose 验收 | 消 B-01；补本地 dev 体验 |
 
 ---
 
@@ -152,6 +164,7 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-06-25 | 开发 | P0 验通：隧道+INBOUND_*→spring-boot 8080；Hikari/Redisson OK；消 B-02；Sprint-1 开发项关 |
 | 2026-06-25 | 技术总监 | 复核 Sprint-1：服务器 sys_user 已存在(64表)；瓶颈改为 spring-boot 验通；更新联调步骤 |
 | 2026-06-25 | 开发 | application-dev.yml 切 Docker PG + pom postgresql 驱动；Redis/SnailJob 对齐；待系统表导入与启动验通 |
 | 2026-06-25 | 运维 | 服务器 PG/Redis/MinIO/RabbitMQ 全绿；本机无 Docker；HANDOFF 开发 PG 联调 |
