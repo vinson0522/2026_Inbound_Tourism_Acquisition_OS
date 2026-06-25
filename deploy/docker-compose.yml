@@ -1,0 +1,149 @@
+# Docker Compose — MVP 基础设施
+
+> 对应 `ARCHITECTURE.md` §12.2 / `TECH_STACK_COMPONENTS.md` §5  
+> 用法：`cd deploy && docker compose up -d`
+
+version: "3.9"
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 10s
+  timeout: 5s
+  retries: 5
+  start_period: 30s
+
+services:
+  # ---------------------------------------------------------------------------
+  # L1 数据层
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: inbound-postgres
+    environment:
+      POSTGRES_DB: inbound_growth
+      POSTGRES_USER: inbound
+      POSTGRES_PASSWORD: inbound_dev_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../database/ddl/001_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ../database/ddl/002_seed_demo.sql:/docker-entrypoint-initdb.d/02_seed_demo.sql:ro
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "pg_isready -U inbound -d inbound_growth"]
+
+  redis:
+    image: redis:7-alpine
+    container_name: inbound-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "redis-cli", "ping"]
+
+  minio:
+    image: minio/minio:latest
+    container_name: inbound-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin_dev
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: inbound-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: inbound
+      RABBITMQ_DEFAULT_PASS: inbound_dev_pass
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+
+  # ---------------------------------------------------------------------------
+  # L0 调度 / 可观测
+  # ---------------------------------------------------------------------------
+  langfuse:
+    image: langfuse/langfuse:2
+    container_name: inbound-langfuse
+    environment:
+      DATABASE_URL: postgresql://inbound:inbound_dev_pass@postgres:5432/inbound_growth
+      NEXTAUTH_SECRET: dev_langfuse_secret_change_in_prod
+      SALT: dev_salt_change_in_prod
+      NEXTAUTH_URL: http://localhost:3000
+      TELEMETRY_ENABLED: "false"
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    container_name: inbound-gotenberg
+    ports:
+      - "3002:3000"
+
+  # ---------------------------------------------------------------------------
+  # L3/L4 应用层（占位 — 待 inbound-core / inbound-ai  Dockerfile 就绪后 build）
+  # ---------------------------------------------------------------------------
+  # core-api:
+  #   build: ../inbound-core
+  #   container_name: inbound-core
+  #   environment:
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/inbound_growth
+  #     SPRING_DATASOURCE_USERNAME: inbound
+  #     SPRING_DATASOURCE_PASSWORD: inbound_dev_pass
+  #     SPRING_REDIS_HOST: redis
+  #     SPRING_RABBITMQ_HOST: rabbitmq
+  #     MINIO_ENDPOINT: http://minio:9000
+  #     AI_SERVICE_BASE_URL: http://ai-api:8090
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     rabbitmq:
+  #       condition: service_healthy
+
+  # ai-api:
+  #   build: ../inbound-ai
+  #   container_name: inbound-ai
+  #   environment:
+  #     DATABASE_URL: postgresql+asyncpg://inbound:inbound_dev_pass@postgres:5432/inbound_growth
+  #     RABBITMQ_URL: amqp://inbound:inbound_dev_pass@rabbitmq:5672/
+  #     LANGFUSE_HOST: http://langfuse:3000
+  #   ports:
+  #     - "8090:8090"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     rabbitmq:
+  #       condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  rabbitmq_data:
+
+networks:
+  default:
+    name: inbound-network

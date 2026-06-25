@@ -1,0 +1,68 @@
+# Vendor clone temp
+.vendor-tmp/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+deploy/.env
+docs/INFRA_ACCESS.local.md
+*.pem
+*.key
+secrets/
+cert/*.pem
+
+# IDE
+.idea/
+*.iml
+.vscode/launch.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Java
+inbound-core/target/
+inbound-core/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+!**/gradle-wrapper.jar
+
+# Python
+inbound-ai/.venv/
+inbound-ai/__pycache__/
+inbound-ai/.pytest_cache/
+inbound-ai/.ruff_cache/
+inbound-ai/dist/
+inbound-ai/*.egg-info/
+.uv/
+
+# Node
+node_modules/
+inbound-admin/dist/
+inbound-admin/.vite/
+inbound-landing/dist/
+inbound-probe-extension/build/
+inbound-probe-extension/.plasmo/
+pnpm-lock.yaml
+package-lock.json
+*.tsbuildinfo
+
+# Logs & temp
+*.log
+logs/
+tmp/
+temp/
+
+# Docker volumes (local)
+deploy/data/
+
+# Build outputs
+*.pdf
+*.docx
+!docs/**/*.docx
+
+# Word temp
+~$*.docx

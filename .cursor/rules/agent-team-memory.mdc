@@ -1,0 +1,31 @@
+---
+description: 多 Agent 窗口共享记忆 — 会话开始读 MEMORY，结束必更新
+alwaysApply: true
+---
+
+# Agent 团队共享记忆（强制）
+
+各 Cursor 窗口 **不共享会话记忆**。以文件为 Single Source of Truth：
+
+| 文件 | 用途 |
+|------|------|
+| `docs/agent-team/MEMORY.md` | 全局快照；**每任务开始读、结束更新** |
+| `docs/agent-team/DECISIONS.md` | 已定架构/产品决策 |
+| `docs/agent-team/HANDOFFS/` | 角色间交接单 |
+| `docs/agent-team/ROLES/{角色}.md` | 四角色职责与激活 Prompt |
+
+## 四角色
+
+| 角色 | 主责 |
+|------|------|
+| 技术总监 | 排期、ADR、HANDOFF、跨角色协调 |
+| 运维 | `deploy/`、基础设施、环境 |
+| 开发 | `inbound-core` / `inbound-ai` / `database` / 探针 |
+| UI 设计 | Admin/落地页/门户视觉与 `docs/design/` |
+
+## 每次任务
+
+**开始**：读 `MEMORY.md` + `DECISIONS.md` 最近 5 条 + 指向本角色的 HANDOFF  
+**结束**：更新 `MEMORY.md` 对应章节；跨角色工作写 `HANDOFFS/`（用 `HANDOFF-TEMPLATE.md`）
+
+完整规范见 `AGENTS.md` §21。优先级：用户指令 > 本规则 > 角色边界。
