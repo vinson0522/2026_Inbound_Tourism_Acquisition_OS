@@ -40,5 +40,5 @@
   - pytest：`test_chunk_service` / `test_embedding_service` / `test_rag_service` / `test_embed_pipeline`（需 `DATABASE_URL`）
 - **遗留**：
   - ~~生产需 `EMBED_MOCK=false` + 有效 embedding Key~~ → Phase 2.1 ✅ OpenAI embedding + reranker
-  - Docling 可选依赖（无 file_url 时用 `content` 字段）
+  - ~~Docling 可选依赖（无 file_url 时用 `content` 字段）~~ → Phase 2.2 ✅ PDF/DOCX Docling · 无 file_url 仍用 `content`
   - ~~bge-reranker top-3 留 Phase 2.1~~ → ✅ `reranker_service` pgvector top-20 → rerank top-3

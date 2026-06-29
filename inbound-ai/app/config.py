@@ -41,6 +41,19 @@ class Settings(BaseSettings):
     rag_vector_top_k: int = 20
     rag_rerank_top_k: int = 3
 
+    minio_endpoint: str | None = None
+    minio_access_key: str | None = None
+    minio_secret_key: str | None = None
+    minio_bucket: str = "inbound-growth"
+
+    keywords_mock_llm: bool = False
+    keywords_model: str = "openai/gpt-4o-mini"
+    keywords_template_name: str = "keyword_generate_v1"
+    keywords_prompt_fallback: str = (
+        "Generate inbound tourism keyword opportunities as JSON only. "
+        "Follow the user message schema; one entry per requested lifecycle stage."
+    )
+
     @property
     def has_embedding_key(self) -> bool:
         return bool(self.openai_api_key)

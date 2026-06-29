@@ -9,6 +9,7 @@ import type {
   KnowledgeAssetForm,
   KnowledgeAssetQuery,
   KnowledgeAssetVo,
+  KnowledgeRagSearchResult,
   PageResult,
   TravelProductForm,
   TravelProductVo
@@ -168,4 +169,25 @@ export function reindexKnowledgeAsset(projectId: number, assetId: number): Axios
     url: `/api/v1/projects/${projectId}/knowledge-assets/${assetId}/reindex`,
     method: 'post'
   });
+}
+
+/** FR-005 知识库 RAG 检索预览 */
+export async function searchKnowledgeRag(
+  projectId: number,
+  query: string,
+  topK = 3
+): Promise<KnowledgeRagSearchResult> {
+  const res = await request({
+    url: `/api/v1/projects/${projectId}/knowledge-assets/search`,
+    method: 'post',
+    data: { query, topK }
+  });
+  const hits = (res.data?.hits ?? []).map((raw: Record<string, unknown>) => ({
+    chunkId: Number(raw.chunkId),
+    assetId: Number(raw.assetId),
+    chunkIndex: Number(raw.chunkIndex ?? 0),
+    chunkText: String(raw.chunkText ?? ''),
+    score: Number(raw.score ?? 0)
+  }));
+  return { hits };
 }

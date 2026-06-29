@@ -4,6 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import org.dromara.aiclient.client.AiServiceClient;
+import org.dromara.aiclient.model.AiApiResponse;
+import org.dromara.aiclient.model.RagChunkHit;
+import org.dromara.aiclient.model.RagSearchData;
+import org.dromara.aiclient.model.RagSearchRequest;
+import org.dromara.common.core.constant.HttpStatus;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -13,7 +19,10 @@ import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.project.domain.CustomerProject;
 import org.dromara.project.domain.KnowledgeAsset;
 import org.dromara.project.domain.bo.KnowledgeAssetBo;
+import org.dromara.project.domain.bo.KnowledgeSearchBo;
 import org.dromara.project.domain.vo.KnowledgeAssetVo;
+import org.dromara.project.domain.vo.KnowledgeRagHitVo;
+import org.dromara.project.domain.vo.KnowledgeRagSearchVo;
 import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.mapper.KnowledgeAssetMapper;
 import org.dromara.project.mq.AiEmbedPublisher;
@@ -26,6 +35,8 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -35,6 +46,7 @@ public class KnowledgeAssetServiceImpl implements IKnowledgeAssetService {
     private final KnowledgeAssetMapper knowledgeAssetMapper;
     private final CustomerProjectMapper customerProjectMapper;
     private final AiEmbedPublisher aiEmbedPublisher;
+    private final AiServiceClient aiServiceClient;
 
     @Override
     public TableDataInfo<KnowledgeAssetVo> queryPageList(Long projectId, KnowledgeAssetBo bo, PageQuery pageQuery) {
@@ -110,6 +122,47 @@ public class KnowledgeAssetServiceImpl implements IKnowledgeAssetService {
         knowledgeAssetMapper.updateById(asset);
         dispatchEmbedAfterCommit(asset);
         return true;
+    }
+
+    @Override
+    public KnowledgeRagSearchVo searchRag(Long projectId, KnowledgeSearchBo bo) {
+        assertProjectOwned(projectId);
+        Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        int topK = bo.getTopK() == null ? 3 : Math.min(Math.max(bo.getTopK(), 1), 10);
+
+        RagSearchRequest request = new RagSearchRequest();
+        request.setTenantId(tenantId);
+        request.setProjectId(projectId);
+        request.setQuery(bo.getQuery().trim());
+        request.setTopK(topK);
+
+        try {
+            AiApiResponse<RagSearchData> response = aiServiceClient.ragSearch(request);
+            if (response == null || response.getCode() == null || response.getCode() != 0) {
+                String msg = response != null && StringUtils.isNotBlank(response.getMessage())
+                    ? response.getMessage()
+                    : "RAG 检索失败";
+                throw new ServiceException(msg, HttpStatus.ERROR);
+            }
+            KnowledgeRagSearchVo result = new KnowledgeRagSearchVo();
+            List<RagChunkHit> hits = response.getData() != null ? response.getData().getHits() : List.of();
+            List<KnowledgeRagHitVo> mapped = new ArrayList<>(hits.size());
+            for (RagChunkHit hit : hits) {
+                KnowledgeRagHitVo vo = new KnowledgeRagHitVo();
+                vo.setChunkId(hit.getChunkId());
+                vo.setAssetId(hit.getAssetId());
+                vo.setChunkIndex(hit.getChunkIndex());
+                vo.setChunkText(hit.getChunkText());
+                vo.setScore(hit.getScore());
+                mapped.add(vo);
+            }
+            result.setHits(mapped);
+            return result;
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("RAG 检索服务不可用: " + e.getMessage(), HttpStatus.ERROR);
+        }
     }
 
     private void dispatchEmbedAfterCommit(KnowledgeAsset asset) {

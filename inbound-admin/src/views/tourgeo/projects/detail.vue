@@ -215,9 +215,10 @@
             <el-table-column label="操作" width="220" align="center" fixed="right">
               <template #default="{ row }">
                 <el-button link type="primary" @click="openKnowledgeMeta(row)">编辑</el-button>
-                <el-tooltip content="向量化完成后可用（EPIC-10）" placement="top">
+                <el-tooltip v-if="row.vectorStatus !== 'READY'" content="向量化完成后可用" placement="top">
                   <el-button link disabled>检索预览</el-button>
                 </el-tooltip>
+                <el-button v-else link type="primary" @click="openRagSearch(row)">检索预览</el-button>
                 <el-popconfirm title="确认删除该资料？" @confirm="removeKnowledge(row.id)">
                   <template #reference>
                     <el-button link type="danger">删除</el-button>
@@ -362,6 +363,35 @@
         <el-button type="primary" :loading="knowledgeMetaSaving" @click="submitKnowledgeMeta">保存</el-button>
       </template>
     </el-drawer>
+
+    <!-- FR-005 检索预览 -->
+    <el-drawer v-model="ragSearchVisible" title="检索预览" size="560px" destroy-on-close>
+      <p v-if="ragSearchAsset" class="rag-context">
+        资料：<strong>{{ ragSearchAsset.title }}</strong>
+        <el-tag size="small" type="success" class="ml-2">可检索</el-tag>
+      </p>
+      <el-input
+        v-model="ragQuery"
+        type="textarea"
+        :rows="3"
+        maxlength="4000"
+        show-word-limit
+        placeholder="输入检索问题，例如：China tour visa requirements"
+        @keyup.enter.ctrl="runRagSearch"
+      />
+      <div class="rag-actions">
+        <el-button type="primary" :loading="ragSearching" @click="runRagSearch">检索</el-button>
+        <span class="rag-hint">Ctrl+Enter 提交 · 返回 top-3 切片</span>
+      </div>
+      <el-empty v-if="ragSearched && !ragHits.length" description="无匹配切片，请换关键词" />
+      <div v-for="(hit, idx) in ragHits" :key="hit.chunkId" class="rag-hit-card">
+        <div class="rag-hit-head">
+          <span class="rag-hit-rank">#{{ idx + 1 }}</span>
+          <span class="rag-hit-meta">chunk_id={{ hit.chunkId }} · asset #{{ hit.assetId }} · score {{ hit.score.toFixed(3) }}</span>
+        </div>
+        <p class="rag-hit-text">{{ hit.chunkText }}</p>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -378,6 +408,7 @@ import {
   listCompetitors,
   listKnowledgeAssets,
   listTravelProducts,
+  searchKnowledgeRag,
   updateCompetitor,
   updateKnowledgeAsset,
   updateProject,
@@ -390,6 +421,7 @@ import type {
   CustomerProjectVo,
   KnowledgeAssetForm,
   KnowledgeAssetVo,
+  KnowledgeRagHit,
   TravelProductForm,
   TravelProductVo
 } from '@/api/tourgeo/types';
@@ -524,6 +556,13 @@ const knowledgeMetaForm = reactive<KnowledgeAssetForm>({
   type: 'DOCUMENT',
   tags: []
 });
+
+const ragSearchVisible = ref(false);
+const ragSearchAsset = ref<KnowledgeAssetVo | null>(null);
+const ragQuery = ref('');
+const ragHits = ref<KnowledgeRagHit[]>([]);
+const ragSearching = ref(false);
+const ragSearched = ref(false);
 
 const needsKnowledgePoll = computed(() =>
   knowledgeList.value.some((a) => a.vectorStatus === 'PENDING' || a.vectorStatus === 'INDEXING')
@@ -824,6 +863,36 @@ async function removeKnowledge(id: number) {
   await loadKnowledge();
 }
 
+function openRagSearch(row: KnowledgeAssetVo) {
+  ragSearchAsset.value = row;
+  ragQuery.value = '';
+  ragHits.value = [];
+  ragSearched.value = false;
+  ragSearchVisible.value = true;
+}
+
+async function runRagSearch() {
+  const q = ragQuery.value.trim();
+  if (!q) {
+    proxy?.$modal.msgWarning('请输入检索问题');
+    return;
+  }
+  ragSearching.value = true;
+  try {
+    const result = await searchKnowledgeRag(projectId.value, q, 3);
+    ragHits.value = result.hits;
+    ragSearched.value = true;
+    if (!result.hits.length) {
+      proxy?.$modal.msgWarning('无匹配切片');
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : '检索失败';
+    proxy?.$modal.msgError(msg);
+  } finally {
+    ragSearching.value = false;
+  }
+}
+
 function startKnowledgePoll() {
   stopKnowledgePoll();
   if (activeTab.value !== 'knowledge' || !needsKnowledgePoll.value) return;
@@ -964,6 +1033,59 @@ onBeforeUnmount(() => {
   font-size: var(--tg-font-size-sm);
   color: var(--tg-color-text-secondary);
   word-break: break-all;
+}
+
+.rag-context {
+  margin: 0 0 var(--tg-space-3);
+  font-size: var(--tg-font-size-sm);
+  color: var(--tg-color-text-regular);
+}
+
+.rag-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--tg-space-3);
+  margin: var(--tg-space-3) 0;
+}
+
+.rag-hint {
+  font-size: var(--tg-font-size-xs);
+  color: var(--tg-color-text-secondary);
+}
+
+.rag-hit-card {
+  margin-bottom: var(--tg-space-3);
+  padding: var(--tg-space-3);
+  border: 1px solid var(--tg-color-border);
+  border-radius: 6px;
+  background: var(--tg-color-bg-surface);
+}
+
+.rag-hit-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tg-space-2);
+  margin-bottom: var(--tg-space-2);
+}
+
+.rag-hit-rank {
+  font-weight: 600;
+  color: var(--tg-color-primary);
+}
+
+.rag-hit-meta {
+  font-family: var(--tg-font-family-mono, monospace);
+  font-size: var(--tg-font-size-xs);
+  color: var(--tg-color-text-secondary);
+}
+
+.rag-hit-text {
+  margin: 0;
+  font-size: var(--tg-font-size-sm);
+  line-height: 1.5;
+  color: var(--tg-color-text-regular);
+  white-space: pre-wrap;
 }
 
 @media (max-width: 992px) {

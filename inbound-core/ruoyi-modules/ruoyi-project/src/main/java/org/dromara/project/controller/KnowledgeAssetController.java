@@ -13,7 +13,9 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.project.domain.bo.KnowledgeAssetBo;
+import org.dromara.project.domain.bo.KnowledgeSearchBo;
 import org.dromara.project.domain.vo.KnowledgeAssetVo;
+import org.dromara.project.domain.vo.KnowledgeRagSearchVo;
 import org.dromara.project.service.IKnowledgeAssetService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -90,5 +92,15 @@ public class KnowledgeAssetController extends BaseController {
     ) {
         knowledgeAssetService.triggerReindex(projectId, assetId);
         return R.ok();
+    }
+
+    /** FR-005 知识库 RAG 检索预览 */
+    @SaCheckLogin
+    @PostMapping("/search")
+    public R<KnowledgeRagSearchVo> search(
+        @NotNull @PathVariable Long projectId,
+        @Validated @RequestBody KnowledgeSearchBo bo
+    ) {
+        return R.ok(knowledgeAssetService.searchRag(projectId, bo));
     }
 }

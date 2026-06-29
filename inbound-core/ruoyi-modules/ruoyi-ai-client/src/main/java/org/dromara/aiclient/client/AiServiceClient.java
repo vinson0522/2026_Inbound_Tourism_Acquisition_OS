@@ -9,6 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.aiclient.config.AiServiceProperties;
 import org.dromara.aiclient.model.AiApiResponse;
 import org.dromara.aiclient.model.AiHealthData;
+import org.dromara.aiclient.model.KeywordGenerateData;
+import org.dromara.aiclient.model.KeywordGenerateRequest;
+import org.dromara.aiclient.model.RagSearchData;
+import org.dromara.aiclient.model.RagSearchRequest;
 import org.dromara.aiclient.model.ScoreRequest;
 import org.dromara.aiclient.model.ScoreResultData;
 import org.springframework.core.ParameterizedTypeReference;
@@ -84,6 +88,71 @@ public class AiServiceClient {
             );
         } catch (JsonProcessingException ex) {
             throw new IllegalStateException("Failed to parse score response", ex);
+        }
+    }
+
+    /**
+     * POST /ai/rag/search — tenant + project scoped vector retrieval.
+     */
+    public AiApiResponse<RagSearchData> ragSearch(RagSearchRequest request) {
+        String url = normalizeBaseUrl() + "/ai/rag/search";
+        String jsonBody;
+        try {
+            jsonBody = objectMapper.writeValueAsString(request);
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Failed to serialize rag search request", ex);
+        }
+        HttpResponse response = HttpRequest.post(url)
+            .header("Authorization", "Bearer " + properties.getInternalToken())
+            .header("Accept", MediaType.APPLICATION_JSON_VALUE)
+            .body(jsonBody, ContentType.JSON.getValue())
+            .timeout(Math.toIntExact(properties.getReadTimeoutMs()))
+            .execute();
+        if (!response.isOk()) {
+            throw new IllegalStateException(
+                "RAG search failed: HTTP " + response.getStatus() + " " + response.body()
+            );
+        }
+        try {
+            return objectMapper.readValue(
+                response.body(),
+                objectMapper.getTypeFactory().constructParametricType(AiApiResponse.class, RagSearchData.class)
+            );
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Failed to parse rag search response", ex);
+        }
+    }
+
+    /**
+     * POST /ai/keywords/generate — FR-201 keyword opportunity generation.
+     */
+    public AiApiResponse<KeywordGenerateData> keywordsGenerate(KeywordGenerateRequest request) {
+        String url = normalizeBaseUrl() + "/ai/keywords/generate";
+        String jsonBody;
+        try {
+            jsonBody = objectMapper.writeValueAsString(request);
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Failed to serialize keywords generate request", ex);
+        }
+        int timeoutMs = Math.max(Math.toIntExact(properties.getReadTimeoutMs()), 120_000);
+        HttpResponse response = HttpRequest.post(url)
+            .header("Authorization", "Bearer " + properties.getInternalToken())
+            .header("Accept", MediaType.APPLICATION_JSON_VALUE)
+            .body(jsonBody, ContentType.JSON.getValue())
+            .timeout(timeoutMs)
+            .execute();
+        if (!response.isOk()) {
+            throw new IllegalStateException(
+                "Keywords generate failed: HTTP " + response.getStatus() + " " + response.body()
+            );
+        }
+        try {
+            return objectMapper.readValue(
+                response.body(),
+                objectMapper.getTypeFactory().constructParametricType(AiApiResponse.class, KeywordGenerateData.class)
+            );
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Failed to parse keywords generate response", ex);
         }
     }
 

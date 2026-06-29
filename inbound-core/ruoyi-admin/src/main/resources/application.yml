@@ -138,6 +138,9 @@ tenant:
     - customer_project
     - travel_product
     - competitor
+    - knowledge_asset
+    - knowledge_chunk
+    - keyword_opportunity
     - diagnostic_run
     - diagnostic_result
     - probe_task
@@ -281,7 +284,7 @@ ai:
     connect-timeout-ms: 5000
     read-timeout-ms: 15000
 
---- # FR-106 报告导出（Gotenberg 可选；本地 ADR-09 默认不启 gotenberg，PDF 需 profile full）
+--- # FR-106 报告导出（Gotenberg；本地 ADR-09 compose 默认映射 :3002）
 inbound:
   report:
     gotenberg-base-url: ${GOTENBERG_BASE_URL:}

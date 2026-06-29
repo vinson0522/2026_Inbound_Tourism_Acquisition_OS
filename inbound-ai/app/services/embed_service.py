@@ -8,7 +8,7 @@ from app.config import Settings, get_settings
 from app.models.embed import EmbedRequest, EmbedResultData
 from app.repositories import knowledge_repository
 from app.services import chunk_service, document_parser, embedding_service
-from app.services.embedding_service import EmbeddingError
+from app.services.document_parser import DocumentParseError
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,12 @@ async def run_embed(req: EmbedRequest, settings: Settings | None = None) -> Embe
 
     await knowledge_repository.set_asset_status(req.asset_id, "INDEXING")
     try:
-        text = await document_parser.extract_text(content=asset.content, file_url=req.file_url or asset.file_url)
+        file_url = req.file_url or asset.file_url
+        text = await document_parser.extract_text(
+            content=asset.content if not file_url else None,
+            file_url=file_url,
+            settings=cfg,
+        )
         pieces = chunk_service.chunk_text(
             text,
             chunk_size=cfg.chunk_size,
@@ -54,6 +59,9 @@ async def run_embed(req: EmbedRequest, settings: Settings | None = None) -> Embe
             count,
         )
         return EmbedResultData(asset_id=req.asset_id, chunk_count=count, vector_status="READY")
+    except DocumentParseError as exc:
+        await knowledge_repository.set_asset_status(req.asset_id, "FAILED")
+        raise EmbedPipelineError(str(exc)) from exc
     except Exception:
         await knowledge_repository.set_asset_status(req.asset_id, "FAILED")
         raise
