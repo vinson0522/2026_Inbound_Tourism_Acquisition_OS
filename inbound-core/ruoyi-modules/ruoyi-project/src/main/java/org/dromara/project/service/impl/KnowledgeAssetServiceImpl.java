@@ -1,0 +1,129 @@
+package org.dromara.project.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.RequiredArgsConstructor;
+import org.dromara.common.core.exception.ServiceException;
+import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.project.domain.CustomerProject;
+import org.dromara.project.domain.KnowledgeAsset;
+import org.dromara.project.domain.bo.KnowledgeAssetBo;
+import org.dromara.project.domain.vo.KnowledgeAssetVo;
+import org.dromara.project.mapper.CustomerProjectMapper;
+import org.dromara.project.mapper.KnowledgeAssetMapper;
+import org.dromara.project.mq.AiEmbedPublisher;
+import org.dromara.project.service.IKnowledgeAssetService;
+import org.dromara.project.support.BusinessTenantHelper;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class KnowledgeAssetServiceImpl implements IKnowledgeAssetService {
+
+    private final KnowledgeAssetMapper knowledgeAssetMapper;
+    private final CustomerProjectMapper customerProjectMapper;
+    private final AiEmbedPublisher aiEmbedPublisher;
+
+    @Override
+    public TableDataInfo<KnowledgeAssetVo> queryPageList(Long projectId, PageQuery pageQuery) {
+        assertProjectOwned(projectId);
+        LambdaQueryWrapper<KnowledgeAsset> lqw = Wrappers.lambdaQuery(KnowledgeAsset.class)
+            .eq(KnowledgeAsset::getProjectId, projectId)
+            .eq(KnowledgeAsset::getTenantId, BusinessTenantHelper.getBusinessTenantId())
+            .isNull(KnowledgeAsset::getDeletedAt)
+            .orderByDesc(KnowledgeAsset::getCreatedAt);
+        Page<KnowledgeAssetVo> page = knowledgeAssetMapper.selectVoPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(page);
+    }
+
+    @Override
+    public KnowledgeAssetVo queryById(Long projectId, Long assetId) {
+        return MapstructUtils.convert(getOwnedAssetOrThrow(projectId, assetId), KnowledgeAssetVo.class);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long insertByBo(Long projectId, KnowledgeAssetBo bo) {
+        assertProjectOwned(projectId);
+        KnowledgeAsset entity = MapstructUtils.convert(bo, KnowledgeAsset.class);
+        Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        OffsetDateTime now = OffsetDateTime.now();
+        entity.setProjectId(projectId);
+        entity.setTenantId(tenantId);
+        entity.setType(StringUtils.blankToDefault(entity.getType(), "DOCUMENT"));
+        entity.setVectorStatus("PENDING");
+        entity.setCreatedAt(now);
+        entity.setUpdatedAt(now);
+        entity.setCreatedBy(LoginHelper.getUserId());
+        knowledgeAssetMapper.insert(entity);
+        dispatchEmbedAfterCommit(entity);
+        return entity.getId();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean triggerReindex(Long projectId, Long assetId) {
+        KnowledgeAsset asset = getOwnedAssetOrThrow(projectId, assetId);
+        asset.setVectorStatus("PENDING");
+        asset.setUpdatedAt(OffsetDateTime.now());
+        knowledgeAssetMapper.updateById(asset);
+        dispatchEmbedAfterCommit(asset);
+        return true;
+    }
+
+    private void dispatchEmbedAfterCommit(KnowledgeAsset asset) {
+        String traceId = StringUtils.blankToDefault(MDC.get("traceId"), UUID.randomUUID().toString());
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                aiEmbedPublisher.publish(
+                    traceId,
+                    asset.getId(),
+                    asset.getTenantId(),
+                    asset.getProjectId(),
+                    asset.getFileUrl()
+                );
+            }
+        });
+    }
+
+    private void assertProjectOwned(Long projectId) {
+        Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        CustomerProject project = customerProjectMapper.selectOne(
+            Wrappers.lambdaQuery(CustomerProject.class)
+                .eq(CustomerProject::getId, projectId)
+                .eq(CustomerProject::getTenantId, tenantId)
+                .isNull(CustomerProject::getDeletedAt)
+        );
+        if (project == null) {
+            throw new ServiceException("项目不存在或无权访问");
+        }
+    }
+
+    private KnowledgeAsset getOwnedAssetOrThrow(Long projectId, Long assetId) {
+        assertProjectOwned(projectId);
+        KnowledgeAsset asset = knowledgeAssetMapper.selectOne(
+            Wrappers.lambdaQuery(KnowledgeAsset.class)
+                .eq(KnowledgeAsset::getId, assetId)
+                .eq(KnowledgeAsset::getProjectId, projectId)
+                .eq(KnowledgeAsset::getTenantId, BusinessTenantHelper.getBusinessTenantId())
+                .isNull(KnowledgeAsset::getDeletedAt)
+        );
+        if (asset == null) {
+            throw new ServiceException("知识库资产不存在");
+        }
+        return asset;
+    }
+}

@@ -65,4 +65,14 @@ VALUES (
     'US', 'inspiration', 88.5, 'tiktok', 1
 );
 
+INSERT INTO knowledge_asset (tenant_id, project_id, type, title, content, vector_status, created_by)
+VALUES (
+    1, 1, 'DOCUMENT',
+    'Demo Brand Overview',
+    'Dragon Journey Travel specializes in private first-time China tours for English-speaking travelers. '
+    || 'Our 10-day itineraries cover Beijing, Xi''an, Zhangjiajie and Shanghai with licensed guides, '
+    || '4-star hotels, and transparent pricing in USD. We assist with visa guidance and 24/7 support.',
+    'PENDING', 1
+);
+
 COMMIT;

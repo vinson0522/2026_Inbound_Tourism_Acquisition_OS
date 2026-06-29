@@ -12,6 +12,8 @@ dependencies = [
   "pydantic-settings>=2.2",
   "python-multipart>=0.0.9",
   "aio-pika>=9.4",
+  "asyncpg>=0.29",
+  "tiktoken>=0.7",
 ]
 
 [project.optional-dependencies]

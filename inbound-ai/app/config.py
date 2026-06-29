@@ -30,6 +30,12 @@ class Settings(BaseSettings):
     # Pipeline E2E when provider keys/quota unavailable (never use in production)
     diagnose_mock_llm: bool = False
 
+    embedding_model: str = "openai/text-embedding-3-small"
+    chunk_size: int = 512
+    chunk_overlap: int = 64
+    embed_worker_enabled: bool = False
+    embed_mock: bool = False
+
     @property
     def has_llm_key(self) -> bool:
         return bool(self.openai_api_key or self.gemini_api_key or self.perplexity_api_key)
