@@ -116,6 +116,7 @@ security:
     - /*/api-docs
     - /*/api-docs/**
     - /warm-flow-ui/config
+    - /api/v1/internal/**
 
 # 多租户配置
 tenant:
@@ -133,6 +134,14 @@ tenant:
     - sys_client
     - sys_oss_config
     - flow_spel
+    - tenant
+    - customer_project
+    - travel_product
+    - competitor
+    - diagnostic_run
+    - diagnostic_result
+    - probe_task
+    - question_bank
 
 # MyBatisPlus配置
 # https://baomidou.com/config/
@@ -262,3 +271,12 @@ warm-flow:
   node-tooltip: true
   # 默认Authorization，如果有多个token，用逗号分隔
   token-name: ${sa-token.token-name},clientid
+
+--- # inbound-ai 内网调用（EPIC-10；与 deploy/.env、inbound-ai/.env.example 对齐）
+ai:
+  service:
+    base-url: ${AI_SERVICE_BASE_URL:http://localhost:8090}
+    internal-token: ${AI_SERVICE_INTERNAL_TOKEN:dev_internal_token_change_me}
+    health-check-on-startup: true
+    connect-timeout-ms: 5000
+    read-timeout-ms: 15000
