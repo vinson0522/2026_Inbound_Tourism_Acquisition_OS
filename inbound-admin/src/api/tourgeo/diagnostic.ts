@@ -9,6 +9,8 @@ import type {
   DiagnosticResultVO,
   DiagnosticRunQuery,
   DiagnosticRunVO,
+  DiagnosticTrendPointVO,
+  DiagnosticTrendsData,
   PageResult,
   ProbeTaskVO
 } from './types';
@@ -79,6 +81,21 @@ export async function getProbeTasks(runId: number): Promise<ProbeTaskVO[]> {
   return list.map(mapProbeTaskVo);
 }
 
+/** FR-108 诊断趋势序列 */
+export async function getDiagnosticTrends(
+  projectId: number,
+  params?: { limit?: number; market?: string }
+): Promise<DiagnosticTrendsData> {
+  const res = await request.get(`${BASE}/projects/${projectId}/diagnostics/trends`, {
+    params: {
+      limit: params?.limit ?? 12,
+      market: params?.market || undefined
+    }
+  });
+  const runs = (res.data?.runs ?? []).map(mapTrendPoint);
+  return { runs };
+}
+
 /** FR-106 导出诊断报告（docx / pdf） */
 export async function downloadDiagnosticReport(
   runId: number,
@@ -92,7 +109,16 @@ export async function downloadDiagnosticReport(
     responseType: 'blob'
   });
   if (!blobValidate(blob)) {
-    throw new Error('export failed');
+    const text = await blob.text();
+    try {
+      const rsp = JSON.parse(text) as { msg?: string; message?: string };
+      throw new Error(rsp.msg || rsp.message || 'export failed');
+    } catch (e) {
+      if (e instanceof Error && e.message !== 'export failed') {
+        throw e;
+      }
+      throw new Error('export failed');
+    }
   }
   FileSaver.saveAs(blob, filename);
 }
@@ -152,6 +178,39 @@ export function computeMetricsFromResults(results: DiagnosticResultVO[]): Diagno
     citationCoverage: citationHits / n,
     longtailCoverage: 0,
     assetCompleteness: 1
+  };
+}
+
+function mapTrendPoint(raw: Record<string, unknown>): DiagnosticTrendPointVO {
+  return {
+    runId: Number(raw.runId),
+    name: String(raw.name ?? ''),
+    geoScore: Number(raw.geoScore),
+    finishedAt: String(raw.finishedAt ?? ''),
+    market: String(raw.market ?? ''),
+    status: String(raw.status ?? ''),
+    metrics: mapTrendMetrics(raw.metrics as Record<string, unknown>)
+  };
+}
+
+function mapTrendMetrics(raw: Record<string, unknown> | undefined): DiagnosticMetrics {
+  if (!raw) {
+    return {
+      brandMentionRate: 0,
+      top3Rate: 0,
+      competitorSuppression: 0,
+      citationCoverage: 0,
+      longtailCoverage: 0,
+      assetCompleteness: 0
+    };
+  }
+  return {
+    brandMentionRate: Number(raw.brandMentionRate ?? 0),
+    top3Rate: Number(raw.top3Rate ?? 0),
+    competitorSuppression: Number(raw.competitorSuppression ?? 0),
+    citationCoverage: Number(raw.citationCoverage ?? 0),
+    longtailCoverage: Number(raw.longtailCoverage ?? 0),
+    assetCompleteness: Number(raw.assetCompleteness ?? 0)
   };
 }
 

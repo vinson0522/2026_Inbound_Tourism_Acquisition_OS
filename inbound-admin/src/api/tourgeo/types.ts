@@ -151,6 +151,21 @@ export interface DiagnosticMetrics {
   assetCompleteness: number;
 }
 
+/** FR-108 趋势 API 单点 */
+export interface DiagnosticTrendPointVO {
+  runId: number;
+  name: string;
+  geoScore: number;
+  finishedAt: string;
+  market: string;
+  status: string;
+  metrics: DiagnosticMetrics;
+}
+
+export interface DiagnosticTrendsData {
+  runs: DiagnosticTrendPointVO[];
+}
+
 export interface DiagnosticRunQuery {
   pageNum: number;
   pageSize: number;
@@ -253,4 +268,17 @@ export interface KnowledgeAssetQuery {
   title?: string;
   type?: KnowledgeAssetType | '';
   vectorStatus?: VectorIndexStatus | '';
+}
+
+/** FR-005 RAG 检索预览 */
+export interface KnowledgeRagHit {
+  chunkId: number;
+  assetId: number;
+  chunkIndex: number;
+  chunkText: string;
+  score: number;
+}
+
+export interface KnowledgeRagSearchResult {
+  hits: KnowledgeRagHit[];
 }

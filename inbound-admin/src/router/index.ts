@@ -125,6 +125,12 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'DiagnosticDetail',
         hidden: true,
         meta: { title: '诊断详情', activeMenu: '/diagnostics/runs', noCache: true }
+      },
+      {
+        path: 'trends',
+        component: () => import('@/views/tourgeo/diagnostics/trends.vue'),
+        name: 'DiagnosticTrends',
+        meta: { title: '趋势监控', icon: 'chart' }
       }
     ]
   },

@@ -6,6 +6,7 @@ import org.dromara.diagnostic.domain.bo.CreateDiagnosticBo;
 import org.dromara.diagnostic.domain.bo.ProbeCallbackBo;
 import org.dromara.diagnostic.domain.vo.DiagnosticResultVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticRunVo;
+import org.dromara.diagnostic.domain.vo.DiagnosticTrendsVo;
 import org.dromara.diagnostic.domain.vo.ProbeTaskVo;
 
 import java.util.List;
@@ -23,4 +24,7 @@ public interface IDiagnosticRunService {
     List<DiagnosticResultVo> queryResults(Long runId);
 
     List<ProbeTaskVo> queryProbeTasks(Long runId);
+
+    /** FR-108 诊断趋势序列（SUCCESS/PARTIAL_FAILED + geo_score 非空） */
+    DiagnosticTrendsVo queryTrends(Long projectId, int limit, String market);
 }

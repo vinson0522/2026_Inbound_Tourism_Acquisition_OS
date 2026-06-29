@@ -58,7 +58,10 @@
           >
             导出 DOCX
           </el-button>
-          <el-tooltip content="PDF 需启动 Gotenberg（见 deploy/LOCAL_DOCKER.md）" placement="top">
+          <el-tooltip
+            content="PDF 由 Gotenberg 生成；服务未启动时将提示启动指引（deploy/LOCAL_DOCKER.md）"
+            placement="top"
+          >
             <el-button
               plain
               :disabled="!canExportReport"
@@ -247,7 +250,9 @@
               </el-table-column>
             </el-table>
             <el-empty v-else description="暂无竞品对比数据" />
-            <el-empty class="mt-4" description="完成第二次诊断后可对比趋势（FR-108）" />
+            <div class="mt-4 trends-link">
+              <router-link :to="trendsLink">查看历史趋势 →</router-link>
+            </div>
           </el-tab-pane>
 
           <el-tab-pane label="探针进度" name="probes">
@@ -316,6 +321,11 @@ const resultFilter = reactive({
 });
 
 const runId = computed(() => Number(route.params.runId));
+
+const trendsLink = computed(() => ({
+  path: '/diagnostics/trends',
+  query: run.value ? { runIds: String(run.value.id) } : undefined
+}));
 
 const showScore = computed(
   () => run.value && ['SUCCESS', 'PARTIAL_FAILED'].includes(run.value.status)
@@ -472,8 +482,9 @@ async function handleExportReport(format: 'docx' | 'pdf') {
   try {
     await downloadDiagnosticReport(run.value.id, format, filename);
     ElMessage.success(format === 'docx' ? 'DOCX 报告已下载' : 'PDF 报告已下载');
-  } catch {
-    ElMessage.error(format === 'pdf' ? 'PDF 导出失败（需 Gotenberg，见 LOCAL_DOCKER.md）' : 'DOCX 导出失败');
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : '导出失败';
+    ElMessage.error(msg);
   } finally {
     loadingRef.value = false;
   }
@@ -686,6 +697,16 @@ onUnmounted(stopPolling);
 .fail-msg {
   margin: 0.25rem 0;
   color: var(--tg-color-text-secondary);
+}
+
+.trends-link a {
+  color: var(--tg-color-primary);
+  font-size: var(--tg-font-size-sm);
+  text-decoration: none;
+}
+
+.trends-link a:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {

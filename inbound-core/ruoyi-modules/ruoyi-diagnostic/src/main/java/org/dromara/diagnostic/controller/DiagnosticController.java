@@ -13,6 +13,7 @@ import org.dromara.common.web.core.BaseController;
 import org.dromara.diagnostic.domain.bo.CreateDiagnosticBo;
 import org.dromara.diagnostic.domain.vo.DiagnosticResultVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticRunVo;
+import org.dromara.diagnostic.domain.vo.DiagnosticTrendsVo;
 import org.dromara.diagnostic.domain.vo.ProbeTaskVo;
 import org.dromara.diagnostic.service.IDiagnosticRunService;
 import org.springframework.validation.annotation.Validated;
@@ -63,6 +64,17 @@ public class DiagnosticController extends BaseController {
         PageQuery pageQuery
     ) {
         return diagnosticRunService.queryPageList(projectId, pageQuery);
+    }
+
+    /** FR-108 诊断趋势序列（按 finished_at ASC） */
+    @SaCheckLogin
+    @GetMapping("/projects/{projectId}/diagnostics/trends")
+    public R<DiagnosticTrendsVo> trends(
+        @NotNull @PathVariable Long projectId,
+        @RequestParam(defaultValue = "12") int limit,
+        @RequestParam(required = false) String market
+    ) {
+        return R.ok(diagnosticRunService.queryTrends(projectId, limit, market));
     }
 
     @SaCheckLogin

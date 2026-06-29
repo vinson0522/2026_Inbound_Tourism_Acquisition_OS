@@ -18,7 +18,6 @@ import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.diagnostic.domain.Competitor;
 import org.dromara.diagnostic.domain.DiagnosticResult;
 import org.dromara.diagnostic.domain.DiagnosticRun;
 import org.dromara.diagnostic.domain.ProbeTask;
@@ -27,8 +26,10 @@ import org.dromara.diagnostic.domain.bo.CreateDiagnosticBo;
 import org.dromara.diagnostic.domain.bo.ProbeCallbackBo;
 import org.dromara.diagnostic.domain.vo.DiagnosticResultVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticRunVo;
+import org.dromara.diagnostic.domain.vo.DiagnosticTrendMetricsVo;
+import org.dromara.diagnostic.domain.vo.DiagnosticTrendVo;
+import org.dromara.diagnostic.domain.vo.DiagnosticTrendsVo;
 import org.dromara.diagnostic.domain.vo.ProbeTaskVo;
-import org.dromara.diagnostic.mapper.CompetitorMapper;
 import org.dromara.diagnostic.mapper.DiagnosticResultMapper;
 import org.dromara.diagnostic.mapper.DiagnosticRunMapper;
 import org.dromara.diagnostic.mapper.ProbeTaskMapper;
@@ -36,9 +37,12 @@ import org.dromara.diagnostic.mapper.QuestionBankMapper;
 import org.dromara.diagnostic.mq.DiagGroundedApiPublisher;
 import org.dromara.diagnostic.service.IDiagnosticRunService;
 import org.dromara.diagnostic.support.BusinessTenantHelper;
+import org.dromara.diagnostic.support.DiagnosticMetricsAggregator;
 import org.dromara.diagnostic.support.PlatformModelResolver;
 import org.dromara.diagnostic.support.PlatformModelResolver.PlatformModel;
+import org.dromara.project.domain.Competitor;
 import org.dromara.project.domain.CustomerProject;
+import org.dromara.project.mapper.CompetitorMapper;
 import org.dromara.project.mapper.CustomerProjectMapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -274,6 +278,63 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
                 .orderByAsc(DiagnosticResult::getQuestionId)
                 .orderByAsc(DiagnosticResult::getPlatform)
         );
+    }
+
+    @Override
+    public DiagnosticTrendsVo queryTrends(Long projectId, int limit, String market) {
+        Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        getOwnedProjectOrThrow(projectId, tenantId);
+
+        int cappedLimit = limit <= 0 ? 12 : Math.min(limit, 52);
+
+        LambdaQueryWrapper<DiagnosticRun> lqw = Wrappers.lambdaQuery();
+        lqw.eq(DiagnosticRun::getTenantId, tenantId);
+        lqw.eq(DiagnosticRun::getProjectId, projectId);
+        lqw.isNull(DiagnosticRun::getDeletedAt);
+        lqw.isNotNull(DiagnosticRun::getGeoScore);
+        lqw.isNotNull(DiagnosticRun::getFinishedAt);
+        lqw.apply("status IN ('SUCCESS'::diagnostic_run_status, 'PARTIAL_FAILED'::diagnostic_run_status)");
+        if (StringUtils.isNotBlank(market)) {
+            lqw.eq(DiagnosticRun::getMarket, market);
+        }
+        lqw.orderByDesc(DiagnosticRun::getFinishedAt);
+        lqw.last("LIMIT " + cappedLimit);
+
+        List<DiagnosticRun> runs = diagnosticRunMapper.selectList(lqw);
+        Collections.reverse(runs);
+
+        DiagnosticTrendsVo response = new DiagnosticTrendsVo();
+        if (runs.isEmpty()) {
+            return response;
+        }
+
+        List<Long> runIds = runs.stream().map(DiagnosticRun::getId).toList();
+        List<DiagnosticResult> allResults = diagnosticResultMapper.selectList(
+            Wrappers.lambdaQuery(DiagnosticResult.class)
+                .in(DiagnosticResult::getRunId, runIds)
+                .isNull(DiagnosticResult::getDeletedAt)
+        );
+        Map<Long, List<DiagnosticResult>> resultsByRun = allResults.stream()
+            .collect(Collectors.groupingBy(DiagnosticResult::getRunId));
+        Map<Long, Boolean> longtailMap = loadLongtailMap(allResults);
+
+        List<DiagnosticTrendVo> trendRuns = new ArrayList<>(runs.size());
+        for (DiagnosticRun run : runs) {
+            List<DiagnosticResult> runResults = resultsByRun.getOrDefault(run.getId(), Collections.emptyList());
+            DiagnosticTrendMetricsVo metrics = DiagnosticMetricsAggregator.aggregate(runResults, longtailMap);
+
+            DiagnosticTrendVo point = new DiagnosticTrendVo();
+            point.setRunId(run.getId());
+            point.setName(run.getName());
+            point.setGeoScore(run.getGeoScore());
+            point.setFinishedAt(run.getFinishedAt());
+            point.setMarket(run.getMarket());
+            point.setStatus(run.getStatus());
+            point.setMetrics(metrics);
+            trendRuns.add(point);
+        }
+        response.setRuns(trendRuns);
+        return response;
     }
 
     @Override
