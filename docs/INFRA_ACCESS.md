@@ -211,6 +211,7 @@ ssh -i cert/im1.pem -N ^
   -L 15672:127.0.0.1:15672 ^
   -L 3100:127.0.0.1:3100 ^
   -L 3002:127.0.0.1:3002 ^
+  -L 8090:127.0.0.1:8090 ^
   ec2-user@18.139.209.10
 ```
 
@@ -233,6 +234,7 @@ Host inbound-dev
     LocalForward 15672 127.0.0.1:15672
     LocalForward 3100 127.0.0.1:3100
     LocalForward 3002 127.0.0.1:3002
+    LocalForward 8090 127.0.0.1:8090
 ```
 
 连接：`ssh -N inbound-dev`
@@ -240,6 +242,16 @@ Host inbound-dev
 ### 6.3 隧道建立后的等价地址
 
 隧道开启后，本机应用配置与 §5 中「远程（隧道后）」列相同，密码用 `INFRA_ACCESS.local.md` 中的服务器值。
+
+**EPIC-2 混合联调**（Java 本机、ai-api 可隧道或直连服务器）：
+
+| 变量 | 混合联调（本机 worker） | 生产同机 compose |
+|------|-------------------------|------------------|
+| `AI_SERVICE_BASE_URL`（Java） | `http://127.0.0.1:8090`（隧道） | `http://ai-api:8090` |
+| `CORE_CALLBACK_BASE_URL`（Python worker） | `http://localhost:8080` | `http://core-api:8080` |
+| `DIAGNOSE_WORKER_ENABLED` | 本机 `true`；**服务器 ai-api 保持 false** | 服务器 ai-api `true`（Java 上机后） |
+
+详见 [deploy/README.md](../deploy/README.md) §EPIC-2。
 
 ---
 
@@ -264,6 +276,9 @@ python deploy/scripts/server_infra_deploy.py --host 18.139.209.10 --key-file cer
 
 # 健康检查
 python deploy/scripts/server_infra_verify.py --host 18.139.209.10 --key-file cert/im1.pem
+
+# 更新 ai-api（EPIC-2 代码）
+python deploy/scripts/server_ai_deploy.py --host 18.139.209.10 --key-file cert/im1.pem
 ```
 
 ---
@@ -290,4 +305,4 @@ python deploy/scripts/server_infra_verify.py --host 18.139.209.10 --key-file cer
 
 ---
 
-*Last updated: 2026-06-25*
+*Last updated: 2026-06-26*

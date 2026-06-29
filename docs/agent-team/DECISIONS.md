@@ -48,6 +48,56 @@
 - **决策**：**单库** `inbound_growth`（`public` schema）；若依系统表走 RuoYi 自带 Flyway/SQL 脚本；业务表保持 `001_schema.sql` 命名；**不做** MySQL 双库过渡
 - **影响**：运维 compose 验证；开发改 `application-dev.yml` + PG driver；Langfuse 同库共存
 
+### ADR-20260625-05 | 本机无 Docker 时用 SSH 隧道联调共享服务器
+- **状态**：已采纳（**本机开发机已被 ADR-09 取代**；隧道仍适用于未装 Docker 的备用场景）
+- **决策者**：技术总监
+- **背景**：Windows 开发机未装 Docker Desktop；共享服务器 `18.139.209.10` 基础设施已全绿
+- **决策**：EPIC-1 Sprint-1 **不阻塞**于本机 compose；开发通过 SSH 隧道映射 PG(5432)、Redis(6380)、RabbitMQ(5672)，`application-dev.yml` 用 `INBOUND_*` 环境变量注入密码；本机 PG 占 5432 时隧道改 `15432` + `INBOUND_PG_PORT=15432`；本地 Docker 列为 P2 便利项
+- **影响**：开发联调步骤见 `MEMORY.md`「开发 → 开发联调步骤」；`docs/INFRA_ACCESS.local.md` §6；**首选**见 ADR-09 `deploy/LOCAL_DOCKER.md`
+
+### ADR-20260627-09 | 本机开发改用 D 盘 Docker Compose（取代隧道）
+- **状态**：已采纳
+- **决策者**：用户 + 技术总监
+- **背景**：SSH 隧道联调远程 PG/MQ 延迟高；用户要求本地化且 **不污染 C 盘**
+- **决策**：
+  - **本机主路径**：Docker Desktop (WSL2) + `docker-compose.yml` + `docker-compose.local-d.yml`
+  - **数据落盘**：镜像 VHDX → `D:\Dev\SDKs\Docker\wsl-data`；业务卷 bind mount → `D:\Dev\SDKs\Docker\inbound-growth\`
+  - **最小服务集**：postgres / redis / rabbitmq / ai-api（Java/Admin 仍本机 IDE）
+  - **ai-api worker**：`CORE_CALLBACK_BASE_URL=http://host.docker.internal:8080`
+  - **共享服务器** `18.139.209.10` 保留 staging；**禁止**隧道与本地 Docker 混用
+  - Windows PostgreSQL-16 保持停止，5432 给容器
+- **影响**：`deploy/LOCAL_DOCKER.md`、bootstrap/cleanup/import 脚本；运维 HANDOFF [local-docker-finish](HANDOFFS/2026-06-27-tech-director-to-devops-local-docker-finish.md)；`MEMORY.md` 联调步骤更新
+
+### ADR-20260625-06 | EPIC-10 分两 Phase 交付
+- **状态**：已采纳
+- **决策者**：技术总监
+- **背景**：EPIC-10 全量（RAG/embed/worker/LangGraph）过大，阻塞 EPIC-2 启动
+- **决策**：
+  - **Phase 1（当前 Sprint）**：FastAPI scaffold + internal token + LiteLLM gateway + `/health` + Dockerfile
+  - **Phase 2**：embed worker、RAG、RabbitMQ 消费者、LangGraph Agent
+  - Phase 1 **不引入** sentence-transformers / Docling / LlamaIndex 依赖
+- **影响**：`inbound-ai/pyproject.toml` 最小依赖；运维 compose `ai-api` 在 Dockerfile 就绪后启用
+
+### ADR-20260626-07 | EPIC-2 M1 仅 grounded-api + demo 题库
+- **状态**：已采纳
+- **决策者**：技术总监
+- **背景**：FR-101~110 全做周期过长；UI/AI/Java 底座已就绪
+- **决策**：
+  - **M1**：`grounded-api` 单模式；demo `question_bank` 3 题；`sample_count=1`
+  - 调度：RabbitMQ `diag.grounded-api` + Python worker + Java callback
+  - **M1 不做**：browser-extension、FR-101 自动生成 100 题、FR-106 报告导出、多平台并行
+- **影响**：[EPIC-2 Sprint HANDOFF](HANDOFFS/2026-06-26-tech-director-epic2-geo-sprint.md)
+
+### ADR-20260626-08 | M1 无 Perplexity 时用 Gemini Grounding
+- **状态**：已采纳
+- **决策者**：技术总监 + 用户（成本约束）
+- **背景**：Perplexity API 成本高，用户暂不提供 Key；OpenAI/Gemini Key 已有
+- **决策**：
+  - **M1 默认探针**：`platform=gemini`，`model=gemini/gemini-2.0-flash`（`grounding_enabled=true`）
+  - **OpenAI** 作备选；**Perplexity** 推迟至 M2 或用户后续提供 Key
+  - Java/Admin 默认模型改 Gemini；Python 补 `parse_gemini`
+- **影响**：不阻塞 Java diagnostic HANDOFF
+
 ---
 
 ## 待讨论

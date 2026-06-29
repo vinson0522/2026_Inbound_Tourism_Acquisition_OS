@@ -157,7 +157,8 @@ dependencies = [
 | `LANGFUSE_HOST` | `http://langfuse:3000` | — |
 | `EMBEDDING_MODEL` | `openai/text-embedding-3-small` | 1536 维 |
 | `RERANKER_MODEL` | `BAAI/bge-reranker-v2-m3` | 本地推理 |
-| `CORE_CALLBACK_BASE_URL` | `http://core-api:8080` | 任务完成回调 |
+| `CORE_CALLBACK_BASE_URL` | `http://core-api:8080` | Worker 回调 Java；**生产同 compose 网**用服务名。混合联调本机 worker 用 `http://localhost:8080` |
+| `DIAGNOSE_WORKER_ENABLED` | `true` / `false` | 是否消费 `diag.grounded-api`；混合阶段本机 `true`、服务器 ai-api 默认 `false` |
 
 ### 4.3 `inbound-admin`（Vue）
 
