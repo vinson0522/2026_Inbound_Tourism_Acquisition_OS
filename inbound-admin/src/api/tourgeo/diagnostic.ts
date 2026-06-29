@@ -1,4 +1,6 @@
 import request from '@/utils/request';
+import { blobValidate } from '@/utils/ruoyi';
+import FileSaver from 'file-saver';
 import type {
   CreateDiagnosticForm,
   DashboardData,
@@ -75,6 +77,24 @@ export async function getProbeTasks(runId: number): Promise<ProbeTaskVO[]> {
   const res = await request.get(`${BASE}/diagnostics/${runId}/probe-tasks`);
   const list = res.data ?? [];
   return list.map(mapProbeTaskVo);
+}
+
+/** FR-106 导出诊断报告（docx / pdf） */
+export async function downloadDiagnosticReport(
+  runId: number,
+  format: 'docx' | 'pdf',
+  filename: string
+): Promise<void> {
+  const blob = await request({
+    url: `${BASE}/diagnostics/${runId}/report`,
+    method: 'get',
+    params: { format },
+    responseType: 'blob'
+  });
+  if (!blobValidate(blob)) {
+    throw new Error('export failed');
+  }
+  FileSaver.saveAs(blob, filename);
 }
 
 /** 工作台：聚合诊断列表 → KPI（最新 geo_score）+ 最近 5 条 run（FR-006 MVP） */

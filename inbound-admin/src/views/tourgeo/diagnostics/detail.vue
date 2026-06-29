@@ -50,11 +50,23 @@
         />
 
         <div class="header-actions">
-          <el-tooltip content="报告导出（FR-106，M2）" placement="top">
-            <el-button plain disabled>导出 DOCX</el-button>
-          </el-tooltip>
-          <el-tooltip content="报告导出（FR-106，M2）" placement="top">
-            <el-button plain disabled>导出 PDF</el-button>
+          <el-button
+            plain
+            :disabled="!canExportReport"
+            :loading="exportingDocx"
+            @click="handleExportReport('docx')"
+          >
+            导出 DOCX
+          </el-button>
+          <el-tooltip content="PDF 需启动 Gotenberg（见 deploy/LOCAL_DOCKER.md）" placement="top">
+            <el-button
+              plain
+              :disabled="!canExportReport"
+              :loading="exportingPdf"
+              @click="handleExportReport('pdf')"
+            >
+              导出 PDF
+            </el-button>
           </el-tooltip>
           <el-button
             v-if="run.status === 'PENDING' || run.status === 'RUNNING'"
@@ -270,6 +282,7 @@
 <script setup name="DiagnosticDetail" lang="ts">
 import {
   computeMetricsFromResults,
+  downloadDiagnosticReport,
   getDiagnosticResults,
   getDiagnosticRun,
   getProbeTasks
@@ -278,6 +291,7 @@ import type { DiagnosticResultVO, DiagnosticRunVO, ProbeTaskVO } from '@/api/tou
 import DiagnosticStatusTag from '@/components/tourgeo/DiagnosticStatusTag.vue';
 import GeoScoreDisplay from '@/components/tourgeo/GeoScoreDisplay.vue';
 import { METRIC_WEIGHT_LABELS, PROBE_TASK_STATUS_META } from '@/constants/diagnostic';
+import { ElMessage } from 'element-plus';
 
 const POLL_MS = 5000;
 
@@ -291,6 +305,8 @@ const results = ref<DiagnosticResultVO[]>([]);
 const probeTasks = ref<ProbeTaskVO[]>([]);
 const activeTab = ref('overview');
 const pollTimer = ref<ReturnType<typeof setInterval> | null>(null);
+const exportingDocx = ref(false);
+const exportingPdf = ref(false);
 
 const resultFilter = reactive({
   platform: '',
@@ -311,6 +327,10 @@ const showKpiGrid = computed(
 
 const showTabs = computed(
   () => run.value && !['PENDING', 'FAILED', 'CANCELLED'].includes(run.value.status)
+);
+
+const canExportReport = computed(
+  () => run.value && ['SUCCESS', 'PARTIAL_FAILED'].includes(run.value.status)
 );
 
 const isPolling = computed(
@@ -440,6 +460,23 @@ function taskDuration(task: ProbeTaskVO) {
 
 function goBack() {
   router.push({ name: 'DiagnosticRuns' });
+}
+
+async function handleExportReport(format: 'docx' | 'pdf') {
+  if (!run.value || !canExportReport.value) return;
+  const loadingRef = format === 'docx' ? exportingDocx : exportingPdf;
+  loadingRef.value = true;
+  const safeName = (run.value.name || 'diagnostic').replace(/[\\/:*?"<>|]/g, '-');
+  const ext = format === 'docx' ? 'docx' : 'pdf';
+  const filename = `${safeName}-geo-report-${run.value.id}.${ext}`;
+  try {
+    await downloadDiagnosticReport(run.value.id, format, filename);
+    ElMessage.success(format === 'docx' ? 'DOCX 报告已下载' : 'PDF 报告已下载');
+  } catch {
+    ElMessage.error(format === 'pdf' ? 'PDF 导出失败（需 Gotenberg，见 LOCAL_DOCKER.md）' : 'DOCX 导出失败');
+  } finally {
+    loadingRef.value = false;
+  }
 }
 
 async function loadAll(silent = false) {

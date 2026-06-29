@@ -21,8 +21,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletResponse;
+import org.dromara.diagnostic.report.DiagnosticReportFile;
+import org.dromara.diagnostic.service.IDiagnosticReportExportService;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -35,6 +43,7 @@ import java.util.List;
 public class DiagnosticController extends BaseController {
 
     private final IDiagnosticRunService diagnosticRunService;
+    private final IDiagnosticReportExportService diagnosticReportExportService;
 
     @SaCheckLogin
     @Log(title = "GEO诊断", businessType = BusinessType.INSERT)
@@ -72,5 +81,21 @@ public class DiagnosticController extends BaseController {
     @GetMapping("/diagnostics/{runId}/probe-tasks")
     public R<List<ProbeTaskVo>> probeTasks(@NotNull @PathVariable Long runId) {
         return R.ok(diagnosticRunService.queryProbeTasks(runId));
+    }
+
+    /** FR-106 诊断报告导出（DOCX / PDF via Gotenberg） */
+    @SaCheckLogin
+    @Log(title = "GEO诊断报告", businessType = BusinessType.EXPORT)
+    @GetMapping("/diagnostics/{runId}/report")
+    public void exportReport(
+        @NotNull @PathVariable Long runId,
+        @RequestParam(defaultValue = "docx") String format,
+        HttpServletResponse response
+    ) throws IOException {
+        DiagnosticReportFile file = diagnosticReportExportService.exportReport(runId, format);
+        response.setContentType(file.getContentType());
+        String encoded = URLEncoder.encode(file.getFilename(), StandardCharsets.UTF_8).replace("+", "%20");
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encoded);
+        response.getOutputStream().write(file.getContent());
     }
 }

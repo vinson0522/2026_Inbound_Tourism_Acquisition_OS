@@ -181,6 +181,23 @@ docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d --build
 | RabbitMQ UI | http://localhost:15672 | 同上 |
 | ai-api | http://localhost:8090 | token: `dev_internal_token_change_me` |
 
+### FR-106 PDF 导出（Gotenberg，可选）
+
+M2 默认 **DOCX 不依赖 Gotenberg**。PDF 需启用 Gotenberg：
+
+```powershell
+cd deploy
+docker compose -f docker-compose.yml -f docker-compose.local-d.yml --profile full up -d gotenberg
+```
+
+Java 环境变量：
+
+```powershell
+$env:GOTENBERG_BASE_URL = "http://localhost:3002"
+```
+
+验通：`python deploy/scripts/test_diagnostic_report_export.py`（DOCX）；PDF 在 Admin 详情页点「导出 PDF」。
+
 ---
 
 ## 5. 清理手册

@@ -280,3 +280,8 @@ ai:
     health-check-on-startup: true
     connect-timeout-ms: 5000
     read-timeout-ms: 15000
+
+--- # FR-106 报告导出（Gotenberg 可选；本地 ADR-09 默认不启 gotenberg，PDF 需 profile full）
+inbound:
+  report:
+    gotenberg-base-url: ${GOTENBERG_BASE_URL:}
