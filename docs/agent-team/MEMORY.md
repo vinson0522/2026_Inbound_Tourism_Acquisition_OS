@@ -8,7 +8,7 @@
 | **最后更新** | 2026-06-29 |
 | **更新角色** | 开发 |
 | **Git 远程** | ⚠️ 本地无 `origin` remote；`git push` 待配置仓库 URL |
-| **当前 EPIC 焦点** | **EPIC-2 M2** FR-106 报告导出 ✅ → 趋势 FR-108 / 多平台 |
+| **当前 EPIC 焦点** | **EPIC-3 M1** FR-201/202 关键词 MVP（Java ✅ · Admin 待做） |
 
 ---
 
@@ -77,8 +77,45 @@
 | — | **总览** | Sprint 索引 | [EPIC-2 Sprint](HANDOFFS/2026-06-26-tech-director-epic2-geo-sprint.md) | — |
 
 **M1 范围**：grounded-api · Gemini（ADR-08）· demo 3 题 · 无报告导出  
-**M2 FR-106（2026-06-29）** ✅ DOCX 导出 + 合规元数据；PDF 需 Gotenberg（文档化）  
+**M2 FR-106（2026-06-29）** ✅ DOCX + **PDF**（HTML→Gotenberg chromium）；`application-dev.yml` 默认 `GOTENBERG_BASE_URL=http://localhost:3002`；未起 Gotenberg 时 400 友好提示  
 **E2E**：隧道 runId=10 ✅；**本地 runId=2 ✅** mock LLM geo_score=85
+
+### EPIC-2 M2.2 Sprint — FR-108 诊断趋势（2026-06-29 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | 趋势线框 | [→UI](HANDOFFS/2026-06-29-tech-director-to-ui-diagnostic-trends.md) | ✅ 线框 + [UI→开发](HANDOFFS/2026-06-29-ui-to-developer-diagnostic-trends.md) |
+| 2 | 开发 Java | trends API | [→Java FR-108](HANDOFFS/2026-06-29-tech-director-to-dev-java-fr108-trends.md) | ✅ 2026-06-29 |
+| 3 | 开发 Admin | ECharts 趋势页 | [→Admin FR-108](HANDOFFS/2026-06-29-tech-director-to-dev-admin-fr108-trends.md) | ✅ 2026-06-29 |
+| — | 总览 | Sprint 索引 | [M2.2 Sprint](HANDOFFS/2026-06-29-tech-director-epic2-m22-fr108-sprint.md) | — |
+
+**技术总监签核（2026-06-29）**：✅ **M2.2 关闭** — smoke `test_diagnostic_trends` 2 点 ASC + 六分项；ADR-10 合规；P2 遗留（时间筛选/dashboard 链）不阻塞 EPIC-3。⚠️ 代码**未 commit**（见 B-04）。
+
+**ADR-10**：复用 `diagnostic_run`，不建新表
+
+### EPIC-3 M1 Sprint — FR-201/202 关键词 MVP（2026-06-29 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | 关键词列表线框 | [→UI](HANDOFFS/2026-06-29-tech-director-to-ui-epic3-keywords-list.md) | ✅ |
+| 2 | 开发 Python | `/ai/keywords/generate` | [→AI](HANDOFFS/2026-06-29-tech-director-to-dev-ai-epic3-keywords.md) | ✅ |
+| 3 | 开发 Java | keyword CRUD + generate | [→Java](HANDOFFS/2026-06-29-tech-director-to-dev-java-epic3-keywords.md) | ✅ 2026-06-29 |
+| 4 | 开发 Admin | 列表 + 生成 | [→Admin](HANDOFFS/2026-06-29-tech-director-to-dev-admin-epic3-keywords.md) | ⏳ |
+| — | 总览 | Sprint 索引 | [EPIC-3 M1](HANDOFFS/2026-06-29-tech-director-epic3-m1-keywords-sprint.md) | — |
+
+**ADR-11**：M1 仅生成+列表；FR-203 评分 → M2
+
+### 未提交增量 — commit 批次（技术总监 2026-06-29 定案）
+
+| 批次 | 范围 | 建议 message 前缀 | smoke |
+|:----:|------|-------------------|-------|
+| **C1** | FR-108 trends（Java Vo/Aggregator/test + Admin trends.vue + diagnostic.ts + wireframe/HANDOFF + `test_diagnostic_trends.py`） | `feat(core,admin): FR-108 diagnostic trends` | `test_diagnostic_trends` |
+| **C2** | FR-005 RAG 预览（KnowledgeAsset search + Admin drawer + ai-client RAG models + `test_knowledge_rag_search.py`） | `feat(core,admin): FR-005 knowledge RAG search preview` | `test_knowledge_rag_search` |
+| **C3** | Phase 2.2 Docling（document_parser/embed/file_storage + tests + pyproject） | `feat(ai): EPIC-10 Phase 2.2 Docling embed pipeline` | `pytest inbound-ai/tests/test_embed_docling_pipeline.py` |
+| **C4** | FR-106 PDF/Gotenberg + dashboard 跳转 + report export smoke | `feat(core,admin,deploy): FR-106 PDF export and dashboard fixes` | `test_diagnostic_report_export` |
+| **C5** | Sprint HANDOFFs + MEMORY + DECISIONS ADR-10/11 + design README | `docs: M2.2/EPIC-3 Sprint HANDOFFs and MEMORY` | — |
+
+**执行**：开发窗口在用户明确要求时按 C1→C5 分批 commit；**不**含 `deploy/.env`。
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -129,15 +166,38 @@
 - **6/29 增量二（2026-06-29）** ✅ **已提交** `a87b780` Story3 · `91c215b` Phase2.1 · `06c4660` docs wireframes
 - **Sprint HANDOFF 归档（2026-06-29）** ✅ **已提交** `3ac6853` — 2026-06-25~27 HANDOFF + INFRA/DECISIONS
 - **Push 状态** ⏳ 本地 **8 个 feat** + **5 个 docs** 待 push；需先 `git remote add origin <url>`
-- **EPIC-2 M2 FR-106（2026-06-29）** ✅ DOCX 报告导出 runId=2；`test_diagnostic_report_export.py` 通过
+- **EPIC-2 M2 FR-106（2026-06-29）** ✅ DOCX + PDF 报告导出 runId=2；`test_diagnostic_report_export.py` docx/pdf；PDF ~32KB 含 geo_score
+- **EPIC-2 M2.2 FR-108 trends API（2026-06-29）** ✅ `GET /api/v1/projects/{id}/diagnostics/trends?limit=12` · 租户隔离 · 从 `diagnostic_result` 聚合 6 分项 · `DiagnosticMetricsAggregatorTest` + `test_diagnostic_trends.py`（runId=2/3 · 2 点 ASC）
+- **EPIC-2 M2.2 FR-108 Admin 趋势页（2026-06-29）** ✅ `/diagnostics/trends` · ECharts 折线+分项柱图 · run 多选 2–6 · 空态「至少需要 2 次成功诊断」· 详情页链趋势
+- **FR-005 知识库 RAG 检索预览（2026-06-29）** ✅ `POST .../knowledge-assets/search` → `/ai/rag/search` · Admin drawer top-3 + chunk_id · `test_knowledge_rag_search.py`（asset#1 · 1 hit）
+- **EPIC-10 Phase 2.2 Docling（2026-06-29）** ✅ PDF/DOCX 解析替换 mock 切片 · `file_storage`（HTTP/MinIO/本地）· embed 优先 `file_url` · DLQ 已有 · pytest fixture PDF + `test_embed_docling_pipeline`
+- **EPIC-3 M1 FR-201 keywords AI（2026-06-29）** ✅ `POST /ai/keywords/generate` · mock/无 Key 回退 · 可选 RAG top-3 · `template_service` · `test_keywords_generate.py` 7 passed
+- **EPIC-3 M1 FR-201/202 keywords Java（2026-06-29）** ✅ 并入 `ruoyi-project` · `GET/POST/DELETE .../keywords` + `POST .../generate` · Feign `/ai/keywords/generate` · `tenant.excludes` 加 `keyword_opportunity` · `test_keywords_api.py` ✅（insertedCount=3 · total 4→7）
 - **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ **已提交** `f40cf8d` — `ai.embed` worker · asset#1 READY
 - **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` / `e22cd43` / `f96ba7e`（待 push）
 - **EPIC-2 M1 代码** ✅ **已提交** `54d8ca5` / `6ba5e1e` / `48926d2`（待 push）
-- **E2E（隧道）** ✅ runId=10 mock LLM
-- **E2E（本机 Docker ADR-09，2026-06-29）** ✅ runId=2 · `SUCCESS` · `geo_score=85.00` · 3 results · `DIAGNOSE_MOCK_LLM=true`
-- **本机 Docker 联调** ✅ Java :8080 + 4 容器 healthy；`test_projects_api` + E2E 通过
+- **Admin 浏览器走查（2026-06-29）** ✅ `pnpm dev` :5173 · admin/admin123 · Java :8080 + Docker ADR-09
+
+  | 路径 | 结果 | 说明 |
+  |------|:----:|------|
+  | `/dashboard` | ✅→🔧 | KPI 4 卡 + 最近诊断 5 条 OK；**已修**「查看」无跳转 → `goRunDetail` |
+  | `/projects/index` → `:id` | ✅ | 「进入」→ 品牌/竞品/知识库三 Tab；竞品≥5 提示；知识库 asset#1 READY · **检索预览** top-3 |
+  | `/diagnostics/runs` | ✅ | 新建抽屉 → 提交进详情；四 Tab（概览/问题/竞品/探针） |
+  | 详情「导出 DOCX」 | ✅ | SUCCESS run 可点；API smoke 2841B（runId=2/3） |
+  | 已知 MVP 占位 | ⚠️ | 工作台任务/预警/漏斗按钮无后端；知识库上传需 OSS |
+
+- **6/29 全量 smoke 回归（2026-06-29 19:40）** ✅ ADR-09 本机 · 4 容器 healthy + Java :8080 · **7/7 通过**
+  - `test_projects_api` ✅（project id=5 新建）
+  - `test_diagnostic_e2e` ✅ runId=**3** · SUCCESS · geo_score=85 · mock LLM
+  - `test_embed_e2e` ✅ READY + RAG top-3（`EMBED_MOCK=true`）
+  - `test_diagnostic_report_export` ✅ runId=2 DOCX 2841B
+  - `test_diagnostic_trends` ✅ runId=2/3 · 2 点 · metrics 六分项
+  - `test_ai_health` ✅ litellm=ready
+  - `test_knowledge_rag_search` ✅ asset#1 · 1 hit · chunkId=5
+  - `test_keywords_api` ✅ inspiration · insertedCount=3 · total 4→7
+- **E2E（本机 Docker ADR-09）** ✅ runId=2/3 · `SUCCESS` · `geo_score=85.00` · **DIAGNOSE_MOCK_LLM**（Docker ai-api）
 - **工作台 FR-006 MVP（2026-06-26）** ✅ `getDashboard` 聚合诊断列表；`/dashboard` 编译与运行正常
-- **待办**：FR-005 检索预览 UI（Admin）；真 embedding 生产 Key 轮换；Docling 文件解析
+- **待办**：真 embedding 生产 Key 轮换；真 Gemini E2E（Q12 配额恢复后）
 
 ### 开发联调步骤（本机 Docker — **首选**，ADR-09）
 
@@ -152,7 +212,7 @@
    - `AI_SERVICE_INTERNAL_TOKEN=dev_internal_token_change_me`
 3. `cd inbound-core && mvn -pl ruoyi-admin spring-boot:run -Dspring-boot.run.profiles=dev`
 4. `cd inbound-admin && pnpm dev`
-5. Smoke：`test_projects_api.py` / `test_diagnostic_e2e.py` / `test_embed_e2e.py` / **`test_diagnostic_report_export.py`**
+5. Smoke（6/29 全量）：`test_projects_api` / `test_diagnostic_e2e` / `test_embed_e2e` / `test_diagnostic_report_export` / `test_diagnostic_trends` / `test_ai_health` / `test_knowledge_rag_search` / `test_keywords_api`
 
 ### 开发联调步骤（SSH 隧道 — **备用**，ADR-05）
 
@@ -162,9 +222,9 @@
 
 ## UI 设计
 
-- **已完成**：dashboard / diagnostics-list / diagnostic-detail / **diagnostic-trends (FR-108)** / projects-list / project-detail
-- **HANDOFF**：[趋势对比 → 开发](HANDOFFS/2026-06-29-ui-to-developer-diagnostic-trends.md)
-- **待办**：关键词/内容模块线框；问题库/探针节点
+- **已完成**：dashboard / diagnostics-list / diagnostic-detail / **diagnostic-trends (FR-108)** / projects-list / project-detail / **keywords-list (FR-201/202)**
+- **HANDOFF**：[关键词列表 → 开发](HANDOFFS/2026-06-29-ui-to-developer-keywords-list.md)
+- **待办**：内容 Agent 列表线框（EPIC-4）；落地页线框（EPIC-6）
 
 ---
 
@@ -174,7 +234,9 @@
 |----|------|--------|------|
 | B-01 | ~~本机不装 Docker，隧道联调~~ | 用户 | **已关闭** → ADR-09 本机 Docker |
 | B-02 | ~~本机若依表未 import~~ | 运维 | **已关闭** 2026-06-27 |
-| B-03 | 本地 E2E 真 Gemini | 开发 | ⏳ 配额用尽；**mock 管道已验通**（runId=2） |
+| B-03a | 本地 GEO E2E **mock LLM**（`DIAGNOSE_MOCK_LLM=true`） | 开发 | ✅ 2026-06-29 runId=2/3 · geo_score=85 |
+| B-03b | 本地 GEO E2E **真 Gemini**（grounded-api） | 开发 | ⏳ 配额用尽；`DIAGNOSE_MOCK_LLM=false` 时 FAILED |
+| B-04 | **工作区 ~60 文件未 commit**（含 M2.2/FR-005/Docling/PDF） | 开发 | ⏳ 见「commit 批次 C1–C5」；push 仍待 origin |
 
 ---
 
@@ -182,12 +244,10 @@
 
 | 优先级 | 窗口 | 动作 | HANDOFF |
 |:------:|------|------|---------|
-| **P0** | ~~**运维**~~ | ~~import 若依 + smoke + MEMORY Done~~ | ✅ 2026-06-27 |
-| **P1** | ~~**开发**~~ | ~~本地 E2E mock LLM~~ | ✅ 2026-06-29 runId=2 |
-| **P2** | ~~**开发 Admin**~~ | ~~补 `getDashboard` stub~~ | ✅ 2026-06-26 |
-| **P3** | ~~**开发**~~ | ~~EPIC-2 M2 FR-106 报告导出~~ | ✅ 2026-06-29 |
-| **P4** | **技术总监** | M2 签核 → FR-108 趋势 / 多平台 | — |
-| **P5** | ~~**开发**~~ | ~~Story 3 项目详情页~~ | ✅ 2026-06-29 |
+| **P0** | **开发** | 按 C1→C5 分批 commit（用户明确要求时） | MEMORY「commit 批次」 |
+| **P1** | **开发 Admin** | 关键词列表 + 生成 | [→Admin EPIC-3](HANDOFFS/2026-06-29-tech-director-to-dev-admin-epic3-keywords.md) · [UI 线框](HANDOFFS/2026-06-29-ui-to-developer-keywords-list.md) |
+| **P2** | **运维** | 配置 `git remote` + push（commit 后） | — |
+| **P3** | **开发** | 真 Gemini E2E（配额恢复后） | B-03b |
 
 ---
 
@@ -195,12 +255,20 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-06-29 | 开发 | Git 收尾：`3ac6853` Sprint HANDOFF 归档；push 阻塞（无 origin remote） |
+| 2026-06-29 | 开发 | EPIC-3 M1 Java keywords CRUD+generate · tenant.excludes 修复 · smoke `test_keywords_api` ✅ |
+| 2026-06-29 | 开发 | EPIC-3 M1 `POST /ai/keywords/generate` · mock + RAG · pytest 7 passed |
+| 2026-06-29 | 技术总监 | **EPIC-2 M2.2 签核 ✅**；定 commit 批次 C1–C5；B-04 未 commit；焦点转 EPIC-3 M1 |
+| 2026-06-29 | UI 设计 | EPIC-3 M1 keywords-list 线框 FR-201/202 · HANDOFF 开发 |
+| 2026-06-29 | 技术总监 | 下一 Sprint HANDOFF：EPIC-2 M2.2 FR-108 + EPIC-3 M1 FR-201/202；ADR-10/11 |
+| 2026-06-29 | 开发 | EPIC-10 Phase 2.2 Docling：PDF/DOCX embed 管道 · MinIO/本地 file · pytest 11 passed |
+| 2026-06-29 | 开发 | FR-005 知识库 RAG 检索预览：Java 代理 + Admin drawer · smoke 1 hit |
+| 2026-06-29 | 开发 | FR-108 trends API：`GET .../diagnostics/trends` · runId=2/3 smoke · Java 单测 aggregator |
 | 2026-06-29 | 开发 | 6/29 增量二 commit：`a87b780` Story3 · `91c215b` Phase2.1 · docs HANDOFF（未 push） |
 | 2026-06-29 | 开发 | EPIC-10 Phase 2.1：OpenAI embedding + bge-reranker top-3；pytest + test_embed_e2e ✅ |
 | 2026-06-29 | 开发 | EPIC-2 M2 FR-106：DOCX 报告导出 + Admin 按钮；runId=2 smoke 通过 |
 | 2026-06-29 | 开发 | EPIC-10 Phase 2 embed MVP：`ai.embed` + chunk/pgvector + `/ai/rag/search`；E2E asset#1 READY |
 | 2026-06-29 | 开发 | M1 代码分批 commit：`54d8ca5` ai · `6ba5e1e` core · `48926d2` admin+deploy（未 push） |
+| 2026-06-29 | UI 设计 | FR-108 诊断趋势对比线框 + HANDOFF 开发 |
 | 2026-06-29 | UI 设计 | Story 3 项目详情线框（品牌/竞品/知识库 Tab）+ HANDOFF 开发 |
 | 2026-06-29 | 开发 | EPIC-2 M1 本地 E2E ✅ runId=2 SUCCESS geo_score=85 mock LLM；4 容器 healthy |
 | 2026-06-26 | 开发 | Admin 工作台 `getDashboard` + `DashboardData`；FR-006 MVP 前端聚合 |

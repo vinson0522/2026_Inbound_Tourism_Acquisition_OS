@@ -14,11 +14,15 @@
 | [wireframes/dashboard.md](./wireframes/dashboard.md) | 工作台（项目概览）线框 |
 | [wireframes/diagnostics-list.md](./wireframes/diagnostics-list.md) | GEO 诊断 · 诊断任务列表线框 |
 | [wireframes/diagnostic-detail.md](./wireframes/diagnostic-detail.md) | GEO 诊断 · 诊断详情/结果（EPIC-2） |
+| [wireframes/diagnostic-trends.md](./wireframes/diagnostic-trends.md) | GEO 诊断 · 趋势对比 FR-108 |
+| [wireframes/keywords-list.md](./wireframes/keywords-list.md) | 关键词洞察 · 机会词列表 FR-201/202 |
 | [wireframes/projects-list.md](./wireframes/projects-list.md) | 客户项目列表 + FR-001 创建线框 |
 | [wireframes/project-detail.md](./wireframes/project-detail.md) | 客户项目详情 · Story 3 Tab（品牌/竞品/知识库） |
 | [../agent-team/HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md](../agent-team/HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md) | UI → 开发（工作台/GEO） |
 | [../agent-team/HANDOFFS/2026-06-25-ui-to-developer-projects-list.md](../agent-team/HANDOFFS/2026-06-25-ui-to-developer-projects-list.md) | UI → 开发（项目列表） |
 | [../agent-team/HANDOFFS/2026-06-29-ui-to-developer-project-detail.md](../agent-team/HANDOFFS/2026-06-29-ui-to-developer-project-detail.md) | UI → 开发（项目详情 Story 3） |
+| [../agent-team/HANDOFFS/2026-06-29-ui-to-developer-diagnostic-trends.md](../agent-team/HANDOFFS/2026-06-29-ui-to-developer-diagnostic-trends.md) | UI → 开发（趋势对比 FR-108） |
+| [../agent-team/HANDOFFS/2026-06-29-ui-to-developer-keywords-list.md](../agent-team/HANDOFFS/2026-06-29-ui-to-developer-keywords-list.md) | UI → 开发（关键词列表 FR-201/202） |
 
 ---
 
@@ -28,15 +32,15 @@
 |----------|---------------------|----------------|
 | 工作台 | `/dashboard` | ✅ [dashboard.md](./wireframes/dashboard.md) |
 | 客户项目 | `/projects` | ✅ [列表](wireframes/projects-list.md) + [详情 Story 3](wireframes/project-detail.md) |
-| GEO 诊断 | `/diagnostics` | ✅ [列表](wireframes/diagnostics-list.md) + [详情](wireframes/diagnostic-detail.md) |
-| 关键词洞察 | `/keywords` | 待设计 |
+| GEO 诊断 | `/diagnostics` | ✅ [列表](wireframes/diagnostics-list.md) + [详情](wireframes/diagnostic-detail.md) + [趋势 FR-108](wireframes/diagnostic-trends.md) |
+| 关键词洞察 | `/projects/:projectId/keywords`（侧栏 `/keywords` 重定向） | ✅ [keywords-list.md](wireframes/keywords-list.md) FR-201/202 M1 |
 | 内容 Agent | `/content` | 待设计 |
 | 落地页 Agent | `/landing` | 待设计 |
 | 线索与转化 | `/leads` | 待设计 |
 | 报告中心 | `/reports` | 待设计 |
 | 系统设置 | `/settings/*` | 沿用若依系统菜单 |
 
-二级页「问题库 / 竞品对比 / 趋势监控 / 探针节点」待后续 Sprint；诊断详情已覆盖「诊断结果」主路径。
+二级页「问题库 / 探针节点」待后续 Sprint；诊断详情已覆盖「诊断结果」；趋势监控见 [diagnostic-trends.md](wireframes/diagnostic-trends.md)。
 
 ---
 
@@ -76,5 +80,7 @@ Token 落地时优先在 `variables.module.scss` 的 `:root` 追加 `--tg-*` 变
 
 | 日期 | 作者 | 说明 |
 |------|------|------|
+| 2026-06-29 | UI 设计 | EPIC-3 M1 关键词机会词列表线框 FR-201/202 + HANDOFF 开发 |
+| 2026-06-29 | UI 设计 | FR-108 诊断趋势对比线框 + HANDOFF |
 | 2026-06-29 | UI 设计 | Story 3 项目详情 Tab 线框 + HANDOFF |
 | 2026-06-26 | UI 设计 | 初版 token + 工作台 + GEO 列表；EPIC-2 诊断详情线框 |

@@ -98,6 +98,29 @@
   - Java/Admin 默认模型改 Gemini；Python 补 `parse_gemini`
 - **影响**：不阻塞 Java diagnostic HANDOFF
 
+### ADR-20260629-10 | FR-108 趋势复用 diagnostic_run，不建新表
+- **状态**：已采纳
+- **决策者**：技术总监
+- **背景**：FR-108 需多次诊断历史对比；`diagnostic_run` 已有 `geo_score`、`finished_at`；`diagnostic_result.score_json` 可支撑分项
+- **决策**：
+  - **M2.2 不新增**趋势/快照表；Java 聚合查询 `diagnostic_run`（+ 可选 join `diagnostic_result`）
+  - 参与趋势：`status IN (SUCCESS, PARTIAL_FAILED)` 且 `geo_score IS NOT NULL`
+  - Admin：最少 2 条 run 才渲染图表（与 UI 线框一致）
+  - **M2.2 不做**：FR-109 定时任务、竞品趋势、多平台拆分
+- **影响**：[EPIC-2 M2.2 Sprint](HANDOFFS/2026-06-29-tech-director-epic2-m22-fr108-sprint.md)；`ruoyi-diagnostic` trends API；Admin `trends.vue`
+
+### ADR-20260629-11 | EPIC-3 M1 仅 FR-201/202 MVP，评分推迟 M2
+- **状态**：已采纳
+- **决策者**：技术总监
+- **背景**：EPIC-3 全量（FR-201~207）过大；DDL `keyword_opportunity` 已就绪；RAG/LLM 底座已通
+- **决策**：
+  - **M1 做**：Python `/ai/keywords/generate`；Java CRUD + generate 落库；Admin 列表 + 八阶段筛选 + 生成按钮
+  - **M1 词量**：每阶段 **≥5 词**（非 PRD 全文 ≥10）；`words_per_stage` 可配置
+  - **M1 不做**：FR-203 完整机会评分公式、词库运营后台、编辑/合并/导出、转内容任务（FR-204+）
+  - `score`/`score_detail_json` 可占位；`source_json` 记 AI + chunk_ids
+  - 生成调用：**M1 同步** Feign 调 AI；高耗时再改 MQ `ai.keywords`
+- **影响**：[EPIC-3 M1 Sprint](HANDOFFS/2026-06-29-tech-director-epic3-m1-keywords-sprint.md)；`ruoyi-keyword` 新模块；`inbound-ai` keywords router
+
 ---
 
 ## 待讨论

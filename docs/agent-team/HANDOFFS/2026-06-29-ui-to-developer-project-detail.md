@@ -56,3 +56,10 @@
 - **完成时间**：2026-06-29
 - **结果摘要**：`/projects/:projectId` 三 Tab；Java `products`/`competitors` CRUD + knowledge 更新/删除/筛选；列表「进入」→ ProjectDetail
 - **遗留**：FR-005 检索预览 disabled；PDF 上传走 OSS + embed MQ（需本机 OSS 配置）
+- **Admin 走查（2026-06-29）**：四路径 OK；dashboard「查看」已修 `goRunDetail`
+
+**走查步骤**（前提：`pnpm dev` + Java :8080 + 登录 admin/admin123）：
+1. `/dashboard` — 选项目 → 见 GEO KPI + 最近 5 条诊断 → 点「查看」进详情
+2. `/projects/index` — 点「进入」→ `/projects/1?tab=brand` → 切换竞品/知识库 Tab
+3. `/diagnostics/runs` — 「新建诊断」→ 提交 → 详情四 Tab
+4. 详情页 SUCCESS 任务 → 「导出 DOCX」→ 浏览器下载 `.docx`
