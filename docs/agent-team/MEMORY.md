@@ -7,6 +7,7 @@
 |------|-----|
 | **最后更新** | 2026-06-29 |
 | **更新角色** | 开发 |
+| **Git 远程** | ⚠️ 本地无 `origin` remote；`git push` 待配置仓库 URL |
 | **当前 EPIC 焦点** | **EPIC-2 M2** FR-106 报告导出 ✅ → 趋势 FR-108 / 多平台 |
 
 ---
@@ -125,11 +126,13 @@
 ## 开发
 
 - **负责目录**：`inbound-core/`、`inbound-ai/`、`database/`、`inbound-probe-extension/`
-- **6/29 增量二（2026-06-29）** ✅ **已提交** `a87b780` Story3 · `91c215b` Phase2.1 · docs HANDOFF/wireframes 同批（未 push）
+- **6/29 增量二（2026-06-29）** ✅ **已提交** `a87b780` Story3 · `91c215b` Phase2.1 · `06c4660` docs wireframes
+- **Sprint HANDOFF 归档（2026-06-29）** ✅ **已提交** `3ac6853` — 2026-06-25~27 HANDOFF + INFRA/DECISIONS
+- **Push 状态** ⏳ 本地 **8 个 feat** + **5 个 docs** 待 push；需先 `git remote add origin <url>`
 - **EPIC-2 M2 FR-106（2026-06-29）** ✅ DOCX 报告导出 runId=2；`test_diagnostic_report_export.py` 通过
 - **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ **已提交** `f40cf8d` — `ai.embed` worker · asset#1 READY
-- **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` ai embed · `e22cd43` core FR-106 report · `f96ba7e` docs（未 push）
-- **EPIC-2 M1 代码** ✅（Python + Java + Admin 详情页）— **已提交** `54d8ca5` / `6ba5e1e` / `48926d2`（2026-06-29）
+- **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` / `e22cd43` / `f96ba7e`（待 push）
+- **EPIC-2 M1 代码** ✅ **已提交** `54d8ca5` / `6ba5e1e` / `48926d2`（待 push）
 - **E2E（隧道）** ✅ runId=10 mock LLM
 - **E2E（本机 Docker ADR-09，2026-06-29）** ✅ runId=2 · `SUCCESS` · `geo_score=85.00` · 3 results · `DIAGNOSE_MOCK_LLM=true`
 - **本机 Docker 联调** ✅ Java :8080 + 4 容器 healthy；`test_projects_api` + E2E 通过
@@ -159,9 +162,9 @@
 
 ## UI 设计
 
-- **已完成**：dashboard / diagnostics-list / diagnostic-detail / projects-list / **project-detail（Story 3）**
-- **HANDOFF**：[项目详情 → 开发](HANDOFFS/2026-06-29-ui-to-developer-project-detail.md)
-- **待办**：诊断趋势 FR-108；关键词/内容模块线框
+- **已完成**：dashboard / diagnostics-list / diagnostic-detail / **diagnostic-trends (FR-108)** / projects-list / project-detail
+- **HANDOFF**：[趋势对比 → 开发](HANDOFFS/2026-06-29-ui-to-developer-diagnostic-trends.md)
+- **待办**：关键词/内容模块线框；问题库/探针节点
 
 ---
 
@@ -192,6 +195,7 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-06-29 | 开发 | Git 收尾：`3ac6853` Sprint HANDOFF 归档；push 阻塞（无 origin remote） |
 | 2026-06-29 | 开发 | 6/29 增量二 commit：`a87b780` Story3 · `91c215b` Phase2.1 · docs HANDOFF（未 push） |
 | 2026-06-29 | 开发 | EPIC-10 Phase 2.1：OpenAI embedding + bge-reranker top-3；pytest + test_embed_e2e ✅ |
 | 2026-06-29 | 开发 | EPIC-2 M2 FR-106：DOCX 报告导出 + Admin 按钮；runId=2 smoke 通过 |
