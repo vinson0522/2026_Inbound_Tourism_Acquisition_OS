@@ -100,6 +100,32 @@ services:
     ports:
       - "127.0.0.1:3002:3000"
 
+  ai-api:
+    build: ../inbound-ai
+    container_name: inbound-ai
+    restart: unless-stopped
+    environment:
+      AI_SERVICE_INTERNAL_TOKEN: ${AI_SERVICE_INTERNAL_TOKEN:?AI_SERVICE_INTERNAL_TOKEN required}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-inbound}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inbound_growth}
+      RABBITMQ_URL: amqp://${RABBITMQ_DEFAULT_USER:-inbound}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672/
+      LANGFUSE_HOST: http://langfuse:3000
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_API_BASE: ${OPENAI_API_BASE:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY:-}
+    ports:
+      - "127.0.0.1:8090:8090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health')\""]
+
 volumes:
   postgres_data:
   redis_data:

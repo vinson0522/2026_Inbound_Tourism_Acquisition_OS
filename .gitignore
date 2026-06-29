@@ -5,6 +5,7 @@
 .env
 .env.*
 !.env.example
+!deploy/.env.local.example
 deploy/.env
 docs/INFRA_ACCESS.local.md
 *.pem
@@ -33,6 +34,8 @@ inbound-core/.mvn/wrapper/maven-wrapper.jar
 # Python
 inbound-ai/.venv/
 inbound-ai/__pycache__/
+**/__pycache__/
+*.py[cod]
 inbound-ai/.pytest_cache/
 inbound-ai/.ruff_cache/
 inbound-ai/dist/

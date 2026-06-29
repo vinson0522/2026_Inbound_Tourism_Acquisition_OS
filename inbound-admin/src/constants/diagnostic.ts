@@ -37,3 +37,34 @@ export const PROBE_MODE_OPTIONS = [
 ];
 
 export const AI_PLATFORM_OPTIONS = ['Perplexity', 'Gemini', 'OpenAI'] as const;
+
+/** PRD 用户生命周期八阶段 */
+export const LIFECYCLE_STAGE_LABELS: Record<string, string> = {
+  inspiration: '灵感',
+  planting: '种草',
+  comparison: '比较',
+  visa: '签证',
+  planning: '规划',
+  trust: '信任',
+  decision: '决策',
+  repurchase: '复购'
+};
+
+export const PROBE_TASK_STATUS_META: Record<string, { label: string; type: 'info' | 'primary' | 'success' | 'warning' | 'danger' }> = {
+  PENDING: { label: '待执行', type: 'info' },
+  DISPATCHED: { label: '已派发', type: 'primary' },
+  RUNNING: { label: '执行中', type: 'primary' },
+  SUCCESS: { label: '成功', type: 'success' },
+  FAILED: { label: '失败', type: 'danger' },
+  RETRY: { label: '重试中', type: 'warning' }
+};
+
+/** GEO 分项指标权重（PRD §10，展示用小字） */
+export const METRIC_WEIGHT_LABELS: Record<string, string> = {
+  brandMentionRate: '25%',
+  top3Rate: '20%',
+  competitorSuppression: '15%',
+  citationCoverage: '15%',
+  longtailCoverage: '15%',
+  assetCompleteness: '10%'
+};

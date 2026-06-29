@@ -23,6 +23,8 @@ def main() -> None:
         ("minio buckets", "sudo docker run --rm --network inbound-network minio/mc:latest sh -c 'mc alias set l http://minio:9000 inbound_minio $(grep MINIO_ROOT_PASSWORD /opt/inbound-growth/deploy/.env | cut -d= -f2) && mc ls l/' 2>&1"),
         ("langfuse http", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3100/ || true"),
         ("gotenberg", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3002/health || true"),
+        ("ai-api health", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8090/health || true"),
+        ("ai-api body", "curl -s http://127.0.0.1:8090/health || true"),
         ("public 5432", "timeout 1 bash -c 'exec 3<>/dev/tcp/18.139.209.10/5432' 2>/dev/null && echo OPEN || echo CLOSED"),
     ]
     for name, cmd in cmds:

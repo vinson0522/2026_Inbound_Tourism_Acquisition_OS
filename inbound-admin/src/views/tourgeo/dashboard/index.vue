@@ -14,8 +14,8 @@
     <el-skeleton v-if="pageLoading" :rows="8" animated />
 
     <template v-else-if="!projectStore.hasProject">
-      <el-empty description="暂无客户项目，请先创建或选择项目">
-        <el-button type="primary" disabled>创建项目（Story 2）</el-button>
+      <el-empty description="暂无客户项目，请先创建">
+        <el-button type="primary" @click="router.push({ path: '/projects/index', query: { create: '1' } })">新建客户项目</el-button>
       </el-empty>
     </template>
 

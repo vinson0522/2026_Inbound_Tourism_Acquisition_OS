@@ -119,11 +119,25 @@
           <el-table-column label="创建时间" prop="createdAt" width="170" />
           <el-table-column label="操作" fixed="right" width="200" align="center">
             <template #default="{ row }">
-              <el-button v-if="row.status === 'PENDING' || row.status === 'RUNNING'" link type="primary">查看进度</el-button>
-              <el-button v-if="row.status === 'SUCCESS' || row.status === 'PARTIAL_FAILED'" link type="primary">查看结果</el-button>
-              <el-button v-if="row.status === 'FAILED'" link type="primary">查看日志</el-button>
+              <el-button
+                v-if="row.status === 'PENDING' || row.status === 'RUNNING'"
+                link
+                type="primary"
+                @click="goDetail(row)"
+              >
+                查看进度
+              </el-button>
+              <el-button
+                v-if="row.status === 'SUCCESS' || row.status === 'PARTIAL_FAILED'"
+                link
+                type="primary"
+                @click="goDetail(row)"
+              >
+                查看结果
+              </el-button>
+              <el-button v-if="row.status === 'FAILED'" link type="primary" @click="goDetail(row)">查看日志</el-button>
               <el-tooltip :content="row.runId" placement="top">
-                <el-button link type="info">复制 ID</el-button>
+                <el-button link type="info" @click="copyRunId(row)">复制 ID</el-button>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -200,7 +214,8 @@
 <script setup name="DiagnosticRuns" lang="ts">
 import { createDiagnosticRun, listDiagnosticRuns } from '@/api/tourgeo/diagnostic';
 import type { CreateDiagnosticForm, DiagnosticRunQuery, DiagnosticRunVO } from '@/api/tourgeo/types';
-import { AI_PLATFORM_OPTIONS, DIAGNOSTIC_STATUS_OPTIONS, PROBE_MODE_OPTIONS } from '@/constants/diagnostic';
+import { DIAGNOSTIC_STATUS_OPTIONS, PROBE_MODE_OPTIONS } from '@/constants/diagnostic';
+import { MARKET_OPTIONS } from '@/constants/project';
 import ProjectSelector from '@/components/tourgeo/ProjectSelector.vue';
 import DiagnosticStatusTag from '@/components/tourgeo/DiagnosticStatusTag.vue';
 import GeoScoreDisplay from '@/components/tourgeo/GeoScoreDisplay.vue';
@@ -208,6 +223,7 @@ import { useProjectStore } from '@/store/modules/project';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const route = useRoute();
+const router = useRouter();
 const projectStore = useProjectStore();
 
 const statusOptions = DIAGNOSTIC_STATUS_OPTIONS;
@@ -242,8 +258,8 @@ const defaultForm = (): CreateDiagnosticForm => ({
   region: 'US',
   questionScope: 'all',
   probeModes: ['grounded-api'],
-  models: ['Perplexity', 'Gemini'],
-  sampleCount: 3,
+  models: ['Gemini'],
+  sampleCount: 1,
   calibrationRatio: 10
 });
 
@@ -258,7 +274,7 @@ const rules = ref<ElFormRules>({
   sampleCount: [{ required: true, message: '请设置采样次数', trigger: 'change' }]
 });
 
-const marketOptions = computed(() => projectStore.currentProject?.targetMarkets ?? ['US']);
+const marketOptions = computed(() => projectStore.currentProject?.targetMarkets ?? MARKET_OPTIONS);
 
 async function getList() {
   if (!projectStore.currentProjectId) {
@@ -324,13 +340,24 @@ async function submitForm() {
   if (!projectStore.currentProjectId) return;
   submitLoading.value = true;
   try {
-    await createDiagnosticRun(projectStore.currentProjectId, { ...form, region: form.market });
+    const created = await createDiagnosticRun(projectStore.currentProjectId, { ...form, region: form.market });
     proxy?.$modal.msgSuccess('任务已创建');
     drawerVisible.value = false;
     await getList();
+    router.push({ name: 'DiagnosticDetail', params: { runId: created.id } });
   } finally {
     submitLoading.value = false;
   }
+}
+
+function goDetail(row: DiagnosticRunVO) {
+  router.push({ name: 'DiagnosticDetail', params: { runId: row.id } });
+}
+
+function copyRunId(row: DiagnosticRunVO) {
+  navigator.clipboard.writeText(row.runId).then(() => {
+    proxy?.$modal.msgSuccess('已复制任务 ID');
+  });
 }
 
 onMounted(async () => {

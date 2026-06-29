@@ -1,0 +1,35 @@
+# D 盘本地开发覆盖层 — 数据 bind mount 到 INBOUND_DOCKER_DATA（默认 D:/Dev/SDKs/Docker/inbound-growth）
+#
+# 仅启 EPIC-2 最小集（不启 minio/langfuse/gotenberg，省资源）：
+#   docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgres redis rabbitmq ai-api
+#
+# 清数据：删 INBOUND_DOCKER_DATA 目录 + compose down（见 LOCAL_DOCKER.md §清理）
+
+services:
+  postgres:
+    volumes:
+      - ${INBOUND_DOCKER_DATA:-D:/Dev/SDKs/Docker/inbound-growth}/postgres:/var/lib/postgresql/data
+      - ../database/ddl/001_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ../database/ddl/002_seed_demo.sql:/docker-entrypoint-initdb.d/02_seed_demo.sql:ro
+
+  redis:
+    volumes:
+      - ${INBOUND_DOCKER_DATA:-D:/Dev/SDKs/Docker/inbound-growth}/redis:/data
+
+  rabbitmq:
+    volumes:
+      - ${INBOUND_DOCKER_DATA:-D:/Dev/SDKs/Docker/inbound-growth}/rabbitmq:/var/lib/rabbitmq
+
+  ai-api:
+    environment:
+      DIAGNOSE_WORKER_ENABLED: ${DIAGNOSE_WORKER_ENABLED:-true}
+      CORE_CALLBACK_BASE_URL: ${CORE_CALLBACK_BASE_URL:-http://host.docker.internal:8080}
+      DIAGNOSE_MOCK_LLM: ${DIAGNOSE_MOCK_LLM:-false}
+
+  # 本地最小集不启动以下服务（若 base compose 误启可显式禁用）
+  minio:
+    profiles: ["full"]
+  langfuse:
+    profiles: ["full"]
+  gotenberg:
+    profiles: ["full"]

@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
-import { listProjects } from '@/api/tourgeo/project';
-import type { CustomerProject } from '@/api/tourgeo/types';
+import { listProjectOptions } from '@/api/tourgeo/project';
+import type { CustomerProjectVo } from '@/api/tourgeo/types';
 
 export const useProjectStore = defineStore('tourgeoProject', () => {
-  const projects = ref<CustomerProject[]>([]);
+  const projects = ref<CustomerProjectVo[]>([]);
   const currentProjectId = ref<number | null>(null);
   const loading = ref(false);
   const initialized = ref(false);
@@ -15,9 +15,12 @@ export const useProjectStore = defineStore('tourgeoProject', () => {
   async function fetchProjects() {
     loading.value = true;
     try {
-      projects.value = await listProjects();
+      const res = await listProjectOptions();
+      projects.value = res.data ?? [];
       if (projects.value.length && currentProjectId.value == null) {
         currentProjectId.value = projects.value[0].id;
+      } else if (currentProjectId.value != null && !projects.value.some((p) => p.id === currentProjectId.value)) {
+        currentProjectId.value = projects.value[0]?.id ?? null;
       }
       initialized.value = true;
     } finally {
