@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.dromara.common.core.validate.AddGroup;
+import org.dromara.common.core.validate.EditGroup;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class KnowledgeAssetBo {
 
     private String type;
 
-    @NotBlank(message = "title不能为空", groups = {AddGroup.class})
+    @NotBlank(message = "title不能为空", groups = {AddGroup.class, EditGroup.class})
     private String title;
 
     private String content;
@@ -25,4 +26,7 @@ public class KnowledgeAssetBo {
     private String fileUrl;
 
     private List<String> tags;
+
+    /** 列表筛选 */
+    private String vectorStatus;
 }

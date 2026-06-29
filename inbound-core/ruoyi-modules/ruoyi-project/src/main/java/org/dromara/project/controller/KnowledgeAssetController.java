@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.validate.AddGroup;
+import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
@@ -32,9 +33,10 @@ public class KnowledgeAssetController extends BaseController {
     @GetMapping
     public TableDataInfo<KnowledgeAssetVo> list(
         @NotNull @PathVariable Long projectId,
+        KnowledgeAssetBo bo,
         PageQuery pageQuery
     ) {
-        return knowledgeAssetService.queryPageList(projectId, pageQuery);
+        return knowledgeAssetService.queryPageList(projectId, bo, pageQuery);
     }
 
     @SaCheckLogin
@@ -56,6 +58,27 @@ public class KnowledgeAssetController extends BaseController {
     ) {
         bo.setProjectId(projectId);
         return R.ok(knowledgeAssetService.insertByBo(projectId, bo));
+    }
+
+    @SaCheckLogin
+    @Log(title = "知识库资产", businessType = BusinessType.UPDATE)
+    @PutMapping("/{assetId}")
+    public R<Void> edit(
+        @NotNull @PathVariable Long projectId,
+        @NotNull @PathVariable Long assetId,
+        @Validated(EditGroup.class) @RequestBody KnowledgeAssetBo bo
+    ) {
+        return toAjax(knowledgeAssetService.updateByBo(projectId, assetId, bo));
+    }
+
+    @SaCheckLogin
+    @Log(title = "知识库资产", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{assetId}")
+    public R<Void> remove(
+        @NotNull @PathVariable Long projectId,
+        @NotNull @PathVariable Long assetId
+    ) {
+        return toAjax(knowledgeAssetService.deleteById(projectId, assetId));
     }
 
     @SaCheckLogin

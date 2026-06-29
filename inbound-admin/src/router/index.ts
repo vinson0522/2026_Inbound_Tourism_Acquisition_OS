@@ -95,6 +95,13 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/tourgeo/projects/index.vue'),
         name: 'ProjectList',
         meta: { title: '项目列表', icon: 'list' }
+      },
+      {
+        path: ':projectId',
+        component: () => import('@/views/tourgeo/projects/detail.vue'),
+        name: 'ProjectDetail',
+        hidden: true,
+        meta: { title: '项目详情', activeMenu: '/projects/index', noCache: true }
       }
     ]
   },

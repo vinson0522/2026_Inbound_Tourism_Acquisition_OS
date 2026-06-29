@@ -265,9 +265,8 @@ async function submit(goDashboard: boolean) {
   }
 }
 
-function enterProject(row: CustomerProjectVo) {
-  projectStore.setCurrentProject(row.id);
-  router.push('/dashboard');
+function enterProject(row: CustomerProjectVo, tab: 'brand' | 'competitors' | 'knowledge' = 'brand') {
+  router.push({ name: 'ProjectDetail', params: { projectId: row.id }, query: { tab } });
 }
 
 async function handleDelete(id: number) {

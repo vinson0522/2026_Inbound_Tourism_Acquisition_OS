@@ -177,3 +177,80 @@ export interface PageResult<T> {
   rows: T[];
   total: number;
 }
+
+export interface TravelProductVo {
+  id: number;
+  projectId: number;
+  name: string;
+  destinations: string[];
+  days?: number | null;
+  priceRange?: string;
+  suitableFor?: string;
+  highlights?: string;
+  inclusions?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TravelProductForm {
+  name: string;
+  destinations: string[];
+  days?: number | null;
+  priceRange?: string;
+  suitableFor?: string;
+  highlights?: string;
+  inclusions?: string;
+}
+
+export interface CompetitorVo {
+  id: number;
+  projectId: number;
+  name: string;
+  website?: string;
+  socialLinks?: Record<string, string>;
+  mainProducts?: string;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CompetitorForm {
+  name: string;
+  website?: string;
+  socialLinks?: Record<string, string>;
+  mainProducts?: string;
+  notes?: string;
+}
+
+export type KnowledgeAssetType = 'DOCUMENT' | 'FAQ' | 'ROUTE' | 'POLICY' | 'WEB_PAGE' | 'OTHER';
+
+export type VectorIndexStatus = 'PENDING' | 'INDEXING' | 'READY' | 'FAILED';
+
+export interface KnowledgeAssetVo {
+  id: number;
+  projectId: number;
+  type: KnowledgeAssetType;
+  title: string;
+  content?: string;
+  fileUrl?: string;
+  tags: string[];
+  vectorStatus: VectorIndexStatus;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface KnowledgeAssetForm {
+  title: string;
+  type?: KnowledgeAssetType;
+  content?: string;
+  fileUrl?: string;
+  tags?: string[];
+}
+
+export interface KnowledgeAssetQuery {
+  pageNum: number;
+  pageSize: number;
+  title?: string;
+  type?: KnowledgeAssetType | '';
+  vectorStatus?: VectorIndexStatus | '';
+}

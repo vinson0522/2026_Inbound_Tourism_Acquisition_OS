@@ -37,12 +37,15 @@ public class KnowledgeAssetServiceImpl implements IKnowledgeAssetService {
     private final AiEmbedPublisher aiEmbedPublisher;
 
     @Override
-    public TableDataInfo<KnowledgeAssetVo> queryPageList(Long projectId, PageQuery pageQuery) {
+    public TableDataInfo<KnowledgeAssetVo> queryPageList(Long projectId, KnowledgeAssetBo bo, PageQuery pageQuery) {
         assertProjectOwned(projectId);
         LambdaQueryWrapper<KnowledgeAsset> lqw = Wrappers.lambdaQuery(KnowledgeAsset.class)
             .eq(KnowledgeAsset::getProjectId, projectId)
             .eq(KnowledgeAsset::getTenantId, BusinessTenantHelper.getBusinessTenantId())
             .isNull(KnowledgeAsset::getDeletedAt)
+            .like(StringUtils.isNotBlank(bo.getTitle()), KnowledgeAsset::getTitle, bo.getTitle())
+            .eq(StringUtils.isNotBlank(bo.getType()), KnowledgeAsset::getType, bo.getType())
+            .eq(StringUtils.isNotBlank(bo.getVectorStatus()), KnowledgeAsset::getVectorStatus, bo.getVectorStatus())
             .orderByDesc(KnowledgeAsset::getCreatedAt);
         Page<KnowledgeAssetVo> page = knowledgeAssetMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(page);
@@ -70,6 +73,32 @@ public class KnowledgeAssetServiceImpl implements IKnowledgeAssetService {
         knowledgeAssetMapper.insert(entity);
         dispatchEmbedAfterCommit(entity);
         return entity.getId();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean updateByBo(Long projectId, Long assetId, KnowledgeAssetBo bo) {
+        KnowledgeAsset asset = getOwnedAssetOrThrow(projectId, assetId);
+        asset.setTitle(bo.getTitle());
+        asset.setType(StringUtils.blankToDefault(bo.getType(), asset.getType()));
+        asset.setTags(bo.getTags());
+        asset.setUpdatedAt(OffsetDateTime.now());
+        return knowledgeAssetMapper.updateById(asset) > 0;
+    }
+
+    @Override
+    public Boolean deleteById(Long projectId, Long assetId) {
+        getOwnedAssetOrThrow(projectId, assetId);
+        return knowledgeAssetMapper.update(
+            null,
+            Wrappers.lambdaUpdate(KnowledgeAsset.class)
+                .set(KnowledgeAsset::getDeletedAt, OffsetDateTime.now())
+                .set(KnowledgeAsset::getUpdatedAt, OffsetDateTime.now())
+                .eq(KnowledgeAsset::getId, assetId)
+                .eq(KnowledgeAsset::getProjectId, projectId)
+                .eq(KnowledgeAsset::getTenantId, BusinessTenantHelper.getBusinessTenantId())
+                .isNull(KnowledgeAsset::getDeletedAt)
+        ) > 0;
     }
 
     @Override

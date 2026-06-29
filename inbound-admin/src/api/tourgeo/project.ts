@@ -1,6 +1,18 @@
 import request from '@/utils/request';
 import type { AxiosPromise } from 'axios';
-import type { CustomerProjectForm, CustomerProjectQuery, CustomerProjectVo, PageResult } from './types';
+import type {
+  CompetitorForm,
+  CompetitorVo,
+  CustomerProjectForm,
+  CustomerProjectQuery,
+  CustomerProjectVo,
+  KnowledgeAssetForm,
+  KnowledgeAssetQuery,
+  KnowledgeAssetVo,
+  PageResult,
+  TravelProductForm,
+  TravelProductVo
+} from './types';
 
 /** 分页列表 */
 export function listProjects(query: CustomerProjectQuery): AxiosPromise<PageResult<CustomerProjectVo>> {
@@ -46,5 +58,114 @@ export function deleteProject(id: number): AxiosPromise<void> {
   return request({
     url: `/api/v1/projects/${id}`,
     method: 'delete'
+  });
+}
+
+/** FR-003 产品路线 */
+export async function listTravelProducts(projectId: number): Promise<TravelProductVo[]> {
+  const res = await request({
+    url: `/api/v1/projects/${projectId}/products`,
+    method: 'get'
+  });
+  return res.data ?? [];
+}
+
+export function createTravelProduct(projectId: number, data: TravelProductForm): AxiosPromise<number> {
+  return request({
+    url: `/api/v1/projects/${projectId}/products`,
+    method: 'post',
+    data
+  });
+}
+
+export function updateTravelProduct(projectId: number, productId: number, data: TravelProductForm): AxiosPromise<void> {
+  return request({
+    url: `/api/v1/projects/${projectId}/products/${productId}`,
+    method: 'put',
+    data
+  });
+}
+
+export function deleteTravelProduct(projectId: number, productId: number): AxiosPromise<void> {
+  return request({
+    url: `/api/v1/projects/${projectId}/products/${productId}`,
+    method: 'delete'
+  });
+}
+
+/** FR-002 竞品 */
+export async function listCompetitors(projectId: number): Promise<CompetitorVo[]> {
+  const res = await request({
+    url: `/api/v1/projects/${projectId}/competitors`,
+    method: 'get'
+  });
+  return res.data ?? [];
+}
+
+export function createCompetitor(projectId: number, data: CompetitorForm): AxiosPromise<number> {
+  return request({
+    url: `/api/v1/projects/${projectId}/competitors`,
+    method: 'post',
+    data
+  });
+}
+
+export function updateCompetitor(projectId: number, competitorId: number, data: CompetitorForm): AxiosPromise<void> {
+  return request({
+    url: `/api/v1/projects/${projectId}/competitors/${competitorId}`,
+    method: 'put',
+    data
+  });
+}
+
+export function deleteCompetitor(projectId: number, competitorId: number): AxiosPromise<void> {
+  return request({
+    url: `/api/v1/projects/${projectId}/competitors/${competitorId}`,
+    method: 'delete'
+  });
+}
+
+/** FR-004 知识库 */
+export function listKnowledgeAssets(projectId: number, query: KnowledgeAssetQuery): AxiosPromise<PageResult<KnowledgeAssetVo>> {
+  return request({
+    url: `/api/v1/projects/${projectId}/knowledge-assets`,
+    method: 'get',
+    params: {
+      pageNum: query.pageNum,
+      pageSize: query.pageSize,
+      title: query.title || undefined,
+      type: query.type || undefined,
+      vectorStatus: query.vectorStatus || undefined
+    }
+  });
+}
+
+export function createKnowledgeAsset(projectId: number, data: KnowledgeAssetForm): AxiosPromise<number> {
+  return request({
+    url: `/api/v1/projects/${projectId}/knowledge-assets`,
+    method: 'post',
+    data
+  });
+}
+
+export function updateKnowledgeAsset(projectId: number, assetId: number, data: KnowledgeAssetForm): AxiosPromise<void> {
+  return request({
+    url: `/api/v1/projects/${projectId}/knowledge-assets/${assetId}`,
+    method: 'put',
+    data
+  });
+}
+
+export function deleteKnowledgeAsset(projectId: number, assetId: number): AxiosPromise<void> {
+  return request({
+    url: `/api/v1/projects/${projectId}/knowledge-assets/${assetId}`,
+    method: 'delete'
+  });
+}
+
+export function reindexKnowledgeAsset(projectId: number, assetId: number): AxiosPromise<void> {
+  return request({
+    url: `/api/v1/projects/${projectId}/knowledge-assets/${assetId}/reindex`,
+    method: 'post'
   });
 }
