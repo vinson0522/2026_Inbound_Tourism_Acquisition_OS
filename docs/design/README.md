@@ -13,7 +13,12 @@
 | [tokens.md](./tokens.md) | 品牌色、字体、间距、圆角、阴影、语义色 |
 | [wireframes/dashboard.md](./wireframes/dashboard.md) | 工作台（项目概览）线框 |
 | [wireframes/diagnostics-list.md](./wireframes/diagnostics-list.md) | GEO 诊断 · 诊断任务列表线框 |
-| [../agent-team/HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md](../agent-team/HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md) | UI → 开发交付单 |
+| [wireframes/diagnostic-detail.md](./wireframes/diagnostic-detail.md) | GEO 诊断 · 诊断详情/结果（EPIC-2） |
+| [wireframes/projects-list.md](./wireframes/projects-list.md) | 客户项目列表 + FR-001 创建线框 |
+| [wireframes/project-detail.md](./wireframes/project-detail.md) | 客户项目详情 · Story 3 Tab（品牌/竞品/知识库） |
+| [../agent-team/HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md](../agent-team/HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md) | UI → 开发（工作台/GEO） |
+| [../agent-team/HANDOFFS/2026-06-25-ui-to-developer-projects-list.md](../agent-team/HANDOFFS/2026-06-25-ui-to-developer-projects-list.md) | UI → 开发（项目列表） |
+| [../agent-team/HANDOFFS/2026-06-29-ui-to-developer-project-detail.md](../agent-team/HANDOFFS/2026-06-29-ui-to-developer-project-detail.md) | UI → 开发（项目详情 Story 3） |
 
 ---
 
@@ -22,8 +27,8 @@
 | 一级模块 | 路由建议（开发实现） | 本阶段设计范围 |
 |----------|---------------------|----------------|
 | 工作台 | `/dashboard` | ✅ [dashboard.md](./wireframes/dashboard.md) |
-| 客户项目 | `/projects` | 后续 Sprint（FR-001 创建流） |
-| GEO 诊断 | `/diagnostics` | ✅ [diagnostics-list.md](./wireframes/diagnostics-list.md)（诊断任务子页） |
+| 客户项目 | `/projects` | ✅ [列表](wireframes/projects-list.md) + [详情 Story 3](wireframes/project-detail.md) |
+| GEO 诊断 | `/diagnostics` | ✅ [列表](wireframes/diagnostics-list.md) + [详情](wireframes/diagnostic-detail.md) |
 | 关键词洞察 | `/keywords` | 待设计 |
 | 内容 Agent | `/content` | 待设计 |
 | 落地页 Agent | `/landing` | 待设计 |
@@ -31,7 +36,7 @@
 | 报告中心 | `/reports` | 待设计 |
 | 系统设置 | `/settings/*` | 沿用若依系统菜单 |
 
-二级页「问题库 / 诊断结果 / 竞品对比 / 趋势监控 / 探针节点」本 Sprint 仅标注入口，不展开线框。
+二级页「问题库 / 竞品对比 / 趋势监控 / 探针节点」待后续 Sprint；诊断详情已覆盖「诊断结果」主路径。
 
 ---
 
@@ -71,4 +76,5 @@ Token 落地时优先在 `variables.module.scss` 的 `:root` 追加 `--tg-*` 变
 
 | 日期 | 作者 | 说明 |
 |------|------|------|
-| 2026-06-25 | UI 设计 | 初版 token + 工作台 + GEO 诊断列表线框 |
+| 2026-06-29 | UI 设计 | Story 3 项目详情 Tab 线框 + HANDOFF |
+| 2026-06-26 | UI 设计 | 初版 token + 工作台 + GEO 列表；EPIC-2 诊断详情线框 |

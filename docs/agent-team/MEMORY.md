@@ -52,8 +52,8 @@
 |------|:----:|------|
 | 登录 → 建项目 → 列表 | ✅ | smoke test + Admin 联调 |
 | 租户隔离 FR-807 | ⚠️ 部分 | `BusinessTenantHelper` 固定 `tenant_id=1` |
-| 知识库上传 FR-004/005 | ✅ MVP | embed 管道 + `knowledge_chunk` READY；Admin 上传 UI 待 Story |
-| 竞品/路线 FR-002/003 | ⏳ | Story 3 backlog |
+| 知识库上传 FR-004/005 | ✅ MVP | embed 管道 + Admin 知识库 Tab 上传/状态 |
+| 竞品/路线 FR-002/003 | ✅ | Story 3 详情页 + Java CRUD API |
 | 工作台真实数据 FR-006 | ✅ MVP | `getDashboard` 前端聚合 `listDiagnosticRuns`（KPI + 最近 5 条） |
 | API 统一响应 `{code,trace_id}` | ⏳ | 仍用 RuoYi `R`/`TableDataInfo` |
 
@@ -125,15 +125,16 @@
 ## 开发
 
 - **负责目录**：`inbound-core/`、`inbound-ai/`、`database/`、`inbound-probe-extension/`
+- **6/29 增量二（2026-06-29）** ✅ **已提交** `a87b780` Story3 · `91c215b` Phase2.1 · docs HANDOFF/wireframes 同批（未 push）
 - **EPIC-2 M2 FR-106（2026-06-29）** ✅ DOCX 报告导出 runId=2；`test_diagnostic_report_export.py` 通过
-- **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ `ai.embed` worker · mock embedding · asset#1 READY
-- **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` ai embed · `e22cd43` core FR-106 report · docs HANDOFF 同批（未 push）
+- **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ **已提交** `f40cf8d` — `ai.embed` worker · asset#1 READY
+- **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` ai embed · `e22cd43` core FR-106 report · `f96ba7e` docs（未 push）
 - **EPIC-2 M1 代码** ✅（Python + Java + Admin 详情页）— **已提交** `54d8ca5` / `6ba5e1e` / `48926d2`（2026-06-29）
 - **E2E（隧道）** ✅ runId=10 mock LLM
 - **E2E（本机 Docker ADR-09，2026-06-29）** ✅ runId=2 · `SUCCESS` · `geo_score=85.00` · 3 results · `DIAGNOSE_MOCK_LLM=true`
 - **本机 Docker 联调** ✅ Java :8080 + 4 容器 healthy；`test_projects_api` + E2E 通过
 - **工作台 FR-006 MVP（2026-06-26）** ✅ `getDashboard` 聚合诊断列表；`/dashboard` 编译与运行正常
-- **待办**：Phase 2.1 bge-reranker；Admin 知识库 Tab 接 Java API；真 embedding Key 验通
+- **待办**：FR-005 检索预览 UI（Admin）；真 embedding 生产 Key 轮换；Docling 文件解析
 
 ### 开发联调步骤（本机 Docker — **首选**，ADR-09）
 
@@ -183,6 +184,7 @@
 | **P2** | ~~**开发 Admin**~~ | ~~补 `getDashboard` stub~~ | ✅ 2026-06-26 |
 | **P3** | ~~**开发**~~ | ~~EPIC-2 M2 FR-106 报告导出~~ | ✅ 2026-06-29 |
 | **P4** | **技术总监** | M2 签核 → FR-108 趋势 / 多平台 | — |
+| **P5** | ~~**开发**~~ | ~~Story 3 项目详情页~~ | ✅ 2026-06-29 |
 
 ---
 
@@ -190,7 +192,8 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-06-29 | 开发 | M2 代码 commit：`f40cf8d` ai · `e22cd43` FR-106 · docs HANDOFF（未 push） |
+| 2026-06-29 | 开发 | 6/29 增量二 commit：`a87b780` Story3 · `91c215b` Phase2.1 · docs HANDOFF（未 push） |
+| 2026-06-29 | 开发 | EPIC-10 Phase 2.1：OpenAI embedding + bge-reranker top-3；pytest + test_embed_e2e ✅ |
 | 2026-06-29 | 开发 | EPIC-2 M2 FR-106：DOCX 报告导出 + Admin 按钮；runId=2 smoke 通过 |
 | 2026-06-29 | 开发 | EPIC-10 Phase 2 embed MVP：`ai.embed` + chunk/pgvector + `/ai/rag/search`；E2E asset#1 READY |
 | 2026-06-29 | 开发 | M1 代码分批 commit：`54d8ca5` ai · `6ba5e1e` core · `48926d2` admin+deploy（未 push） |
