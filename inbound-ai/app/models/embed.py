@@ -21,7 +21,7 @@ class RagSearchRequest(BaseModel):
     tenant_id: int = Field(..., alias="tenantId")
     project_id: int = Field(..., alias="projectId")
     query: str = Field(..., min_length=1, max_length=4000)
-    top_k: int = Field(default=20, ge=1, le=50, alias="topK")
+    top_k: int = Field(default=3, ge=1, le=10, alias="topK")
 
     model_config = {"populate_by_name": True}
 

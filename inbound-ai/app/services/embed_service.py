@@ -8,6 +8,7 @@ from app.config import Settings, get_settings
 from app.models.embed import EmbedRequest, EmbedResultData
 from app.repositories import knowledge_repository
 from app.services import chunk_service, document_parser, embedding_service
+from app.services.embedding_service import EmbeddingError
 
 logger = logging.getLogger(__name__)
 

@@ -26,7 +26,8 @@ services:
       EMBED_WORKER_ENABLED: ${EMBED_WORKER_ENABLED:-true}
       CORE_CALLBACK_BASE_URL: ${CORE_CALLBACK_BASE_URL:-http://host.docker.internal:8080}
       DIAGNOSE_MOCK_LLM: ${DIAGNOSE_MOCK_LLM:-false}
-      EMBED_MOCK: ${EMBED_MOCK:-true}
+      EMBED_MOCK: ${EMBED_MOCK:-false}
+      RERANKER_MOCK: ${RERANKER_MOCK:-true}
 
   # 本地最小集不启动以下服务（若 base compose 误启可显式禁用）
   minio:

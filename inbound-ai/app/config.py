@@ -36,6 +36,15 @@ class Settings(BaseSettings):
     embed_worker_enabled: bool = False
     embed_mock: bool = False
 
+    reranker_model: str = "BAAI/bge-reranker-v2-m3"
+    reranker_mock: bool = False
+    rag_vector_top_k: int = 20
+    rag_rerank_top_k: int = 3
+
+    @property
+    def has_embedding_key(self) -> bool:
+        return bool(self.openai_api_key)
+
     @property
     def has_llm_key(self) -> bool:
         return bool(self.openai_api_key or self.gemini_api_key or self.perplexity_api_key)

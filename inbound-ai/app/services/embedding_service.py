@@ -1,4 +1,4 @@
-"""LiteLLM embedding with deterministic mock for local E2E."""
+"""LiteLLM embedding (OpenAI text-embedding-3-small) with optional mock for tests."""
 
 from __future__ import annotations
 
@@ -13,12 +13,18 @@ logger = logging.getLogger(__name__)
 EMBED_DIM = 1536
 
 
+class EmbeddingError(Exception):
+    pass
+
+
 async def embed_texts(texts: list[str], settings: Settings | None = None) -> list[list[float]]:
     cfg = settings or get_settings()
     if not texts:
         return []
-    if cfg.embed_mock or not cfg.has_llm_key:
+    if cfg.embed_mock:
         return [_mock_vector(t) for t in texts]
+    if not cfg.openai_api_key:
+        raise EmbeddingError("OPENAI_API_KEY required when EMBED_MOCK=false")
     return await _litellm_embed(texts, cfg)
 
 
@@ -30,7 +36,14 @@ async def embed_query(query: str, settings: Settings | None = None) -> list[floa
 async def _litellm_embed(texts: list[str], cfg: Settings) -> list[list[float]]:
     from litellm import aembedding  # noqa: PLC0415
 
-    resp = await aembedding(model=cfg.embedding_model, input=texts)
+    kwargs: dict = {
+        "model": cfg.embedding_model,
+        "input": texts,
+        "api_key": cfg.openai_api_key,
+    }
+    if cfg.openai_api_base:
+        kwargs["api_base"] = cfg.openai_api_base
+    resp = await aembedding(**kwargs)
     return [item["embedding"] for item in resp.data]
 
 

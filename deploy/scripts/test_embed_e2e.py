@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""E2E: embed demo knowledge asset → knowledge_chunk READY (EPIC-10 Phase 2).
+"""E2E: embed demo knowledge asset → knowledge_chunk READY → RAG top-3 (EPIC-10 Phase 2.1).
 
 Requires local Docker (ADR-09):
-  postgres :5432, rabbitmq :5672, ai-api :8090 with EMBED_WORKER_ENABLED=true
-Optional Java :8080 for MQ trigger via POST .../knowledge-assets/{id}/reindex
+  postgres :5432, ai-api :8090
+Phase 2.1 defaults: EMBED_MOCK=false (needs OPENAI_API_KEY), RERANKER_MOCK=true for CPU-light local.
+Set EMBED_MOCK=true to skip OpenAI embedding in local smoke.
 """
 from __future__ import annotations
 
@@ -15,13 +16,16 @@ import urllib.error
 import urllib.request
 
 AI_BASE = os.environ.get("AI_SERVICE_BASE", "http://localhost:8090")
-JAVA_BASE = os.environ.get("INBOUND_API_BASE", "http://localhost:8080")
 TOKEN = os.environ.get("AI_SERVICE_INTERNAL_TOKEN", "dev_internal_token_change_me")
 ASSET_ID = int(os.environ.get("EMBED_ASSET_ID", "1"))
 TENANT_ID = int(os.environ.get("EMBED_TENANT_ID", "1"))
 PROJECT_ID = int(os.environ.get("EMBED_PROJECT_ID", "1"))
 POLL_SEC = int(os.environ.get("EMBED_POLL_SEC", "60"))
 MODE = os.environ.get("EMBED_E2E_MODE", "direct")  # direct | mq
+RAG_QUERY = os.environ.get(
+    "EMBED_RAG_QUERY",
+    "Dragon Journey Travel private China tours for English-speaking travelers",
+)
 
 
 def _http_json(method: str, url: str, body: dict | None = None, headers: dict | None = None) -> dict:
@@ -30,7 +34,7 @@ def _http_json(method: str, url: str, body: dict | None = None, headers: dict | 
         hdrs.update(headers)
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(url, data=data, headers=hdrs, method=method)
-    with urllib.request.urlopen(req, timeout=60) as resp:
+    with urllib.request.urlopen(req, timeout=120) as resp:
         return json.loads(resp.read().decode())
 
 
@@ -147,7 +151,34 @@ def trigger_mq_embed() -> None:
     print("   published ai.embed message")
 
 
+def verify_rag_search() -> None:
+    body = {
+        "tenantId": TENANT_ID,
+        "projectId": PROJECT_ID,
+        "query": RAG_QUERY,
+        "topK": 3,
+    }
+    resp = _http_json(
+        "POST",
+        f"{AI_BASE}/ai/rag/search",
+        body=body,
+        headers={"Authorization": f"Bearer {TOKEN}"},
+    )
+    if resp.get("code") != 0:
+        raise RuntimeError(f"/ai/rag/search failed: {resp}")
+    hits = (resp.get("data") or {}).get("hits") or []
+    print(f"   rag/search hits={len(hits)}")
+    if not hits:
+        raise RuntimeError("RAG search returned no hits")
+    if len(hits) > 3:
+        raise RuntimeError(f"expected at most 3 reranked hits, got {len(hits)}")
+    print(f"   top hit score={hits[0].get('score')} chunk_id={hits[0].get('chunk_id')}")
+
+
 def main() -> int:
+    embed_mode = "mock" if os.environ.get("EMBED_MOCK", "").lower() in ("1", "true", "yes") else "openai"
+    print(f"0. embed mode={embed_mode} (set EMBED_MOCK=true for mock embedding)")
+
     print("1. Ensure demo knowledge_asset exists...")
     ensure_demo_asset_pg()
 
@@ -157,7 +188,9 @@ def main() -> int:
     else:
         data = trigger_direct_embed()
         if data.get("vector_status") == "READY" and int(data.get("chunk_count") or 0) > 0:
-            print(f"E2E passed: vector_status=READY chunks={data.get('chunk_count')}")
+            print("3. Verify RAG search (top-3 rerank)...")
+            verify_rag_search()
+            print(f"E2E passed: vector_status=READY chunks={data.get('chunk_count')} rag_ok")
             return 0
         try:
             status = poll_vector_status()
@@ -166,7 +199,9 @@ def main() -> int:
             print("E2E failed: embed response not READY and psycopg2 unavailable for DB poll")
             return 1
         if status == "READY" and chunks > 0:
-            print(f"E2E passed: vector_status=READY chunks={chunks}")
+            print("3. Verify RAG search (top-3 rerank)...")
+            verify_rag_search()
+            print(f"E2E passed: vector_status=READY chunks={chunks} rag_ok")
             return 0
         print(f"   unexpected direct result status={status} chunks={chunks}")
         return 1
@@ -178,7 +213,9 @@ def main() -> int:
         chunks = poll_chunk_count()
         print(f"   status={status} chunks={chunks}")
         if status == "READY" and chunks > 0:
-            print(f"E2E passed: vector_status=READY chunks={chunks}")
+            print("4. Verify RAG search (top-3 rerank)...")
+            verify_rag_search()
+            print(f"E2E passed: vector_status=READY chunks={chunks} rag_ok")
             return 0
         time.sleep(2)
 
