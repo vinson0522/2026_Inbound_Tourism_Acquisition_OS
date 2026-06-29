@@ -38,7 +38,7 @@ if (-not $env:INBOUND_DOCKER_DATA) {
 }
 
 Write-Host "[start] INBOUND_DOCKER_DATA=$($env:INBOUND_DOCKER_DATA)"
-docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgres redis rabbitmq ai-api
+docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgres redis rabbitmq ai-api gotenberg
 
 Write-Host ""
 Write-Host "等待 healthcheck..."
@@ -48,5 +48,5 @@ docker compose -f docker-compose.yml -f docker-compose.local-d.yml ps
 Write-Host ""
 Write-Host "下一步:"
 Write-Host "  1. 首次: .\scripts\import_ruoyi_pg_local.ps1"
-Write-Host "  2. 验通: curl http://localhost:8090/health"
+Write-Host "  2. 验通: curl.exe http://localhost:8090/health ; curl.exe http://localhost:3002/health"
 Write-Host "  3. 起 Java/Admin，见 LOCAL_DOCKER.md §2.8"

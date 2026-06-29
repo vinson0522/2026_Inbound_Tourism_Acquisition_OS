@@ -101,8 +101,8 @@
             <template #default="{ row }">{{ row.finishedAt || '—' }}</template>
           </el-table-column>
           <el-table-column label="操作" width="100" align="center">
-            <template #default>
-              <el-button link type="primary">查看</el-button>
+            <template #default="{ row }">
+              <el-button link type="primary" @click="goRunDetail(row)">查看</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -179,6 +179,10 @@ async function loadData() {
 
 function goCreateDiagnostic() {
   router.push({ path: '/diagnostics/runs', query: { create: '1' } });
+}
+
+function goRunDetail(row: { id: number }) {
+  router.push({ name: 'DiagnosticDetail', params: { runId: row.id } });
 }
 
 onMounted(async () => {

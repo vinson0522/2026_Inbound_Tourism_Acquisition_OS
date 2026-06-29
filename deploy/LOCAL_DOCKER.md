@@ -36,7 +36,7 @@ D:\Dev\SDKs\Docker\
 
 ```powershell
 # 查看占用
-Get-NetTCPConnection -LocalPort 5432,6379,5672,8090 -State Listen -ErrorAction SilentlyContinue
+Get-NetTCPConnection -LocalPort 5432,6379,5672,8090,3002 -State Listen -ErrorAction SilentlyContinue
 ```
 
 ### 2.2 安装 WSL2（一次性，需管理员 + 重启）
@@ -97,7 +97,7 @@ copy .env.local.example .env
 
 ```powershell
 cd deploy
-docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgres redis rabbitmq ai-api
+docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgres redis rabbitmq ai-api gotenberg
 docker compose -f docker-compose.yml -f docker-compose.local-d.yml ps
 ```
 
@@ -156,18 +156,33 @@ python deploy/scripts/test_diagnostic_e2e.py
 ```powershell
 cd deploy
 
-# 启动
-docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgres redis rabbitmq ai-api
+# 启动（EPIC-2 最小集 + Gotenberg FR-106 PDF）
+docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgres redis rabbitmq ai-api gotenberg gotenberg
 
 # 停止（保留 D 盘数据）
 docker compose -f docker-compose.yml -f docker-compose.local-d.yml stop
 
 # 看日志
 docker compose -f docker-compose.yml -f docker-compose.local-d.yml logs -f ai-api
+docker compose -f docker-compose.yml -f docker-compose.local-d.yml logs -f gotenberg
 
 # 重建 ai-api（改代码后）
 docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d --build ai-api
+
+# 验通 Gotenberg（FR-106 PDF 前置）
+curl.exe http://localhost:3002/health
 ```
+
+**Java PDF 导出**（`ReportExportProperties`，见 `application.yml`）：
+
+```powershell
+# 环境变量（推荐）
+$env:GOTENBERG_BASE_URL = "http://localhost:3002"
+
+# 或 YAML：inbound.report.gotenberg-base-url=http://localhost:3002
+```
+
+DOCX 导出不依赖 Gotenberg；PDF 需上述 URL + 容器 healthy。
 
 ---
 
@@ -180,23 +195,26 @@ docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d --build
 | RabbitMQ | `localhost:5672` | `inbound` / `inbound_dev_pass` |
 | RabbitMQ UI | http://localhost:15672 | 同上 |
 | ai-api | http://localhost:8090 | token: `dev_internal_token_change_me` |
+| Gotenberg | http://localhost:3002 | FR-106 PDF；health → `/health` |
 
-### FR-106 PDF 导出（Gotenberg，可选）
+### FR-106 PDF 导出（Gotenberg）
 
-M2 默认 **DOCX 不依赖 Gotenberg**。PDF 需启用 Gotenberg：
+Gotenberg 已包含在 §3 默认 `up -d` 服务列表。若单独补启：
 
 ```powershell
 cd deploy
-docker compose -f docker-compose.yml -f docker-compose.local-d.yml --profile full up -d gotenberg
+docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d gotenberg
+curl.exe http://localhost:3002/health
 ```
 
-Java 环境变量：
+Java 侧（`ReportExportProperties`，前缀 `inbound.report`）：
 
-```powershell
-$env:GOTENBERG_BASE_URL = "http://localhost:3002"
-```
+| 配置方式 | 值 |
+|----------|-----|
+| 环境变量 | `GOTENBERG_BASE_URL=http://localhost:3002` |
+| `application.yml` | `inbound.report.gotenberg-base-url: http://localhost:3002` |
 
-验通：`python deploy/scripts/test_diagnostic_report_export.py`（DOCX）；PDF 在 Admin 详情页点「导出 PDF」。
+空 URL 时 PDF 导出返回明确错误；DOCX 不受影响。Admin 详情页「导出 PDF」或 `test_diagnostic_report_export.py` 验通。
 
 ---
 
@@ -340,4 +358,4 @@ A：不要混用。本地 Docker 模式下关掉所有隧道，Redis 用 **6379*
 
 ---
 
-*Last updated: 2026-06-27*
+*Last updated: 2026-06-29*

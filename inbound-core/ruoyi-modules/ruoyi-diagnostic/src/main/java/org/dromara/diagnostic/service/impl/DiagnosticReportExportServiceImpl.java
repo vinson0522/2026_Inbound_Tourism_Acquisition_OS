@@ -40,6 +40,11 @@ import java.util.Set;
 public class DiagnosticReportExportServiceImpl implements IDiagnosticReportExportService {
 
     private static final Set<String> EXPORTABLE = Set.of("SUCCESS", "PARTIAL_FAILED");
+    private static final String PDF_GOTENBERG_HINT =
+        "PDF 导出需要 Gotenberg。本地请 cd deploy && docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d gotenberg，"
+            + "并设置 GOTENBERG_BASE_URL=http://localhost:3002（dev profile 已默认）";
+    private static final String PDF_GOTENBERG_DOWN =
+        "Gotenberg 未响应（请确认 inbound-gotenberg 容器 healthy：curl http://localhost:3002/health）";
 
     private final IDiagnosticRunService diagnosticRunService;
     private final CustomerProjectMapper customerProjectMapper;
@@ -71,10 +76,10 @@ public class DiagnosticReportExportServiceImpl implements IDiagnosticReportExpor
         try {
             if ("pdf".equals(fmt)) {
                 if (!gotenbergClient.isEnabled()) {
-                    throw new ServiceException(
-                        "PDF 导出需要 Gotenberg。本地请 docker compose --profile full up gotenberg 并设置 GOTENBERG_BASE_URL=http://localhost:3002",
-                        HttpStatus.BAD_REQUEST
-                    );
+                    throw new ServiceException(PDF_GOTENBERG_HINT, HttpStatus.BAD_REQUEST);
+                }
+                if (!gotenbergClient.isReachable()) {
+                    throw new ServiceException(PDF_GOTENBERG_DOWN, HttpStatus.BAD_REQUEST);
                 }
                 String html = DiagnosticHtmlReportRenderer.render(ctx);
                 byte[] pdf = gotenbergClient.htmlToPdf(html.getBytes(StandardCharsets.UTF_8), "index.html");
@@ -93,6 +98,9 @@ public class DiagnosticReportExportServiceImpl implements IDiagnosticReportExpor
                 .build();
         } catch (ServiceException e) {
             throw e;
+        } catch (IllegalStateException e) {
+            log.warn("FR-106 PDF export failed runId={}: {}", runId, e.getMessage());
+            throw new ServiceException(PDF_GOTENBERG_DOWN, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             throw new ServiceException("报告生成失败: " + e.getMessage(), HttpStatus.ERROR);
         }

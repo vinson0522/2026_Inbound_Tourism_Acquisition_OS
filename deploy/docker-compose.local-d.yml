@@ -1,9 +1,10 @@
 # D 盘本地开发覆盖层 — 数据 bind mount 到 INBOUND_DOCKER_DATA（默认 D:/Dev/SDKs/Docker/inbound-growth）
 #
-# 仅启 EPIC-2 最小集（不启 minio/langfuse/gotenberg，省资源）：
-#   docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgres redis rabbitmq ai-api
+# 默认启 EPIC-2 最小集 + Gotenberg（FR-106 PDF）：
+#   docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgres redis rabbitmq ai-api gotenberg
 #
-# 清数据：删 INBOUND_DOCKER_DATA 目录 + compose down（见 LOCAL_DOCKER.md §清理）
+# 可选 profile full：minio / langfuse
+#   docker compose -f docker-compose.yml -f docker-compose.local-d.yml --profile full up -d
 
 services:
   postgres:
@@ -27,12 +28,11 @@ services:
       CORE_CALLBACK_BASE_URL: ${CORE_CALLBACK_BASE_URL:-http://host.docker.internal:8080}
       DIAGNOSE_MOCK_LLM: ${DIAGNOSE_MOCK_LLM:-false}
       EMBED_MOCK: ${EMBED_MOCK:-false}
+      KEYWORDS_MOCK_LLM: ${KEYWORDS_MOCK_LLM:-true}
       RERANKER_MOCK: ${RERANKER_MOCK:-true}
 
-  # 本地最小集不启动以下服务（若 base compose 误启可显式禁用）
+  # 本地默认不启 minio/langfuse（profile full）；Gotenberg 默认启用于 FR-106 PDF
   minio:
     profiles: ["full"]
   langfuse:
-    profiles: ["full"]
-  gotenberg:
     profiles: ["full"]
