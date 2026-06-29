@@ -1,0 +1,33 @@
+[project]
+name = "inbound-ai"
+version = "0.1.0"
+description = "Inbound AI Growth Agent — FastAPI microservice (EPIC-10)"
+requires-python = ">=3.11"
+readme = "README.md"
+dependencies = [
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.27",
+  "litellm>=1.40",
+  "httpx>=0.27",
+  "pydantic-settings>=2.2",
+  "python-multipart>=0.0.9",
+  "aio-pika>=9.4",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-asyncio>=0.23",
+  "httpx>=0.27",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]

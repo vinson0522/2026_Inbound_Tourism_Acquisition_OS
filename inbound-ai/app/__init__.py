@@ -1,0 +1,1 @@
+"""Inbound AI FastAPI application."""

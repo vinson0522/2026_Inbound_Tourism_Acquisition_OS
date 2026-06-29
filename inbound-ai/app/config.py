@@ -1,0 +1,44 @@
+from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+    app_version: str = "0.1.0"
+    ai_service_internal_token: str = "dev_internal_token_change_me"
+
+    database_url: str | None = None
+
+    openai_api_key: str | None = None
+    openai_api_base: str | None = None
+    gemini_api_key: str | None = None
+    perplexity_api_key: str | None = None
+
+    langfuse_public_key: str | None = None
+    langfuse_secret_key: str | None = None
+    langfuse_host: str | None = None
+
+    rabbitmq_url: str | None = None
+    core_callback_base_url: str | None = None
+    diagnose_worker_enabled: bool = False
+    # Pipeline E2E when provider keys/quota unavailable (never use in production)
+    diagnose_mock_llm: bool = False
+
+    @property
+    def has_llm_key(self) -> bool:
+        return bool(self.openai_api_key or self.gemini_api_key or self.perplexity_api_key)
+
+    @property
+    def litellm_status(self) -> str:
+        return "ready" if self.has_llm_key else "no_key"
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
