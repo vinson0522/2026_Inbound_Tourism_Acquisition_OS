@@ -1,0 +1,60 @@
+---
+import HeroModule from './modules/HeroModule.astro';
+import WhyModule from './modules/WhyModule.astro';
+import ItineraryModule from './modules/ItineraryModule.astro';
+import ProvideModule from './modules/ProvideModule.astro';
+import ReviewsModule from './modules/ReviewsModule.astro';
+import FaqModule from './modules/FaqModule.astro';
+import LeadForm from './LeadForm.astro';
+import WhatsAppBar from './modules/WhatsAppBar.astro';
+import type { FormConfigJson, LandingModule, PublicLandingPage } from '../types/landing';
+import { getApiBase } from '../lib/api';
+
+interface Props {
+  module: LandingModule;
+  page: PublicLandingPage;
+}
+
+const { module, page } = Astro.props;
+const content = (module.content ?? {}) as Record<string, unknown>;
+const key = module.key;
+const apiBase = getApiBase();
+const whatsappLink =
+  page.whatsappLink ??
+  page.formConfigJson?.whatsapp_link ??
+  page.formConfigJson?.whatsappLink ??
+  null;
+---
+
+{
+  key === 'hero' && <HeroModule content={content} />
+}
+{
+  key === 'why_this_trip' && <WhyModule content={content} />
+}
+{
+  key === 'itinerary' && <ItineraryModule content={content} />
+}
+{
+  key === 'what_we_provide' && <ProvideModule content={content} />
+}
+{
+  key === 'traveler_reviews' && <ReviewsModule content={content} />
+}
+{
+  key === 'faq' && <FaqModule content={content} />
+}
+{
+  key === 'lead_form' && (
+    <LeadForm
+      landingPageId={page.id}
+      formConfig={page.formConfigJson as FormConfigJson}
+      moduleContent={content}
+      turnstileSiteKey={page.turnstileSiteKey}
+      apiBase={apiBase}
+    />
+  )
+}
+{
+  key === 'whatsapp_cta' && <WhatsAppBar content={content} whatsappLink={whatsappLink} />
+}

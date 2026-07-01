@@ -1,0 +1,18 @@
+---
+import { pickHeading, pickSubtitle, pickCtaLabel } from '../../lib/content';
+
+interface Props {
+  content: Record<string, unknown>;
+}
+
+const { content } = Astro.props;
+const heading = pickHeading(content);
+const subtitle = pickSubtitle(content);
+const cta = pickCtaLabel(content, 'Plan My Trip');
+---
+
+<section class="lp-hero" id="top">
+  {heading && <h1>{heading}</h1>}
+  {subtitle && <p>{subtitle}</p>}
+  <a class="lp-btn lp-btn--primary" href="#lead-form">{cta}</a>
+</section>

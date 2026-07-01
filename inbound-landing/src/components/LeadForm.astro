@@ -1,0 +1,97 @@
+---
+import { pickHeading, pickSubtitle } from '../lib/content';
+import type { FormConfigJson } from '../types/landing';
+
+interface Props {
+  landingPageId: number;
+  formConfig?: FormConfigJson;
+  moduleContent?: Record<string, unknown>;
+  turnstileSiteKey?: string | null;
+  apiBase: string;
+}
+
+const { landingPageId, formConfig, moduleContent, turnstileSiteKey, apiBase } = Astro.props;
+
+const fields = formConfig?.fields ?? ['name', 'email', 'phone', 'travel_date', 'party_size', 'budget', 'message'];
+const submitLabel = formConfig?.submit_label ?? formConfig?.submitLabel ?? 'Submit Inquiry';
+const heading = pickHeading(moduleContent, 'Request a Custom Quote');
+const subheading = pickSubtitle(moduleContent);
+
+const envSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+const siteKey = turnstileSiteKey || envSiteKey || '';
+
+const fieldMeta: Record<string, { label: string; type: string; required?: boolean }> = {
+  name: { label: 'Name', type: 'text', required: true },
+  email: { label: 'Email', type: 'email' },
+  phone: { label: 'Phone', type: 'tel' },
+  travel_date: { label: 'Travel date', type: 'date' },
+  party_size: { label: 'Party size', type: 'number' },
+  pax: { label: 'Party size', type: 'number' },
+  budget: { label: 'Budget', type: 'text' },
+  message: { label: 'Message', type: 'textarea' },
+  notes: { label: 'Notes', type: 'textarea' },
+};
+---
+
+<section class="lp-section" id="lead-form">
+  <h2>{heading}</h2>
+  {subheading && <p>{subheading}</p>}
+
+  <form class="lp-form" id="inbound-lead-form" data-landing-id={landingPageId} data-api-base={apiBase} data-site-key={siteKey}>
+    {
+      fields.map((field) => {
+        const meta = fieldMeta[field] ?? { label: field.replace(/_/g, ' '), type: 'text' };
+        const id = `field-${field}`;
+        if (meta.type === 'textarea') {
+          return (
+            <label for={id}>
+              {meta.label}
+              <textarea id={id} name={field} rows={4} />
+            </label>
+          );
+        }
+        return (
+          <label for={id}>
+            {meta.label}
+            {meta.required && ' *'}
+            <input
+              id={id}
+              name={field}
+              type={meta.type}
+              min={meta.type === 'number' ? '1' : undefined}
+              required={meta.required}
+            />
+          </label>
+        );
+      })
+    }
+
+    <div id="turnstile-wrap">
+      {
+        siteKey ? (
+          <div id="cf-turnstile" class="cf-turnstile" data-sitekey={siteKey} />
+        ) : (
+          <div class="lp-turnstile-placeholder">Turnstile disabled in local dev — submit without captcha.</div>
+        )
+      }
+    </div>
+
+    <div id="lead-form-alert" hidden></div>
+
+    <button type="submit" class="lp-btn lp-btn--primary" id="lead-submit-btn" style="width:100%">
+      {submitLabel}
+    </button>
+
+    <p class="lp-form__hint">
+      Your information is used only to respond to this inquiry. Email or phone is required.
+    </p>
+  </form>
+</section>
+
+{siteKey && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
+
+<script>
+  import { initLeadForm } from '../scripts/lead-form';
+
+  initLeadForm();
+</script>

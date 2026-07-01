@@ -1,0 +1,31 @@
+---
+export const prerender = false;
+
+import LandingLayout from '../../../layouts/LandingLayout.astro';
+import LandingModuleRenderer from '../../../components/LandingModuleRenderer.astro';
+import { fetchPublicLandingPage } from '../../../lib/api';
+
+const { projectId, slug } = Astro.params;
+
+const page =
+  projectId && slug ? await fetchPublicLandingPage(projectId, slug) : null;
+
+if (!page) {
+  Astro.response.status = 404;
+}
+
+const publicBase = (import.meta.env.PUBLIC_LANDING_BASE_URL ?? Astro.url.origin).replace(/\/+$/, '');
+const canonicalUrl =
+  page && projectId && slug ? `${publicBase}/p/${projectId}/${slug}` : undefined;
+const modules = page?.contentJson?.modules ?? [];
+---
+
+{
+  page && (
+    <LandingLayout title={page.title} seo={page.seoMetaJson} canonicalUrl={canonicalUrl}>
+      {modules.map((mod) => (
+        <LandingModuleRenderer module={mod} page={page} />
+      ))}
+    </LandingLayout>
+  )
+}

@@ -7,6 +7,8 @@ import org.dromara.project.domain.bo.LandingPageBo;
 import org.dromara.project.domain.vo.LandingGenerateVo;
 import org.dromara.project.domain.vo.LandingPageDetailVo;
 import org.dromara.project.domain.vo.LandingPageVo;
+import org.dromara.project.domain.vo.LandingPublishVo;
+import org.dromara.project.domain.vo.PublicLandingPageVo;
 
 public interface ILandingPageService {
 
@@ -19,4 +21,10 @@ public interface ILandingPageService {
     Boolean deleteById(Long projectId, Long pageId);
 
     LandingGenerateVo generate(Long projectId, Long pageId, LandingGenerateBo bo);
+
+    LandingPublishVo publish(Long projectId, Long pageId);
+
+    LandingPublishVo unpublish(Long projectId, Long pageId);
+
+    PublicLandingPageVo queryPublicPublished(Long projectId, String slug);
 }

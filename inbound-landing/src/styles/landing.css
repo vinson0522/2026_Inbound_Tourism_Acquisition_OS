@@ -1,0 +1,243 @@
+:root {
+  --lp-primary: #1677a0;
+  --lp-primary-dark: #0f5575;
+  --lp-text: #1f2937;
+  --lp-muted: #6b7280;
+  --lp-bg: #ffffff;
+  --lp-section-alt: #f5f7fb;
+  --lp-radius: 8px;
+  --lp-max: 48rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--lp-text);
+  background: var(--lp-bg);
+  line-height: 1.6;
+}
+
+.lp-page {
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.lp-brand {
+  font-size: 0.875rem;
+  color: var(--lp-muted);
+  text-align: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.lp-section {
+  padding: 3rem 1rem;
+  max-width: var(--lp-max);
+  margin: 0 auto;
+}
+
+.lp-section--alt {
+  background: var(--lp-section-alt);
+  max-width: none;
+}
+
+.lp-section--alt .lp-section__inner {
+  max-width: var(--lp-max);
+  margin: 0 auto;
+}
+
+.lp-section h2 {
+  font-size: clamp(1.35rem, 4vw, 1.75rem);
+  margin: 0 0 1rem;
+}
+
+.lp-hero {
+  text-align: center;
+  padding: 3rem 1rem 2.5rem;
+  max-width: var(--lp-max);
+  margin: 0 auto;
+  background: linear-gradient(180deg, #eef6fa 0%, var(--lp-bg) 100%);
+}
+
+.lp-hero h1 {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.2;
+  margin: 0 0 1rem;
+}
+
+.lp-hero p {
+  color: var(--lp-muted);
+  font-size: 1.05rem;
+  margin: 0 0 1.5rem;
+}
+
+.lp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--lp-radius);
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.lp-btn--primary {
+  background: var(--lp-primary);
+  color: #fff;
+}
+
+.lp-btn--primary:hover {
+  background: var(--lp-primary-dark);
+}
+
+.lp-btn--primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.lp-btn--whatsapp {
+  background: #25d366;
+  color: #fff;
+  width: 100%;
+}
+
+.lp-list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.lp-list li {
+  margin-bottom: 0.5rem;
+}
+
+.lp-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .lp-grid--2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.lp-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: var(--lp-radius);
+  padding: 1rem 1.25rem;
+}
+
+.lp-review-stars {
+  color: #f59e0b;
+  letter-spacing: 0.05em;
+}
+
+.lp-faq details {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 0;
+}
+
+.lp-faq summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.lp-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.lp-form label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.lp-form input,
+.lp-form textarea,
+.lp-form select {
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: var(--lp-radius);
+  font: inherit;
+}
+
+.lp-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.lp-form__hint {
+  font-size: 0.8rem;
+  color: var(--lp-muted);
+  margin-top: 0.75rem;
+}
+
+.lp-alert {
+  padding: 0.75rem 1rem;
+  border-radius: var(--lp-radius);
+  font-size: 0.95rem;
+}
+
+.lp-alert--success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.lp-alert--error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.lp-turnstile-placeholder {
+  padding: 1rem;
+  background: #f3f4f6;
+  border-radius: var(--lp-radius);
+  color: var(--lp-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.lp-wa-sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0));
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid #e5e7eb;
+  max-width: var(--lp-max);
+  margin: 0 auto;
+}
+
+.lp-footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--lp-muted);
+  padding: 2rem 1rem 3rem;
+}
+
+.lp-not-found {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}

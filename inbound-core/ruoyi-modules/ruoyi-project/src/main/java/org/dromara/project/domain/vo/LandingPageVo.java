@@ -28,6 +28,10 @@ public class LandingPageVo {
 
     private Integer moduleCount;
 
+    private String publishedUrl;
+
+    private OffsetDateTime publishedAt;
+
     private OffsetDateTime createdAt;
 
     private OffsetDateTime updatedAt;

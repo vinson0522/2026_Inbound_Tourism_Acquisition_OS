@@ -16,6 +16,7 @@ import org.dromara.project.domain.bo.LandingPageBo;
 import org.dromara.project.domain.vo.LandingGenerateVo;
 import org.dromara.project.domain.vo.LandingPageDetailVo;
 import org.dromara.project.domain.vo.LandingPageVo;
+import org.dromara.project.domain.vo.LandingPublishVo;
 import org.dromara.project.service.ILandingPageService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -82,5 +83,28 @@ public class LandingPageController extends BaseController {
         @RequestBody(required = false) LandingGenerateBo bo
     ) {
         return R.ok(landingPageService.generate(projectId, pageId, bo));
+    }
+
+    /** EPIC-6 M2 发布落地页 */
+    @SaCheckLogin
+    @Log(title = "落地页", businessType = BusinessType.UPDATE)
+    @RepeatSubmit
+    @PostMapping("/{pageId}/publish")
+    public R<LandingPublishVo> publish(
+        @NotNull @PathVariable Long projectId,
+        @NotNull @PathVariable Long pageId
+    ) {
+        return R.ok(landingPageService.publish(projectId, pageId));
+    }
+
+    /** EPIC-6 M2 下线落地页 */
+    @SaCheckLogin
+    @Log(title = "落地页", businessType = BusinessType.UPDATE)
+    @PostMapping("/{pageId}/unpublish")
+    public R<LandingPublishVo> unpublish(
+        @NotNull @PathVariable Long projectId,
+        @NotNull @PathVariable Long pageId
+    ) {
+        return R.ok(landingPageService.unpublish(projectId, pageId));
     }
 }

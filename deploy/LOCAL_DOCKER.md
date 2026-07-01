@@ -169,6 +169,10 @@ docker compose -f docker-compose.yml -f docker-compose.local-d.yml logs -f goten
 # 重建 ai-api（改代码后）
 docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d --build ai-api
 
+# EPIC-6 M2 落地页
+docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d --build inbound-landing
+curl.exe http://localhost:4321/
+
 # 验通 Gotenberg（FR-106 PDF 前置）
 curl.exe http://localhost:3002/health
 ```
@@ -196,8 +200,43 @@ DOCX 导出不依赖 Gotenberg；PDF 需上述 URL + 容器 healthy。
 | RabbitMQ UI | http://localhost:15672 | 同上 |
 | ai-api | http://localhost:8090 | token: `dev_internal_token_change_me` |
 | Gotenberg | http://localhost:3002 | FR-106 PDF；health → `/health` |
+| **inbound-landing** | http://localhost:4321 | EPIC-6 M2 Astro；health → `/` 200 |
 
-### FR-106 PDF 导出（Gotenberg）
+### EPIC-6 M2 落地页（inbound-landing :4321）
+
+**启动**（Java 仍在宿主机 `:8080`）：
+
+```powershell
+cd deploy
+docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d --build inbound-landing
+curl.exe http://localhost:4321/
+```
+
+**环境变量**（`deploy/.env` 或 `.env.local.example`）：
+
+| 变量 | 本地示例 | 用途 |
+|------|----------|------|
+| `PUBLIC_API_BASE_URL` | `http://localhost:8080` | 浏览器访问 Java（表单 POST / public GET） |
+| `LANDING_PUBLIC_BASE_URL` | `http://localhost:4321` | Java `published_url` 前缀 |
+| `TURNSTILE_SITE_KEY` | （可选） | Astro widget → compose 映射 `PUBLIC_TURNSTILE_SITE_KEY` |
+| `TURNSTILE_SECRET_KEY` | （可选） | Java Turnstile siteverify |
+
+容器内 SSR fetch 使用 `http://host.docker.internal:8080`（`docker-compose.local-d.yml` 默认覆盖）。
+
+**Java CORS 联调**（开发配置，M2 publish API 合并后生效）：
+
+- 允许 Origin：`http://localhost:4321`（及 `LANDING_PUBLIC_BASE_URL`）
+- 路径：`/api/v1/public/**`（landing GET + leads POST）
+- 启动 Java 时可选：
+
+```powershell
+$env:LANDING_PUBLIC_BASE_URL = "http://localhost:4321"
+$env:CLOUDFLARE_TURNSTILE_SECRET = ""   # 或真实 Turnstile secret
+```
+
+**验收**：Admin 发布 slug → 浏览器打开 `http://localhost:4321/p/{projectId}/{slug}` → 表单提交 → Admin `/leads` 可见。
+
+---
 
 Gotenberg 已包含在 §3 默认 `up -d` 服务列表。若单独补启：
 
@@ -358,4 +397,4 @@ A：不要混用。本地 Docker 模式下关掉所有隧道，Redis 用 **6379*
 
 ---
 
-*Last updated: 2026-06-29*
+*Last updated: 2026-07-03*

@@ -1,0 +1,20 @@
+---
+import { pickCtaLabel } from '../../lib/content';
+
+interface Props {
+  content: Record<string, unknown>;
+  whatsappLink?: string | null;
+}
+
+const { content, whatsappLink } = Astro.props;
+const label = pickCtaLabel(content, 'Chat on WhatsApp');
+const url = whatsappLink ?? String(content.url ?? content.whatsapp_link ?? '#');
+---
+
+{url && url !== '#' && (
+  <div class="lp-wa-sticky">
+    <a class="lp-btn lp-btn--whatsapp" href={url} target="_blank" rel="noopener noreferrer">
+      {label}
+    </a>
+  </div>
+)}

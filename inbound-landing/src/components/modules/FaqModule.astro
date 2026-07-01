@@ -1,0 +1,31 @@
+---
+import { asRecordArray, pickHeading } from '../../lib/content';
+
+interface Props {
+  content: Record<string, unknown>;
+}
+
+const { content } = Astro.props;
+const heading = pickHeading(content, 'FAQ');
+const items = asRecordArray(content.items ?? content.faqs);
+---
+
+<section class="lp-section lp-section--alt">
+  <div class="lp-section__inner lp-faq">
+    <h2>{heading}</h2>
+    {items.length > 0 ? (
+      items.map((item) => {
+        const q = String(item.q ?? item.question ?? item.name ?? '');
+        const a = String(item.a ?? item.answer ?? item.text ?? '');
+        return (
+          <details>
+            <summary>{q}</summary>
+            <p>{a}</p>
+          </details>
+        );
+      })
+    ) : (
+      <p>No FAQ entries yet.</p>
+    )}
+  </div>
+</section>

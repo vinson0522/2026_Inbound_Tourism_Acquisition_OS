@@ -1,0 +1,25 @@
+---
+import { asRecordArray, asStringArray, pickHeading } from '../../lib/content';
+
+interface Props {
+  content: Record<string, unknown>;
+}
+
+const { content } = Astro.props;
+const heading = pickHeading(content, 'What We Provide');
+const items = asRecordArray(content.items);
+const labels = items.length > 0 ? items.map((i) => String(i.label ?? i.title ?? '')) : asStringArray(content.items);
+---
+
+<section class="lp-section lp-section--alt">
+  <div class="lp-section__inner">
+    <h2>{heading}</h2>
+    {labels.length > 0 ? (
+      <ul class="lp-list">
+        {labels.filter(Boolean).map((label) => <li>{label}</li>)}
+      </ul>
+    ) : (
+      <p>Contact us for full inclusions.</p>
+    )}
+  </div>
+</section>

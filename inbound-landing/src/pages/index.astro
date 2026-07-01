@@ -1,0 +1,31 @@
+---
+const apiBase = import.meta.env.PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inbound Landing</title>
+  </head>
+  <body>
+    <main>
+      <h1>Inbound Landing</h1>
+      <p>EPIC-6 M2 Astro site — published pages at <code>/p/&#123;projectId&#125;/&#123;slug&#125;</code>.</p>
+      <p>API base: <code>{apiBase}</code></p>
+    </main>
+  </body>
+</html>
+
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    margin: 2rem;
+    line-height: 1.5;
+  }
+  code {
+    background: #f4f4f5;
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+  }
+</style>

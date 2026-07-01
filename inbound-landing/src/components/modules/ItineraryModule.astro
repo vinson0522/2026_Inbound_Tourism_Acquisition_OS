@@ -1,0 +1,43 @@
+---
+import { asRecordArray, pickHeading } from '../../lib/content';
+
+interface Props {
+  content: Record<string, unknown>;
+}
+
+const { content } = Astro.props;
+const heading = pickHeading(content, 'Sample Itinerary');
+const days = asRecordArray(content.days);
+---
+
+<section class="lp-section">
+  <h2>{heading}</h2>
+  {days.length > 0 ? (
+    <div class="lp-grid">
+      {days.map((day) => {
+        const dayNum = day.day ?? day.day_number ?? '';
+        const title = day.title ?? day.name ?? '';
+        const highlights = Array.isArray(day.highlights)
+          ? day.highlights.map(String)
+          : day.body
+            ? [String(day.body)]
+            : [];
+        return (
+          <article class="lp-card">
+            <strong>
+              {dayNum !== '' ? `Day ${dayNum}` : 'Day'}
+              {title ? `: ${title}` : ''}
+            </strong>
+            {highlights.length > 0 && (
+              <ul class="lp-list">
+                {highlights.map((h) => <li>{h}</li>)}
+              </ul>
+            )}
+          </article>
+        );
+      })}
+    </div>
+  ) : (
+    <p>No itinerary details available yet.</p>
+  )}
+</section>

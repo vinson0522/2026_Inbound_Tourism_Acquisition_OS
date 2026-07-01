@@ -14,4 +14,7 @@ public class TurnstileProperties {
 
     /** Cloudflare Turnstile secret; empty → skip verification with warn log. */
     private String secretKey = "";
+
+    /** Cloudflare Turnstile site key exposed to public landing pages. */
+    private String siteKey = "";
 }

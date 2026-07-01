@@ -149,14 +149,29 @@
                 <el-icon v-if="row.status === 'EDITING' || (generating && generatingPageId === row.id)" class="is-loading mr-1">
                   <Loading />
                 </el-icon>
+                <el-icon v-else-if="row.status === 'PUBLISHED'" class="mr-1"><Link /></el-icon>
                 {{ landingStatusMeta(row.status).label }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="更新时间" width="160" class-name="hidden-md-only">
+          <el-table-column label="公网链接" min-width="200" show-overflow-tooltip class-name="hidden-md-only">
+            <template #default="{ row }">
+              <template v-if="row.status === 'PUBLISHED' && resolvePublishedUrl(row)">
+                <span class="slug-mono">{{ resolvePublishedUrl(row) }}</span>
+                <el-button link type="primary" class="ml-1" @click="copyPublicUrl(resolvePublishedUrl(row))">复制</el-button>
+              </template>
+              <span v-else class="text-muted">—</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="发布时间" width="160" class-name="hidden-md-only">
+            <template #default="{ row }">
+              {{ row.status === 'PUBLISHED' ? formatTime(row.publishedAt) : '—' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="更新时间" width="160" class-name="hidden-lg-only">
             <template #default="{ row }">{{ formatTime(row.updatedAt) }}</template>
           </el-table-column>
-          <el-table-column label="操作" width="220" fixed="right" align="center">
+          <el-table-column label="操作" width="300" fixed="right" align="center">
             <template #default="{ row }">
               <el-button
                 v-if="canPreview(row)"
@@ -166,6 +181,41 @@
                 @click="openPreview(row)"
               >
                 预览
+              </el-button>
+              <el-button
+                v-if="row.status === 'PUBLISHED' && resolvePublishedUrl(row)"
+                link
+                type="primary"
+                :disabled="generating"
+                @click="openPublicPreview(row)"
+              >
+                公网预览 ↗
+              </el-button>
+              <el-tooltip
+                v-if="showPublishAction(row)"
+                :content="PUBLISH_DISABLED_TOOLTIP"
+                :disabled="canPublish(row)"
+                placement="top"
+              >
+                <el-button
+                  link
+                  type="primary"
+                  :loading="publishing && publishingPageId === row.id"
+                  :disabled="generating || publishing || !canPublish(row)"
+                  @click="handlePublish(row)"
+                >
+                  发布
+                </el-button>
+              </el-tooltip>
+              <el-button
+                v-if="row.status === 'PUBLISHED'"
+                link
+                type="danger"
+                :loading="publishing && publishingPageId === row.id"
+                :disabled="generating || publishing"
+                @click="handleUnpublish(row)"
+              >
+                下线
               </el-button>
               <el-button
                 v-if="canGenerate(row)"
@@ -346,7 +396,36 @@
             <el-alert type="warning" :closable="false" show-icon :title="NEEDS_REVIEW_TOOLTIP" />
           </template>
 
-          <el-empty v-else description="尚未生成内容，请先 AI 生成">
+          <section v-if="previewDetail" class="preview-section">
+            <h4>发布状态</h4>
+            <el-descriptions :column="1" border size="small">
+              <el-descriptions-item label="状态">
+                <el-tag :type="landingStatusMeta(previewDetail.status).type" size="small">
+                  {{ landingStatusMeta(previewDetail.status).label }}
+                </el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item label="公网链接">
+                <template v-if="previewDetail.status === 'PUBLISHED' && previewPublicUrl">
+                  <span class="slug-mono">{{ previewPublicUrl }}</span>
+                  <el-button link type="primary" class="ml-1" @click="copyPublicUrl(previewPublicUrl)">复制</el-button>
+                </template>
+                <span v-else class="text-muted">—（未发布）</span>
+              </el-descriptions-item>
+              <el-descriptions-item label="发布时间">
+                {{ previewDetail.status === 'PUBLISHED' ? formatTime(previewDetail.publishedAt) : '—' }}
+              </el-descriptions-item>
+            </el-descriptions>
+            <el-alert
+              v-if="showPublishAction(previewDetail)"
+              type="warning"
+              :closable="false"
+              show-icon
+              title="AI 生成内容需人工确认价格/签证/政策后再发布。"
+              class="mt-2"
+            />
+          </section>
+
+          <el-empty v-if="!hasPreviewContent" description="尚未生成内容，请先 AI 生成">
             <el-button
               v-if="canGenerate(previewDetail)"
               type="primary"
@@ -359,15 +438,52 @@
         </template>
       </div>
       <template #footer>
-        <el-button @click="previewVisible = false">关闭</el-button>
-        <el-tooltip content="M2 可视化编辑" placement="top">
-          <el-button disabled>编辑页面</el-button>
-        </el-tooltip>
-        <el-tooltip content="FR-506 M2" placement="top">
-          <el-button disabled>导出 HTML</el-button>
-        </el-tooltip>
+        <div class="preview-footer">
+          <el-button @click="previewVisible = false">关闭</el-button>
+          <el-button v-if="hasPreviewContent" @click="jsonPreviewVisible = true">Admin JSON 预览</el-button>
+          <el-tooltip
+            v-if="previewDetail && showPublishAction(previewDetail)"
+            :content="PUBLISH_DISABLED_TOOLTIP"
+            :disabled="canPublish(previewDetail)"
+            placement="top"
+          >
+            <el-button
+              type="primary"
+              :loading="publishing && previewDetail && publishingPageId === previewDetail.id"
+              :disabled="!previewDetail || generating || publishing || !canPublish(previewDetail)"
+              @click="previewDetail && handlePublish(previewDetail)"
+            >
+              发布
+            </el-button>
+          </el-tooltip>
+          <el-button
+            v-if="previewDetail?.status === 'PUBLISHED' && previewPublicUrl"
+            type="primary"
+            @click="openPublicPreview(previewDetail!)"
+          >
+            打开公网预览 ↗
+          </el-button>
+          <el-button
+            v-if="previewDetail?.status === 'PUBLISHED'"
+            type="danger"
+            plain
+            :loading="publishing && previewDetail && publishingPageId === previewDetail.id"
+            :disabled="generating || publishing"
+            @click="previewDetail && handleUnpublish(previewDetail)"
+          >
+            下线
+          </el-button>
+          <el-tooltip content="FR-506 M2" placement="top">
+            <el-button disabled>导出 HTML</el-button>
+          </el-tooltip>
+        </div>
       </template>
     </el-drawer>
+
+    <el-dialog v-model="jsonPreviewVisible" title="Admin JSON 预览" width="720px" destroy-on-close append-to-body>
+      <pre v-if="previewDetail?.contentJson" class="preview-json preview-json--dialog">{{ formatJson(previewDetail.contentJson) }}</pre>
+      <el-empty v-else description="暂无 content_json" />
+    </el-dialog>
   </div>
 </template>
 
@@ -377,10 +493,18 @@ import {
   deleteLandingPage,
   generateLandingPage,
   getLandingPage,
-  listLandingPages
+  listLandingPages,
+  publishLandingPage,
+  unpublishLandingPage
 } from '@/api/tourgeo/landing';
 import { listKeywords } from '@/api/tourgeo/keyword';
-import type { KeywordOpportunityVo, LandingModuleItem, LandingPageDetailVo, LandingPageVo } from '@/api/tourgeo/types';
+import type {
+  KeywordOpportunityVo,
+  LandingModuleItem,
+  LandingPageDetailVo,
+  LandingPageVo,
+  LandingPublishResult
+} from '@/api/tourgeo/types';
 import ProjectSelector from '@/components/tourgeo/ProjectSelector.vue';
 import {
   LANDING_FORM_FIELD_LABELS,
@@ -388,15 +512,18 @@ import {
   LANDING_PAGE_STATUS_META,
   LANDING_TEMPLATE_TYPES,
   NEEDS_REVIEW_TOOLTIP,
+  PUBLISH_DISABLED_TOOLTIP,
   isValidSlug,
   landingStatusMeta,
+  resolvePublishedUrl,
   slugifyTitle,
   templateTypeLabel
 } from '@/constants/landing';
 import { useProjectStore } from '@/store/modules/project';
-import { ArrowDown, Loading } from '@element-plus/icons-vue';
+import { ArrowDown, Link, Loading } from '@element-plus/icons-vue';
 import type { FormInstance, FormRules } from 'element-plus';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElButton, ElMessage, ElMessageBox, ElNotification } from 'element-plus';
+import { h } from 'vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -405,6 +532,8 @@ const projectStore = useProjectStore();
 const loading = ref(false);
 const generating = ref(false);
 const generatingPageId = ref<number | null>(null);
+const publishing = ref(false);
+const publishingPageId = ref<number | null>(null);
 const pageList = ref<LandingPageVo[]>([]);
 const total = ref(0);
 const knownSlugs = ref<Set<string>>(new Set());
@@ -420,6 +549,7 @@ const slugHint = ref<'ok' | 'invalid' | 'conflict' | ''>('');
 const previewVisible = ref(false);
 const previewLoading = ref(false);
 const previewDetail = ref<LandingPageDetailVo | null>(null);
+const jsonPreviewVisible = ref(false);
 
 const queryParams = reactive({
   pageNum: 1,
@@ -540,6 +670,11 @@ const previewWhatsapp = computed((): string => {
   return link ? String(link) : '';
 });
 
+const previewPublicUrl = computed(() => {
+  if (!previewDetail.value) return '';
+  return resolvePublishedUrl(previewDetail.value);
+});
+
 function keywordMarket(row: LandingPageVo): string | undefined {
   if (!row.keywordId) return undefined;
   return keywordMarketMap.value.get(row.keywordId);
@@ -606,6 +741,158 @@ function canGenerate(row: LandingPageVo): boolean {
 
 function canPreview(row: LandingPageVo): boolean {
   return (row.moduleCount ?? 0) > 0;
+}
+
+function hasLandingContent(row: LandingPageVo | LandingPageDetailVo): boolean {
+  if ((row.moduleCount ?? 0) > 0) return true;
+  const detail = row as LandingPageDetailVo;
+  const modules = detail.contentJson?.modules;
+  return Array.isArray(modules) && modules.length > 0;
+}
+
+function showPublishAction(row: LandingPageVo): boolean {
+  return row.status !== 'PUBLISHED' && row.status !== 'ARCHIVED' && row.status !== 'EDITING';
+}
+
+function canPublish(row: LandingPageVo | LandingPageDetailVo): boolean {
+  if (!showPublishAction(row as LandingPageVo)) return false;
+  if (!row.slug || !isValidSlug(row.slug)) return false;
+  return hasLandingContent(row);
+}
+
+function applyPublishResult(pageId: number, result: LandingPublishResult) {
+  const patch = {
+    status: result.status,
+    publishedUrl: result.publishedUrl,
+    publishedAt: result.publishedAt
+  };
+  const idx = pageList.value.findIndex((p) => p.id === pageId);
+  if (idx >= 0) {
+    pageList.value[idx] = { ...pageList.value[idx], ...patch };
+  }
+  if (previewDetail.value?.id === pageId) {
+    previewDetail.value = { ...previewDetail.value, ...patch };
+  }
+}
+
+async function copyPublicUrl(url: string) {
+  if (!url) return;
+  try {
+    await navigator.clipboard.writeText(url);
+    ElMessage.success('已复制公网链接');
+  } catch {
+    ElMessage.info(url);
+  }
+}
+
+function openPublicPreview(row: LandingPageVo | LandingPageDetailVo) {
+  const url = resolvePublishedUrl(row);
+  if (!url) {
+    ElMessage.warning('暂无公网链接');
+    return;
+  }
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function showPublishSuccess(url: string) {
+  ElNotification({
+    title: '页面已发布',
+    message: h('div', [
+      h('p', { style: 'margin:0 0 8px;font-size:13px;word-break:break-all' }, url),
+      h('div', { style: 'display:flex;gap:8px;flex-wrap:wrap' }, [
+        h(ElButton, { size: 'small', onClick: () => copyPublicUrl(url) }, () => '复制链接'),
+        h(
+          ElButton,
+          {
+            size: 'small',
+            type: 'primary',
+            onClick: () => window.open(url, '_blank', 'noopener,noreferrer')
+          },
+          () => '打开预览 ↗'
+        )
+      ])
+    ]),
+    type: 'success',
+    duration: 10000
+  });
+}
+
+async function handlePublish(row: LandingPageVo | LandingPageDetailVo) {
+  const pid = projectId.value;
+  if (!pid) return;
+  if (!canPublish(row)) {
+    ElMessage.warning(PUBLISH_DISABLED_TOOLTIP);
+    return;
+  }
+  const slugPath = `/p/${pid}/${row.slug}`;
+  try {
+    await ElMessageBox.confirm(
+      `即将把页面发布到公网预览环境：\n\n· 标题：${row.title}\n· Slug：${slugPath}\n· 表单：姓名/邮箱/电话/日期/人数/预算 + Turnstile\n\n发布后访客可提交询盘；请确认文案合规。`,
+      '确认发布',
+      {
+        confirmButtonText: '确认发布',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    );
+  } catch {
+    return;
+  }
+
+  publishing.value = true;
+  publishingPageId.value = row.id;
+  try {
+    const result = await publishLandingPage(pid, row.id);
+    applyPublishResult(row.id, result);
+    const url = result.publishedUrl ?? resolvePublishedUrl({ ...row, status: 'PUBLISHED', publishedUrl: result.publishedUrl });
+    showPublishSuccess(url);
+    await getList();
+    if (previewVisible.value && previewDetail.value?.id === row.id) {
+      previewDetail.value = await getLandingPage(pid, row.id);
+    }
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg && msg !== 'error') ElMessage.error(msg);
+  } finally {
+    publishing.value = false;
+    publishingPageId.value = null;
+  }
+}
+
+async function handleUnpublish(row: LandingPageVo | LandingPageDetailVo) {
+  const pid = projectId.value;
+  if (!pid) return;
+  try {
+    await ElMessageBox.confirm(
+      '下线后公网链接将不可访问（404），已有线索保留。\n\n页面将恢复为草稿状态。',
+      '确认下线',
+      {
+        confirmButtonText: '确认下线',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    );
+  } catch {
+    return;
+  }
+
+  publishing.value = true;
+  publishingPageId.value = row.id;
+  try {
+    const result = await unpublishLandingPage(pid, row.id);
+    applyPublishResult(row.id, result);
+    ElMessage.success('页面已下线');
+    await getList();
+    if (previewVisible.value && previewDetail.value?.id === row.id) {
+      previewDetail.value = await getLandingPage(pid, row.id);
+    }
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg && msg !== 'error') ElMessage.error(msg);
+  } finally {
+    publishing.value = false;
+    publishingPageId.value = null;
+  }
 }
 
 function syncProjectFromRoute() {
@@ -1057,6 +1344,17 @@ onMounted(async () => {
     line-height: 1.5;
     overflow: auto;
     max-height: 240px;
+
+    &--dialog {
+      max-height: 60vh;
+    }
+  }
+
+  .preview-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--tg-space-2, 8px);
+    justify-content: flex-end;
   }
 
   .module-summary {
@@ -1095,6 +1393,12 @@ onMounted(async () => {
 
 @media (max-width: 992px) {
   .tg-landing-pages :deep(.hidden-sm-only) {
+    display: none;
+  }
+}
+
+@media (max-width: 1200px) {
+  .tg-landing-pages :deep(.hidden-lg-only) {
     display: none;
   }
 }

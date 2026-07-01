@@ -167,6 +167,15 @@ dependencies = [
 | `VITE_API_BASE_URL` | `/api/v1` | 经 Nginx 反代 |
 | `VITE_TURNSTILE_SITE_KEY` | `0x***` | 公开表单用 |
 
+### 4.4 `inbound-landing`（Astro）
+
+| 变量 | 示例 | 说明 |
+|------|------|------|
+| `PUBLIC_API_BASE_URL` | `http://localhost:8080` | 浏览器 / SSR → Java `/api/v1/public/**` |
+| `PUBLIC_TURNSTILE_SITE_KEY` | `0x***` | Turnstile widget；空则跳过 |
+| `LANDING_PUBLIC_BASE_URL` | `http://localhost:4321` | Java `published_url` 前缀（`LandingPublishProperties`） |
+| `TURNSTILE_SECRET_KEY` | `0x***` | Java 服务端 siteverify（`CLOUDFLARE_TURNSTILE_SECRET`） |
+
 ---
 
 ## 5. 网络与端口矩阵
@@ -179,6 +188,7 @@ dependencies = [
 | rabbitmq | inbound-rabbitmq | 5672/15672 | 5672/15672 | 内网 |
 | core-api | inbound-core | 8080 | 8080 | 内网 |
 | ai-api | inbound-ai | 8090 | 8090 | 内网 |
+| inbound-landing | inbound-landing | 4321 | 4321 | 内网 / Nginx 反代 |
 | admin-web | inbound-admin | 5173 | 5173 | 内网 |
 | nginx | inbound-nginx | 80/443 | 80/443 | **公网** |
 | langfuse | inbound-langfuse | 3000 | 3000 | 内网 |

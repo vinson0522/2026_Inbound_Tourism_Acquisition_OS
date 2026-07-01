@@ -1,0 +1,24 @@
+---
+import { asStringArray, pickHeading } from '../../lib/content';
+
+interface Props {
+  content: Record<string, unknown>;
+}
+
+const { content } = Astro.props;
+const heading = pickHeading(content, 'Why This Trip');
+const bullets = asStringArray(content.bullets ?? content.items);
+const body = content.body ? String(content.body) : '';
+---
+
+<section class="lp-section lp-section--alt">
+  <div class="lp-section__inner">
+    <h2>{heading}</h2>
+    {body && <p>{body}</p>}
+    {bullets.length > 0 && (
+      <ul class="lp-list">
+        {bullets.map((item) => <li>{item}</li>)}
+      </ul>
+    )}
+  </div>
+</section>

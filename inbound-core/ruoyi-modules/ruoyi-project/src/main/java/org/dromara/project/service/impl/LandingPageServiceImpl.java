@@ -27,6 +27,10 @@ import org.dromara.project.domain.bo.LandingPageBo;
 import org.dromara.project.domain.vo.LandingGenerateVo;
 import org.dromara.project.domain.vo.LandingPageDetailVo;
 import org.dromara.project.domain.vo.LandingPageVo;
+import org.dromara.project.domain.vo.LandingPublishVo;
+import org.dromara.project.domain.vo.PublicLandingPageVo;
+import org.dromara.project.config.LandingPublishProperties;
+import org.dromara.project.config.TurnstileProperties;
 import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.mapper.KeywordOpportunityMapper;
 import org.dromara.project.mapper.LandingPageMapper;
@@ -56,6 +60,8 @@ public class LandingPageServiceImpl implements ILandingPageService {
     private final KeywordOpportunityMapper keywordOpportunityMapper;
     private final AiServiceClient aiServiceClient;
     private final ObjectMapper objectMapper;
+    private final LandingPublishProperties landingPublishProperties;
+    private final TurnstileProperties turnstileProperties;
 
     @Override
     public TableDataInfo<LandingPageVo> queryPageList(Long projectId, LandingPageBo bo, PageQuery pageQuery) {
@@ -183,6 +189,103 @@ public class LandingPageServiceImpl implements ILandingPageService {
         );
         vo.setCaptureMethod(data.getCaptureMethod());
         vo.setModuleCount(countModulesFromAi(data.getContentJson()));
+        return vo;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public LandingPublishVo publish(Long projectId, Long pageId) {
+        LandingPage page = getOwnedPageOrThrow(projectId, pageId);
+        if (StringUtils.isBlank(page.getSlug())) {
+            throw new ServiceException("slug 不能为空，无法发布");
+        }
+        if (page.getContentJson() == null || page.getContentJson().isEmpty()) {
+            throw new ServiceException("content_json 为空，请先生成或编辑落地页内容");
+        }
+
+        OffsetDateTime now = OffsetDateTime.now();
+        String publishedUrl = landingPublishProperties.buildPublishedUrl(projectId, page.getSlug());
+
+        landingPageMapper.update(
+            null,
+            Wrappers.lambdaUpdate(LandingPage.class)
+                .setSql("status = 'PUBLISHED'::landing_page_status")
+                .set(LandingPage::getPublishedAt, now)
+                .set(LandingPage::getPublishedUrl, publishedUrl)
+                .set(LandingPage::getUpdatedAt, now)
+                .eq(LandingPage::getId, pageId)
+                .eq(LandingPage::getProjectId, projectId)
+                .eq(LandingPage::getTenantId, BusinessTenantHelper.getBusinessTenantId())
+                .isNull(LandingPage::getDeletedAt)
+        );
+
+        LandingPublishVo vo = new LandingPublishVo();
+        vo.setPageId(pageId);
+        vo.setStatus("PUBLISHED");
+        vo.setPublishedUrl(publishedUrl);
+        vo.setPublishedAt(now);
+        return vo;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public LandingPublishVo unpublish(Long projectId, Long pageId) {
+        getOwnedPageOrThrow(projectId, pageId);
+        OffsetDateTime now = OffsetDateTime.now();
+
+        landingPageMapper.update(
+            null,
+            Wrappers.lambdaUpdate(LandingPage.class)
+                .setSql("status = 'DRAFT'::landing_page_status")
+                .set(LandingPage::getPublishedUrl, null)
+                .set(LandingPage::getPublishedAt, null)
+                .set(LandingPage::getUpdatedAt, now)
+                .eq(LandingPage::getId, pageId)
+                .eq(LandingPage::getProjectId, projectId)
+                .eq(LandingPage::getTenantId, BusinessTenantHelper.getBusinessTenantId())
+                .isNull(LandingPage::getDeletedAt)
+        );
+
+        LandingPublishVo vo = new LandingPublishVo();
+        vo.setPageId(pageId);
+        vo.setStatus("DRAFT");
+        vo.setPublishedUrl(null);
+        vo.setPublishedAt(null);
+        return vo;
+    }
+
+    @Override
+    public PublicLandingPageVo queryPublicPublished(Long projectId, String slug) {
+        if (projectId == null || projectId <= 0) {
+            throw new ServiceException("projectId required", 400);
+        }
+        if (StringUtils.isBlank(slug)) {
+            throw new ServiceException("slug required", 400);
+        }
+
+        LandingPage page = landingPageMapper.selectOne(
+            Wrappers.lambdaQuery(LandingPage.class)
+                .eq(LandingPage::getProjectId, projectId)
+                .eq(LandingPage::getSlug, slug.trim())
+                .isNull(LandingPage::getDeletedAt)
+                .apply("status = 'PUBLISHED'::landing_page_status")
+        );
+        if (page == null) {
+            throw new ServiceException("落地页不存在或未发布", 404);
+        }
+
+        PublicLandingPageVo vo = new PublicLandingPageVo();
+        vo.setId(page.getId());
+        vo.setProjectId(page.getProjectId());
+        vo.setTitle(page.getTitle());
+        vo.setSlug(page.getSlug());
+        vo.setContentJson(page.getContentJson());
+        vo.setSeoMetaJson(page.getSeoMetaJson());
+        vo.setFormConfigJson(page.getFormConfigJson());
+        vo.setWhatsappLink(page.getWhatsappLink());
+        if (StringUtils.isNotBlank(turnstileProperties.getSiteKey())) {
+            vo.setTurnstileSiteKey(turnstileProperties.getSiteKey());
+        }
         return vo;
     }
 

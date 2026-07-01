@@ -31,6 +31,11 @@ services:
       KEYWORDS_MOCK_LLM: ${KEYWORDS_MOCK_LLM:-true}
       RERANKER_MOCK: ${RERANKER_MOCK:-true}
 
+  # EPIC-6 M2: Astro 落地页 — 容器内 SSR/表单需访问宿主机 Java
+  inbound-landing:
+    environment:
+      PUBLIC_API_BASE_URL: ${PUBLIC_API_BASE_URL:-http://host.docker.internal:8080}
+
   # 本地默认不启 minio/langfuse（profile full）；Gotenberg 默认启用于 FR-106 PDF
   minio:
     profiles: ["full"]

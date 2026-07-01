@@ -58,5 +58,5 @@
 ## 完成后
 
 - 各 HANDOFF Done + `MEMORY.md` EPIC-8 M1 ✅
-- **技术总监签核（2026-07-02）**：功能 ✅ · smoke docx 2885B · **C12 commit ⏳**
-- **下一 Sprint**：EPIC-6 M2 Astro 预览 或 EPIC-9 计费 MVP（C12 后定案）
+- **技术总监签核（2026-07-02）**：✅ **EPIC-8 正式关闭** C12 `e127485`
+- **下一 Sprint**：EPIC-6 M2 Astro 预览 或 EPIC-9 计费 MVP（技术总监定案）

@@ -5,10 +5,10 @@
 
 | 字段 | 值 |
 |------|-----|
-| **最后更新** | 2026-07-02 |
-| **更新角色** | 技术总监 |
-| **Git 远程** | ✅ `origin/main` pushed · C11 `76da501` EPIC-7 leads |
-| **当前 EPIC 焦点** | **EPIC-8 M1** ✅ 功能签核 · ⏳ **C12 commit+push** |
+| **最后更新** | 2026-07-03 |
+| **更新角色** | 运维 |
+| **Git 远程** | ✅ `origin/main` · C12 `e127485` |
+| **当前 EPIC 焦点** | **EPIC-6 M2** ✅ 功能签核 · ⏳ **C13 commit+push**（~57 文件） |
 
 ---
 
@@ -133,7 +133,20 @@
 
 **技术总监签核（2026-07-01）**：✅ **EPIC-6 M1 正式关闭** — C10 `91b3ea4` · pytest 6 + `test_landing_api` · ADR-13
 
-**ADR-13**：M1 草稿+预览；Astro/公开表单 → M2/EPIC-7
+**ADR-13**：M1 草稿+预览；Astro/公开表单 → **M2 本 Sprint**
+
+### EPIC-6 M2 Sprint — Astro 发布 + Turnstile（2026-07-03 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | 发布/预览线框 | [→UI](HANDOFFS/2026-07-03-tech-director-to-ui-epic6-landing-publish.md) | ✅ |
+| 2 | 开发 Java | public GET + publish | [→Java](HANDOFFS/2026-07-03-tech-director-to-dev-java-epic6-landing-publish.md) | ✅ smoke |
+| 3 | 运维 | landing compose :4321 | [→运维](HANDOFFS/2026-07-03-tech-director-to-devops-epic6-landing-compose.md) | ✅ |
+| 4 | 开发 Landing | Astro scaffold | [→Astro](HANDOFFS/2026-07-03-tech-director-to-dev-landing-epic6-astro.md) | ✅ build + 404 |
+| 5 | 开发 Admin | 发布/预览按钮 | [→Admin](HANDOFFS/2026-07-03-tech-director-to-dev-admin-epic6-landing-publish.md) | ✅ build |
+| — | 总览 | Sprint 索引 | [EPIC-6 M2](HANDOFFS/2026-07-03-tech-director-epic6-m2-landing-publish-sprint.md) | 功能 ✅ · **C13 ⏳** |
+
+**技术总监签核（2026-07-03）**：✅ **EPIC-6 M2 功能验收** — 五棒齐 · Java compile ✅ · landing `:4321` 200 · dev smoke 报告通过 · **C13 待 commit**
 
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
@@ -155,9 +168,9 @@
 | 1 | UI | 报告中心线框 | [→UI](HANDOFFS/2026-07-02-tech-director-to-ui-epic8-reports-list.md) | ✅ |
 | 2 | 开发 Java | report list + weekly + export | [→Java](HANDOFFS/2026-07-02-tech-director-to-dev-java-epic8-reports.md) | ✅ smoke |
 | 3 | 开发 Admin | 报告中心页 | [→Admin](HANDOFFS/2026-07-02-tech-director-to-dev-admin-epic8-reports.md) | ✅ build |
-| — | 总览 | Sprint 索引 | [EPIC-8 M1](HANDOFFS/2026-07-02-tech-director-epic8-m1-reports-sprint.md) | 功能 ✅ · **C12 ⏳** |
+| — | 总览 | Sprint 索引 | [EPIC-8 M1](HANDOFFS/2026-07-02-tech-director-epic8-m1-reports-sprint.md) | ✅ **关闭** |
 
-**技术总监签核（2026-07-02）**：✅ **EPIC-8 M1 功能验收** — compile ✅ · smoke `test_reports_api` docx **2885B** · ADR-15 · **C12 待 commit**
+**技术总监签核（2026-07-02）**：✅ **EPIC-8 M1 正式关闭** — C12 `e127485` · smoke docx 2885B · ADR-15
 
 **ADR-15**：M1 列表 + 手动周报 + 导出；月报/白标/定时 → M2
 
@@ -176,9 +189,10 @@
 | **C9** | EPIC-6 docs + ADR-13/14 + EPIC-7 HANDOFFs | `docs: EPIC-6/7 Sprint HANDOFFs and ADR-13/14` | ✅ |
 | **C10** | EPIC-6 M1 全栈 landing | `feat(core,ai,admin): EPIC-6 M1 landing page generate` | ✅ `91b3ea4` |
 | **C11** | EPIC-7 M1 全栈 leads | `feat(core,admin): EPIC-7 M1 public leads and Admin list` | ✅ `76da501` |
-| **C12** | EPIC-8 M1 报告中心 | `feat(core,admin): EPIC-8 M1 report center and weekly report` | `test_reports_api` |
+| **C12** | EPIC-8 M1 报告中心 | `feat(core,admin): EPIC-8 M1 report center and weekly report` | ✅ `e127485` |
+| **C13** | EPIC-6 M2 Astro 发布 | `feat(landing,core,admin): EPIC-6 M2 Astro publish and Turnstile leads` | `test_landing_publish_e2e` |
 
-**执行**：C1–C11 ✅ · push ✅ · **C12 ⏳** EPIC-8
+**执行**：C1–C12 ✅ · push ✅ · **C13 ⏳** EPIC-6 M2
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -195,8 +209,9 @@
 ## 运维
 
 - **负责目录**：`deploy/`、`cert/`、`docs/INFRA_ACCESS.local.md`
-- **验证时间**：2026-06-27（本机 Docker bootstrap ✅）
+- **验证时间**：2026-07-03（本机 Docker + **inbound-landing :4321** ✅）
 - **Git 远程（2026-07-01）** ✅ `origin` = `git@github.com:vinson0522/2026_Inbound_Tourism_Acquisition_OS.git`（SSH）· `git push -u origin main` 成功 · **25 commits** · `deploy/.env` 未入库（`.gitignore`）
+- **EPIC-6 M2 landing（2026-07-03）** ✅ `inbound-landing/Dockerfile` · compose `:4321` · env 文档 · `curl localhost:4321/` **200** · container **healthy**
 
 ### 本机（资源提供人 Windows — **主开发路径 ADR-09**）
 
@@ -205,6 +220,7 @@
 | WSL2 + Ubuntu | ✅ |
 | Docker Desktop | ✅；Disk image → `D:\Dev\SDKs\Docker\wsl-data` |
 | Compose 4 服务 | ✅ postgres / redis / rabbitmq / ai-api **healthy** |
+| **inbound-landing** | ✅ `:4321` healthy（EPIC-6 M2 · `deploy-inbound-landing`） |
 | 若依系统表 | ✅ `sys_user` 存在；public **64 表**（`import_ruoyi_pg_local.ps1`） |
 | `deploy/.env` | ✅ `INBOUND_DOCKER_DATA` + worker/callback + GEMINI（gitignore） |
 | Smoke | ✅ `/health` 200 · `test_ai_health.py` · pg_isready |
@@ -244,6 +260,9 @@
 - **EPIC-6 M1 FR-502~505 landing AI（2026-07-01）** ✅ `POST /ai/landing/generate` · PRD §20.3 八模块 `content_json` · `seo_meta_json`/`form_config_json` · `LANDING_MOCK_LLM` · `landing_generate_v1` · `test_landing_generate.py` 6 passed
 - **EPIC-6 M1 FR-501~505 landing Java（2026-07-01）** ✅ `GET/POST/DELETE .../landing-pages` + 详情 + `POST .../generate` · Feign `/ai/landing/generate` · `tenant.excludes` 加 `landing_page` · `test_landing_api.py` ✅
 - **EPIC-6 M1 FR-501~505 Admin 落地页（2026-07-01）** ✅ `/landing-pages` 列表 + 创建 dialog + AI 生成 + JSON/SEO 预览 drawer · 关键词「转落地页」· `pnpm build:prod` ✅
+- **EPIC-6 M2 landing publish Java（2026-07-03）** ✅ `PublicLandingPageController` + publish/unpublish · `LandingPublishProperties` · `PublicApiCorsConfig` · Turnstile siteverify · `test_landing_publish_e2e.py` ✅
+- **EPIC-6 M2 Astro landing（2026-07-03）** ✅ `/p/[projectId]/[slug]` hybrid SSR · 八模块 · Turnstile LeadForm · `404.astro` · `pnpm build` ✅ · `test_landing_astro_e2e.py` · 404 友好页 ✅
+- **EPIC-6 M2 Admin 落地页发布（2026-07-03）** ✅ 列表/ drawer 发布·下线·公网预览 · `publishLandingPage`/`unpublishLandingPage` · `pnpm build:prod` ✅
 - **EPIC-7 M1 FR-601 leads Java（2026-07-01）** ✅ `POST /api/v1/public/leads` + `GET .../leads` 列表/详情 · Turnstile M1 stub · IP+landingPageId 限流 · `tenant.excludes` 加 `lead` · `test_public_leads_api.py` ✅
 - **EPIC-7 M1 FR-601 Admin 线索页（2026-07-01）** ✅ `/leads` 侧栏 + 列表/筛选/脱敏 + 详情 drawer · `maskPii` · `pnpm build:prod` ✅
 - **EPIC-8 M1 FR-701/702 Admin 报告中心（2026-07-02）** ✅ `/reports` 侧栏 + 列表/筛选 + 周报 dialog + 预览 drawer + DOCX/PDF 下载 · `pnpm build:prod` ✅
@@ -316,9 +335,9 @@
 
 ## UI 设计
 
-- **已完成**：reports-list (EPIC-8 M1) ✅ · leads-list (EPIC-7 M1) ✅ · landing-page-list (EPIC-6 M1) ✅
-- **HANDOFF**：[报告中心 → 开发](HANDOFFS/2026-07-02-ui-to-developer-reports-list.md)
-- **待办**：落地页 M2 编辑 · 线索 CRM M2 · 报告白标/月报 M2（FR-703~705）
+- **已完成**：reports-list (EPIC-8 M1) ✅ · leads-list (EPIC-7 M1) ✅ · landing-page-list (EPIC-6 M1) ✅ · **landing-page-publish (EPIC-6 M2)** ✅
+- **HANDOFF**：[落地页发布 → 开发](HANDOFFS/2026-07-03-ui-to-developer-landing-publish.md)
+- **待办**：线索 CRM M2 · 报告白标/月报 M2 · PostHog M3
 
 ---
 
@@ -336,18 +355,18 @@
 | B-07 | ~~EPIC-6 M1 C9+C10 未 commit/push~~ | 开发 | ✅ **已关闭** C10 `91b3ea4` + C9 docs |
 | B-08 | ~~EPIC-7 M1 C11 未 commit/push~~ | 开发 | ✅ **已关闭** C11 `76da501` |
 | B-09 | ~~EPIC-8 M1 Java report API 未实现~~ | 开发 Java | ✅ **已关闭** smoke docx 2885B |
-| B-10 | EPIC-8 M1 **C12 未 commit/push** | 开发 | ⏳ ~25 文件工作区 |
+| B-10 | ~~EPIC-8 M1 C12 未 commit/push~~ | 开发 | ✅ **已关闭** C12 `e127485` |
+| B-11 | EPIC-6 M2 **C13 未 commit/push** | 开发 | ⏳ ~57 文件工作区 |
 
 ---
 
-## 下一步（跨角色 · 2026-07-02）
+## 下一步（跨角色 · 2026-07-03）
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P0** | **开发** | **C12** commit + push（Java + Admin + docs + wireframe） | `test_reports_api` ✅ |
-| **P1** | **技术总监** | EPIC-8 M1 签核关闭 | C12 后 |
-| **P2** | **开发** | Admin `/reports` 端到端联调（可选） | Java 已就绪 |
-| **P4** | **开发** | diagnostic smoke 9/9 恢复 | `DIAGNOSE_MOCK_LLM=true` |
+| **P0** | **开发** | **C13** commit + push 全栈 | `test_landing_publish_e2e` + `test_landing_astro_e2e` |
+| **P1** | **技术总监** | EPIC-6 M2 正式签核关闭 | C13 后 |
+| **P2** | **开发** | 重启 Java :8080 后复跑全量 smoke 12/12 | 本机 login 阻塞时先 `spring-boot:run` |
 
 ---
 
@@ -355,8 +374,16 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-03 | 技术总监 | **EPIC-6 M2 功能签核 ✅** · 五棒齐 · 待 C13 commit |
+| 2026-07-03 | 开发 Admin | EPIC-6 M2 落地页发布/下线/公网预览 · drawer + 列表 · build:prod ✅ |
+| 2026-07-03 | 开发 Landing | EPIC-6 M2 Astro `/p/[projectId]/[slug]` 八模块 + Turnstile LeadForm · `pnpm build` · 404 smoke ✅ |
+| 2026-07-03 | 开发 Java | EPIC-6 M2 public landing + publish/unpublish + CORS + Turnstile siteverify · smoke ✅ |
+| 2026-07-03 | 运维 | EPIC-6 M2 `inbound-landing` Dockerfile + compose :4321 + env 文档 · curl 200 healthy |
 | 2026-07-02 | 开发 Java | EPIC-8 M1 Report API list/weekly/export · `test_reports_api.py` ✅ |
-| 2026-07-02 | 技术总监 | **EPIC-8 M1 功能签核 ✅** · 复核 smoke docx 2885B · 待 C12 |
+| 2026-07-03 | UI 设计 | EPIC-6 M2 landing-page-publish 线框 · Admin 发布/下线 + Astro 八模块 Turnstile · HANDOFF |
+| 2026-07-03 | 技术总监 | 定案 **EPIC-6 M2** · ADR-16 · 5 条 HANDOFF（UI/Java/运维/Landing/Admin） |
+| 2026-07-02 | 技术总监 | **EPIC-8 M1 正式关闭** C12 `e127485` |
+| 2026-07-02 | 开发 | C12 commit+push EPIC-8 全栈 report center |
 | 2026-07-02 | 开发 Java | EPIC-8 Report API + weekly 聚合 + export · `test_reports_api` ✅ |
 | 2026-07-02 | UI 设计 | EPIC-8 M1 reports-list 线框 FR-701/702 · 周报 dialog · DOCX/PDF · HANDOFF 开发 |
 | 2026-07-02 | 技术总监 | **EPIC-7 M1 正式关闭** C11 `76da501` · 排 **EPIC-8 M1** HANDOFF + ADR-15 |

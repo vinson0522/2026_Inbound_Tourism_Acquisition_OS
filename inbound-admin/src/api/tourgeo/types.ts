@@ -427,6 +427,8 @@ export interface LandingPageVo {
   slug: string;
   status: LandingPageStatus;
   moduleCount?: number;
+  publishedUrl?: string;
+  publishedAt?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -466,6 +468,13 @@ export interface LandingGenerateResult {
   needsHumanReview?: boolean;
   captureMethod?: string;
   moduleCount?: number;
+}
+
+export interface LandingPublishResult {
+  pageId: number;
+  status: LandingPageStatus;
+  publishedUrl?: string;
+  publishedAt?: string;
 }
 
 export interface LandingModuleItem {

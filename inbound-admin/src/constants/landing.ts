@@ -60,6 +60,29 @@ export const LANDING_FORM_FIELD_LABELS: Record<string, string> = {
 export const NEEDS_REVIEW_TOOLTIP =
   'AI 生成落地页默认需人工确认价格/签证/政策类信息（PRD 合规）';
 
+export const PUBLISH_DISABLED_TOOLTIP = '请先完成 AI 生成并确认内容';
+
+/** Astro 公网预览根 URL（与 Java inbound.landing.public-base-url 对齐） */
+export const LANDING_PUBLIC_BASE_URL = (
+  import.meta.env.VITE_LANDING_PUBLIC_BASE_URL ?? 'http://localhost:4321'
+).replace(/\/+$/, '');
+
+export function buildLandingPublicUrl(projectId: number, slug: string): string {
+  return `${LANDING_PUBLIC_BASE_URL}/p/${projectId}/${slug}`;
+}
+
+export function resolvePublishedUrl(row: {
+  status?: string;
+  publishedUrl?: string;
+  projectId?: number;
+  slug?: string;
+}): string {
+  if (row.status !== 'PUBLISHED' || !row.slug) return '';
+  if (row.publishedUrl) return row.publishedUrl;
+  if (row.projectId) return buildLandingPublicUrl(row.projectId, row.slug);
+  return '';
+}
+
 export function templateTypeLabel(value?: string): string {
   if (!value) return '—';
   return LANDING_TEMPLATE_TYPES.find((t) => t.value === value)?.label ?? value;

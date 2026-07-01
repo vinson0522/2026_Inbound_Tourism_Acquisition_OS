@@ -47,6 +47,7 @@ node_modules/
 inbound-admin/dist/
 inbound-admin/.vite/
 inbound-landing/dist/
+inbound-landing/.astro/
 inbound-probe-extension/build/
 inbound-probe-extension/.plasmo/
 pnpm-lock.yaml

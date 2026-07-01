@@ -1,0 +1,46 @@
+---
+import '../styles/landing.css';
+import type { SeoMetaJson } from '../types/landing';
+
+interface Props {
+  title: string;
+  seo?: SeoMetaJson;
+  canonicalUrl?: string;
+  brandLabel?: string;
+}
+
+const { title, seo, canonicalUrl, brandLabel = 'TourGEO Agent' } = Astro.props;
+const pageTitle = seo?.title ?? title;
+const description = seo?.description ?? '';
+const faqSchema = seo?.faq_schema;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    {description && <meta name="description" content={description} />}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    {
+      faqSchema && faqSchema.length > 0 && (
+        <script type="application/ld+json" set:html={JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faqSchema,
+        })} />
+      )
+    }
+  </head>
+  <body>
+    <div class="lp-page">
+      <header class="lp-brand">Tour by {brandLabel}</header>
+      <slot />
+      <footer class="lp-footer">
+        <p>© {new Date().getFullYear()} {brandLabel}. Powered by TourGEO Agent.</p>
+        <p>Prices and visa policies require confirmation by our travel advisor.</p>
+      </footer>
+    </div>
+  </body>
+</html>

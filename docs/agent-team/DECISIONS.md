@@ -164,6 +164,18 @@
   - 周报建议：3 条静态模板（按 KPI 阈值选文案）
 - **影响**：[EPIC-8 M1 Sprint](HANDOFFS/2026-07-02-tech-director-epic8-m1-reports-sprint.md)；`ruoyi-diagnostic` ReportController
 
+### ADR-20260703-16 | EPIC-6 M2 Astro 预览 + Turnstile 表单闭环
+- **状态**：已采纳
+- **决策者**：技术总监 + 用户（2026-07-03）
+- **背景**：M1 仅 DRAFT + Admin JSON 预览；EPIC-7 已有 `POST /api/v1/public/leads`；闭环缺公网页与发布
+- **决策**：
+  - **M2 做**：`inbound-landing` Astro 4 · 路径 `/p/{projectId}/{slug}` · Java public GET + publish/unpublish · Admin 发布按钮 · Turnstile widget → public leads
+  - **公网 API**：`GET /api/v1/public/landing-pages/{slug}?projectId=` 仅 `PUBLISHED`；`published_url` = `{landing.public-base-url}/p/{projectId}/{slug}`
+  - **Turnstile**：有 `secret-key` 时 Java 真 siteverify；无 Key 本地 skip（与 M1 兼容）
+  - **M2 不做**：GrapesJS/Puck 编辑、HTML 文件导出 FR-506、自定义域名、A/B FR-508、PostHog（→ M3）
+  - **CORS**：Java 允许 landing origin 访问 `/api/v1/public/**`
+- **影响**：[EPIC-6 M2 Sprint](HANDOFFS/2026-07-03-tech-director-epic6-m2-landing-publish-sprint.md)
+
 ---
 
 ## 待讨论

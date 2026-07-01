@@ -160,6 +160,24 @@ services:
       <<: *healthcheck-defaults
       test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health')\""]
 
+  inbound-landing:
+    build:
+      context: ../inbound-landing
+      args:
+        PUBLIC_API_BASE_URL: ${PUBLIC_API_BASE_URL:-http://localhost:8080}
+        PUBLIC_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+    container_name: inbound-landing
+    environment:
+      PUBLIC_API_BASE_URL: ${PUBLIC_API_BASE_URL:-http://host.docker.internal:8080}
+      PUBLIC_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+    ports:
+      - "4321:4321"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:4321/ >/dev/null 2>&1 || exit 1"]
+
 volumes:
   postgres_data:
   redis_data:

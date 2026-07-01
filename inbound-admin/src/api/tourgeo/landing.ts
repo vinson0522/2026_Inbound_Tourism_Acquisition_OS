@@ -6,6 +6,7 @@ import type {
   LandingPageForm,
   LandingPageQuery,
   LandingPageVo,
+  LandingPublishResult,
   PageResult
 } from './types';
 
@@ -64,4 +65,20 @@ export async function generateLandingPage(
     data: data ?? {}
   });
   return res.data as LandingGenerateResult;
+}
+
+export async function publishLandingPage(projectId: number, pageId: number): Promise<LandingPublishResult> {
+  const res = await request({
+    url: `${BASE}/projects/${projectId}/landing-pages/${pageId}/publish`,
+    method: 'post'
+  });
+  return res.data as LandingPublishResult;
+}
+
+export async function unpublishLandingPage(projectId: number, pageId: number): Promise<LandingPublishResult> {
+  const res = await request({
+    url: `${BASE}/projects/${projectId}/landing-pages/${pageId}/unpublish`,
+    method: 'post'
+  });
+  return res.data as LandingPublishResult;
 }
