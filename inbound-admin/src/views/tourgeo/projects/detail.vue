@@ -20,6 +20,7 @@
             <el-tag :type="statusMeta(project.status).type" effect="light">{{ statusMeta(project.status).label }}</el-tag>
           </div>
           <div class="header-actions">
+            <el-button plain @click="goKeywords">关键词机会</el-button>
             <el-button plain @click="setCurrent">设为当前项目</el-button>
             <el-button type="primary" @click="goDashboard">进入工作台</el-button>
           </div>
@@ -595,6 +596,13 @@ function goBack() {
 
 function goDashboard() {
   router.push('/dashboard');
+}
+
+function goKeywords() {
+  if (project.value) {
+    projectStore.setCurrentProject(project.value.id);
+    router.push({ name: 'ProjectKeywords', params: { projectId: project.value.id } });
+  }
 }
 
 function setCurrent() {

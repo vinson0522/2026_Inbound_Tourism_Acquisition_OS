@@ -102,6 +102,29 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'ProjectDetail',
         hidden: true,
         meta: { title: '项目详情', activeMenu: '/projects/index', noCache: true }
+      },
+      {
+        path: ':projectId/keywords',
+        component: () => import('@/views/tourgeo/keywords/index.vue'),
+        name: 'ProjectKeywords',
+        hidden: true,
+        meta: { title: '机会词列表', activeMenu: '/keywords/index', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/keywords',
+    component: Layout,
+    redirect: '/keywords/index',
+    name: 'TourgeoKeywords',
+    meta: { title: '关键词洞察', icon: 'search' },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/tourgeo/keywords/index.vue'),
+        name: 'KeywordsList',
+        meta: { title: '机会词列表', icon: 'list' }
       }
     ]
   },

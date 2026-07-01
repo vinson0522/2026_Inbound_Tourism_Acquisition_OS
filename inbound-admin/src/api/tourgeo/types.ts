@@ -282,3 +282,45 @@ export interface KnowledgeRagHit {
 export interface KnowledgeRagSearchResult {
   hits: KnowledgeRagHit[];
 }
+
+/** FR-201/202 关键词机会词 */
+export interface KeywordOpportunityVo {
+  id: number;
+  projectId: number;
+  keyword: string;
+  keywordEn?: string;
+  keywordCn?: string;
+  intent?: string;
+  market: string;
+  stage: string;
+  score?: number | null;
+  scoreDetailJson?: Record<string, unknown>;
+  channel?: string;
+  sourceJson?: Record<string, unknown>;
+  status: EntityStatus;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface KeywordOpportunityQuery {
+  pageNum: number;
+  pageSize: number;
+  stage?: string;
+  market?: string;
+  keyword?: string;
+  status?: EntityStatus | '';
+}
+
+export interface KeywordGenerateForm {
+  market: string;
+  locale?: string;
+  stages?: string[];
+  wordsPerStage?: number;
+  useRag?: boolean;
+}
+
+export interface KeywordGenerateResult {
+  insertedCount: number;
+  needsHumanReview?: boolean;
+  captureMethod?: string;
+}
