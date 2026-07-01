@@ -49,4 +49,8 @@
 ## 完成后
 
 - 各 HANDOFF Done + `MEMORY.md` EPIC-3 M1 ✅
-- M2 排期：FR-203 机会评分、编辑、与 GEO 联动
+- **技术总监签核（2026-07-01）**：
+  - **功能验收 ✅**：UI 线框 · Python pytest 7 · Java smoke · Admin 实现 · ADR-11 合规
+  - **仓库签核 ✅**：`75e96cb` Admin 关键词页 · C6 完成 · **EPIC-3 M1 正式关闭**
+- M2 可选并行：[EPIC-3 M2 FR-203](2026-06-29-tech-director-epic3-m2-keyword-score-sprint.md)
+- **下一主 Sprint**：[EPIC-4 M1 内容 Agent](2026-06-29-tech-director-epic4-m1-content-sprint.md)
