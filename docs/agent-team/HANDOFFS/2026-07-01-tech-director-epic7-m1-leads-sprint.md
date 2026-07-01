@@ -45,4 +45,6 @@
 
 ## 完成后
 
-- EPIC-7 M1 ✅ → EPIC-6 M2 Astro 预览 或 EPIC-8 报告
+- 各 HANDOFF Done + `MEMORY.md` EPIC-7 M1 ✅
+- **技术总监签核（2026-07-01）**：功能 ✅ · **C11 commit ⏳**
+- **下一 Sprint**：EPIC-8 M1 报告 或 EPIC-6 M2 Astro（C11 后定案）

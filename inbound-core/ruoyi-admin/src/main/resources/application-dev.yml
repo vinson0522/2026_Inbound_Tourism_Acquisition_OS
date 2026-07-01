@@ -281,3 +281,6 @@ justauth:
 inbound:
   report:
     gotenberg-base-url: ${GOTENBERG_BASE_URL:http://localhost:3002}
+  turnstile:
+    enabled: false
+    secret-key: ${CLOUDFLARE_TURNSTILE_SECRET:}

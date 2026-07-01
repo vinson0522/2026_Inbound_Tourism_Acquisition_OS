@@ -474,3 +474,42 @@ export interface LandingModuleItem {
   content?: Record<string, unknown>;
   [key: string]: unknown;
 }
+
+/** FR-601 询盘线索 */
+export type LeadStatus = 'NEW' | 'FOLLOWING' | 'QUOTED' | 'WON' | 'LOST';
+
+export interface LeadVo {
+  id: number;
+  projectId: number;
+  landingPageId?: number;
+  keywordId?: number;
+  name?: string;
+  email?: string;
+  phone?: string;
+  source?: string;
+  status: LeadStatus;
+  landingPageTitle?: string;
+  landingPageSlug?: string;
+  keywordText?: string;
+  keywordMarket?: string;
+  createdAt?: string;
+}
+
+export interface LeadDetailVo extends LeadVo {
+  travelDate?: string;
+  partySize?: number;
+  budget?: string;
+  message?: string;
+  utm?: Record<string, string>;
+  device?: string;
+}
+
+export interface LeadQuery {
+  pageNum: number;
+  pageSize: number;
+  name?: string;
+  email?: string;
+  phone?: string;
+  source?: string;
+  status?: LeadStatus | '';
+}

@@ -7,8 +7,8 @@
 |------|-----|
 | **最后更新** | 2026-07-01 |
 | **更新角色** | 技术总监 |
-| **Git 远程** | ✅ `origin` SSH · C9/C10 pushed 待完成 |
-| **当前 EPIC 焦点** | **EPIC-6 M1** ✅ 仓库关闭 · **EPIC-7 M1** 下一 Sprint |
+| **Git 远程** | ✅ `origin/main` pushed · C9 `96dcd4e` + C10 `91b3ea4`（+2 commits） |
+| **当前 EPIC 焦点** | **EPIC-7 M1** ✅ 功能完成 · ⏳ **C11 commit+push** → 签核关闭 |
 
 ---
 
@@ -129,9 +129,9 @@
 | 2 | 开发 Python | `/ai/landing/generate` | [→AI](HANDOFFS/2026-07-01-tech-director-to-dev-ai-epic6-landing.md) | ✅ pytest 6 |
 | 3 | 开发 Java | landing CRUD + generate | [→Java](HANDOFFS/2026-07-01-tech-director-to-dev-java-epic6-landing.md) | ✅ smoke |
 | 4 | 开发 Admin | 列表 + JSON 预览 | [→Admin](HANDOFFS/2026-07-01-tech-director-to-dev-admin-epic6-landing.md) | ✅ build |
-| — | 总览 | Sprint 索引 | [EPIC-6 M1](HANDOFFS/2026-07-01-tech-director-epic6-m1-landing-sprint.md) | 功能 ✅ · 仓库 ⏳ |
+| — | 总览 | Sprint 索引 | [EPIC-6 M1](HANDOFFS/2026-07-01-tech-director-epic6-m1-landing-sprint.md) | ✅ **关闭** |
 
-**技术总监签核（2026-07-01）**：✅ **功能关闭** · ADR-13 · **C10 commit 后正式关 Sprint**
+**技术总监签核（2026-07-01）**：✅ **EPIC-6 M1 正式关闭** — C10 `91b3ea4` · pytest 6 + `test_landing_api` · ADR-13
 
 **ADR-13**：M1 草稿+预览；Astro/公开表单 → M2/EPIC-7
 
@@ -140,11 +140,11 @@
 | # | 角色 | 任务 | HANDOFF | 状态 |
 |---|------|------|---------|:----:|
 | 1 | UI | 线索列表线框 | [→UI](HANDOFFS/2026-07-01-tech-director-to-ui-epic7-leads-list.md) | ✅ |
-| 2 | 开发 Java | public leads + Admin list | [→Java](HANDOFFS/2026-07-01-tech-director-to-dev-java-epic7-leads.md) | ⏳ |
-| 3 | 开发 Admin | 线索列表 | [→Admin](HANDOFFS/2026-07-01-tech-director-to-dev-admin-epic7-leads.md) | ⏳ |
-| — | 总览 | Sprint 索引 | [EPIC-7 M1](HANDOFFS/2026-07-01-tech-director-epic7-m1-leads-sprint.md) | — |
+| 2 | 开发 Java | public leads + Admin list | [→Java](HANDOFFS/2026-07-01-tech-director-to-dev-java-epic7-leads.md) | ✅ smoke |
+| 3 | 开发 Admin | 线索列表 | [→Admin](HANDOFFS/2026-07-01-tech-director-to-dev-admin-epic7-leads.md) | ✅ build |
+| — | 总览 | Sprint 索引 | [EPIC-7 M1](HANDOFFS/2026-07-01-tech-director-epic7-m1-leads-sprint.md) | 功能 ✅ · **C11 ⏳** |
 
-**ADR-14**：M1 公开 POST + Admin 列表；CRM/归因 → M2
+**技术总监签核（2026-07-01）**：✅ **功能验收** · ADR-14 · **C11 commit+push 后正式关闭**
 
 ### 未提交增量 — commit 批次
 
@@ -159,9 +159,10 @@
 | **C7** | EPIC-4 Sprint HANDOFFs + content-task 线框 + ADR-12 | `docs: EPIC-4 M1 Sprint HANDOFFs…` | ✅ `4d8e1e2` |
 | **C8** | EPIC-4 M1 全栈 | `feat(core,ai,admin): EPIC-4 M1 content…` | ✅ `23a46f6` |
 | **C9** | EPIC-6 docs + ADR-13/14 + EPIC-7 HANDOFFs | `docs: EPIC-6/7 Sprint HANDOFFs and ADR-13/14` | ✅ |
-| **C10** | EPIC-6 M1 全栈 landing | `feat(core,ai,admin): EPIC-6 M1 landing page generate` | ✅ `91b3ea4` · pytest 6/6 + `test_landing_api` ✅ |
+| **C10** | EPIC-6 M1 全栈 landing | `feat(core,ai,admin): EPIC-6 M1 landing page generate` | ✅ `91b3ea4` |
+| **C11** | EPIC-7 M1 全栈 leads | `feat(core,admin): EPIC-7 M1 public leads and Admin list` | `test_public_leads_api` |
 
-**执行**：C1–C10 ✅ · C10 `91b3ea4` · push 待完成
+**执行**：C1–C10 ✅ · push ✅ · **C11 ⏳**（~20 文件工作区）
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -227,6 +228,8 @@
 - **EPIC-6 M1 FR-502~505 landing AI（2026-07-01）** ✅ `POST /ai/landing/generate` · PRD §20.3 八模块 `content_json` · `seo_meta_json`/`form_config_json` · `LANDING_MOCK_LLM` · `landing_generate_v1` · `test_landing_generate.py` 6 passed
 - **EPIC-6 M1 FR-501~505 landing Java（2026-07-01）** ✅ `GET/POST/DELETE .../landing-pages` + 详情 + `POST .../generate` · Feign `/ai/landing/generate` · `tenant.excludes` 加 `landing_page` · `test_landing_api.py` ✅
 - **EPIC-6 M1 FR-501~505 Admin 落地页（2026-07-01）** ✅ `/landing-pages` 列表 + 创建 dialog + AI 生成 + JSON/SEO 预览 drawer · 关键词「转落地页」· `pnpm build:prod` ✅
+- **EPIC-7 M1 FR-601 leads Java（2026-07-01）** ✅ `POST /api/v1/public/leads` + `GET .../leads` 列表/详情 · Turnstile M1 stub · IP+landingPageId 限流 · `tenant.excludes` 加 `lead` · `test_public_leads_api.py` ✅
+- **EPIC-7 M1 FR-601 Admin 线索页（2026-07-01）** ✅ `/leads` 侧栏 + 列表/筛选/脱敏 + 详情 drawer · `maskPii` · `pnpm build:prod` ✅
 - **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ **已提交** `f40cf8d` — `ai.embed` worker · asset#1 READY
 - **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` / `e22cd43` / `f96ba7e`（已 push）
 - **EPIC-2 M1 代码** ✅ **已提交** `54d8ca5` / `6ba5e1e` / `48926d2`（已 push）
@@ -313,6 +316,7 @@
 | B-05 | ~~EPIC-3 M1 仓库签核~~ | 技术总监 | **已关闭** 2026-07-01 · `75e96cb` |
 | B-06 | ~~EPIC-4 M1 C8 未 commit~~ | 开发 | **已关闭** · `23a46f6` |
 | B-07 | ~~EPIC-6 M1 C9+C10 未 commit/push~~ | 开发 | ✅ **已关闭** C10 `91b3ea4` + C9 docs |
+| B-08 | EPIC-7 M1 **C11 未 commit/push** | 开发 | ⏳ ~20 文件工作区 |
 
 ---
 
@@ -320,11 +324,11 @@
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P0** | **开发** | **C10** commit EPIC-6 全栈 + **C9** docs · `git push` |
-| **P1** | **开发 Java** | `POST /api/v1/public/leads` + Admin list | [HANDOFF](HANDOFFS/2026-07-01-tech-director-to-dev-java-epic7-leads.md) |
-| **P2** | **开发 Admin** | 线索列表页 | [HANDOFF](HANDOFFS/2026-07-01-tech-director-to-dev-admin-epic7-leads.md) · 线框 ✅ |
-| **P4** | **开发** | 恢复 diagnostic smoke 9/9 | `DIAGNOSE_MOCK_LLM=true` |
-| **P5** | **开发备用** | EPIC-3 M2 FR-203 / 真 Gemini B-03b | 低优 |
+| **P0** | **开发** | **C11** commit EPIC-7 全栈 + `git push` | `test_public_leads_api.py` |
+| **P1** | **技术总监** | EPIC-7 M1 正式签核关闭 | C11 后 |
+| **P2** | **开发** | 全量 smoke 10/10（+ `test_public_leads_api`） | 可选 |
+| **P3** | **技术总监** | 排 **EPIC-8 M1 报告** 或 **EPIC-6 M2 Astro** | CLAUDE EPIC 顺序 |
+| **P4** | **开发** | diagnostic smoke 9/9 恢复 | `DIAGNOSE_MOCK_LLM=true` |
 
 ---
 
@@ -332,7 +336,11 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-01 | 技术总监 | EPIC-7 M1 **功能签核 ✅** · 待 C11 commit；EPIC-6 正式关闭 |
+| 2026-07-01 | 开发 Admin | EPIC-7 M1 线索列表 + 详情 drawer + 侧栏 `/leads` · build ✅ |
+| 2026-07-01 | 开发 | EPIC-7 M1 FR-601 public leads + Admin list/detail · `test_public_leads_api.py` ✅ |
 | 2026-07-01 | 技术总监 | **EPIC-6 M1 功能签核 ✅** · 排 **EPIC-7 M1** HANDOFF + ADR-14 · B-07 C9/C10 |
+| 2026-07-01 | 开发 | push C9 `96dcd4e` + C10 `91b3ea4` · EPIC-6 smoke 全过 |
 | 2026-07-01 | 开发 | C10 `91b3ea4` EPIC-6 landing 全栈 · pytest 6/6 + `test_landing_api` ✅ |
 | 2026-07-01 | 开发 | EPIC-6 M1 Admin 落地页列表/创建/预览 drawer · 关键词转落地页 · build ✅ |
 | 2026-07-01 | 开发 | EPIC-6 M1 landing Java CRUD + generate · `test_landing_api.py` ✅ |

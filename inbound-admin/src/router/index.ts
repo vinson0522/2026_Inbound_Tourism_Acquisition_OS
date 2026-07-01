@@ -123,6 +123,13 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'ProjectLandingPages',
         hidden: true,
         meta: { title: '页面草稿', activeMenu: '/landing-pages/index', noCache: true }
+      },
+      {
+        path: ':projectId/leads',
+        component: () => import('@/views/tourgeo/leads/index.vue'),
+        name: 'ProjectLeads',
+        hidden: true,
+        meta: { title: '询盘线索', activeMenu: '/leads/index', noCache: true }
       }
     ]
   },
@@ -171,6 +178,22 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/tourgeo/landing/index.vue'),
         name: 'LandingPagesList',
         meta: { title: '页面草稿', icon: 'list' }
+      }
+    ]
+  },
+  {
+    path: '/leads',
+    component: Layout,
+    redirect: '/leads/index',
+    name: 'TourgeoLeads',
+    meta: { title: '线索与转化', icon: 'message' },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/tourgeo/leads/index.vue'),
+        name: 'LeadsList',
+        meta: { title: '询盘线索', icon: 'list' }
       }
     ]
   },

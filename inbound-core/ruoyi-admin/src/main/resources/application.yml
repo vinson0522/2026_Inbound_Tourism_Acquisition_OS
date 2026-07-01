@@ -117,6 +117,7 @@ security:
     - /*/api-docs/**
     - /warm-flow-ui/config
     - /api/v1/internal/**
+    - /api/v1/public/**
 
 # 多租户配置
 tenant:
@@ -144,6 +145,7 @@ tenant:
     - content_task
     - generated_content
     - landing_page
+    - lead
     - diagnostic_run
     - diagnostic_result
     - probe_task
