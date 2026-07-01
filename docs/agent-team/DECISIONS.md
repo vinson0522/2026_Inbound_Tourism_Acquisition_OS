@@ -121,6 +121,17 @@
   - 生成调用：**M1 同步** Feign 调 AI；高耗时再改 MQ `ai.keywords`
 - **影响**：[EPIC-3 M1 Sprint](HANDOFFS/2026-06-29-tech-director-epic3-m1-keywords-sprint.md)；`ruoyi-keyword` 新模块；`inbound-ai` keywords router
 
+### ADR-20260629-12 | EPIC-4 M1 仅 FR-301/302 脚本 MVP
+- **状态**：已采纳
+- **决策者**：技术总监
+- **背景**：EPIC-4 全量（FR-301~308）含排期/多语言/图文；DDL `content_task` + `generated_content` 已就绪；EPIC-3 关键词可关联 `keyword_id`
+- **决策**：
+  - **M1 做**：从 keyword 创建 `content_task`；Python `/ai/content/generate` 输出 hook/script/voiceover/storyboard_json/cta；Java CRUD + 同步 generate；Admin 列表 + 预览 drawer
+  - **M1 时长**：15/30/60s 三档；platform 枚举 MVP（如 `youtube_shorts` / `tiktok`）
+  - **M1 不做**：FR-303 分镜导出、FR-304~308、LangGraph 多节点、TipTap 编辑、MQ `ai.content`
+  - `needs_human_review` 默认 true；Prompt 读 `template` 表
+- **影响**：[EPIC-4 M1 Sprint](HANDOFFS/2026-06-29-tech-director-epic4-m1-content-sprint.md)；`ruoyi-project` 或 `ruoyi-content`；`inbound-ai` content router
+
 ---
 
 ## 待讨论

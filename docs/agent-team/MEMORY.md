@@ -5,10 +5,10 @@
 
 | 字段 | 值 |
 |------|-----|
-| **最后更新** | 2026-06-29 |
-| **更新角色** | UI 设计 |
+| **最后更新** | 2026-07-01 |
+| **更新角色** | 开发 |
 | **Git 远程** | ⚠️ 本地无 `origin` remote；`git push` 待配置仓库 URL |
-| **当前 EPIC 焦点** | **EPIC-3 M1** ✅ 功能签核 · ⏳ Admin commit 后仓库关闭 · **EPIC-4 M1** 内容 Agent 已排期 |
+| **当前 EPIC 焦点** | **EPIC-4 M1** FR-301/302 内容 Agent（Python ✅ · Java ✅ · Admin ✅） |
 
 ---
 
@@ -112,9 +112,9 @@
 | # | 角色 | 任务 | HANDOFF | 状态 |
 |---|------|------|---------|:----:|
 | 1 | UI | 内容任务列表线框 | [→UI](HANDOFFS/2026-06-29-tech-director-to-ui-epic4-content-list.md) | ⏳ |
-| 2 | 开发 Python | `/ai/content/generate` | [→AI](HANDOFFS/2026-06-29-tech-director-to-dev-ai-epic4-content.md) | ⏳ |
-| 3 | 开发 Java | content CRUD + generate | [→Java](HANDOFFS/2026-06-29-tech-director-to-dev-java-epic4-content.md) | ⏳ |
-| 4 | 开发 Admin | 列表 + 脚本预览 | [→Admin](HANDOFFS/2026-06-29-tech-director-to-dev-admin-epic4-content.md) | ⏳ |
+| 2 | 开发 Python | `/ai/content/generate` | [→AI](HANDOFFS/2026-06-29-tech-director-to-dev-ai-epic4-content.md) | ✅ 2026-07-01 |
+| 3 | 开发 Java | content CRUD + generate | [→Java](HANDOFFS/2026-06-29-tech-director-to-dev-java-epic4-content.md) | ✅ 2026-07-01 |
+| 4 | 开发 Admin | 列表 + 脚本预览 | [→Admin](HANDOFFS/2026-06-29-tech-director-to-dev-admin-epic4-content.md) | ✅ 2026-07-01 |
 | — | 总览 | Sprint 索引 | [EPIC-4 M1](HANDOFFS/2026-06-29-tech-director-epic4-m1-content-sprint.md) | — |
 
 **ADR-12**：M1 仅选题+脚本；分镜导出/排期/多语言 → M2
@@ -188,7 +188,10 @@
 - **EPIC-10 Phase 2.2 Docling（2026-06-29）** ✅ PDF/DOCX 解析替换 mock 切片 · `file_storage`（HTTP/MinIO/本地）· embed 优先 `file_url` · DLQ 已有 · pytest fixture PDF + `test_embed_docling_pipeline`
 - **EPIC-3 M1 FR-201 keywords AI（2026-06-29）** ✅ `POST /ai/keywords/generate` · mock/无 Key 回退 · 可选 RAG top-3 · `template_service` · `test_keywords_generate.py` 7 passed
 - **EPIC-3 M1 FR-201/202 keywords Java（2026-06-29）** ✅ 并入 `ruoyi-project` · `GET/POST/DELETE .../keywords` + `POST .../generate` · Feign `/ai/keywords/generate` · `tenant.excludes` 加 `keyword_opportunity` · `test_keywords_api.py` ✅
-- **EPIC-3 M1 FR-201/202 Admin 关键词页（2026-06-29）** ✅ `/keywords/index` + `/projects/:id/keywords` · 八阶段 Tab · AI 生成确认+loading · `keyword.ts` API · 项目详情入口
+- **EPIC-3 M1 FR-201/202 Admin 关键词页（2026-06-29）** ✅ `/keywords/index` · commit `75e96cb`
+- **EPIC-4 M1 FR-301/302 content AI（2026-07-01）** ✅ `POST /ai/content/generate` · hook/script/voiceover/storyboard_json · `CONTENT_MOCK_LLM` · RAG top-3 · `content_script_v1` · `test_content_generate.py` 6 passed
+- **EPIC-4 M1 FR-301/302 content Java（2026-07-01）** ✅ 并入 `ruoyi-project` · `GET/POST/DELETE .../content-tasks` + 详情 + `POST .../generate` · Feign `/ai/content/generate` · `tenant.excludes` 加 `content_task`/`generated_content` · `test_content_api.py` ✅
+- **EPIC-4 M1 FR-301/302 Admin 内容任务页（2026-07-01）** ✅ `/content-tasks` · 列表/创建/生成/预览 drawer · 关键词「创建内容」FR-205 · `vite build` ✅
 - **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ **已提交** `f40cf8d` — `ai.embed` worker · asset#1 READY
 - **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` / `e22cd43` / `f96ba7e`（待 push）
 - **EPIC-2 M1 代码** ✅ **已提交** `54d8ca5` / `6ba5e1e` / `48926d2`（待 push）
@@ -211,6 +214,7 @@
   - `test_ai_health` ✅ litellm=ready
   - `test_knowledge_rag_search` ✅ asset#1 · 1 hit · chunkId=5
   - `test_keywords_api` ✅ inspiration · insertedCount=3 · total 4→7
+  - `test_content_api` ✅ task create → generate → detail → delete
 - **E2E（本机 Docker ADR-09）** ✅ runId=2/3 · `SUCCESS` · `geo_score=85.00` · **DIAGNOSE_MOCK_LLM**（Docker ai-api）
 - **工作台 FR-006 MVP（2026-06-26）** ✅ `getDashboard` 聚合诊断列表；`/dashboard` 编译与运行正常
 - **待办**：真 embedding 生产 Key 轮换；真 Gemini E2E（Q12 配额恢复后）
@@ -261,13 +265,8 @@
 
 | 优先级 | 窗口 | 动作 | HANDOFF |
 |:------:|------|------|---------|
-| **P0** | **开发 Admin** | **C6** commit 关键词页 → EPIC-3 M1 仓库关闭 | — |
-| **P1** | **UI 设计** | EPIC-4 内容任务列表线框 | [→UI content](HANDOFFS/2026-06-29-tech-director-to-ui-epic4-content-list.md) |
-| **P2** | **开发 Python** | `/ai/content/generate`（可与 UI 并行） | [→AI EPIC-4](HANDOFFS/2026-06-29-tech-director-to-dev-ai-epic4-content.md) |
-| **P3** | **开发 Java** | content CRUD + generate | [→Java EPIC-4](HANDOFFS/2026-06-29-tech-director-to-dev-java-epic4-content.md) |
-| **P4** | **开发 Admin** | 内容列表 + 脚本预览 | [→Admin EPIC-4](HANDOFFS/2026-06-29-tech-director-to-dev-admin-epic4-content.md) |
-| **P5** | **运维** | `git remote` + push（C6 后） | — |
-| **P6** | **开发** | EPIC-3 M2 FR-203 评分（可选，不阻塞 EPIC-4） | [EPIC-3 M2](HANDOFFS/2026-06-29-tech-director-epic3-m2-keyword-score-sprint.md) |
+| **P0** | **UI 设计** | EPIC-4 内容任务列表线框定稿 | [→UI content](HANDOFFS/2026-06-29-tech-director-to-ui-epic4-content-list.md) |
+| **P1** | **运维** | `git remote` + push | — |
 
 ---
 
@@ -275,8 +274,10 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-06-29 | 技术总监 | EPIC-3 M1 **功能签核 ✅** · 仓库 ⏳ C6；排 EPIC-4 M1 HANDOFF + ADR-12 |
-| 2026-07-01 | 开发 | commit `2ffa3d7` EPIC-3 M1 Admin 关键词页 · B-04 全关 |
+| 2026-07-01 | 开发 | EPIC-4 M1 Admin 内容任务列表 + 预览 drawer + FR-205 跳转 |
+| 2026-07-01 | 开发 | EPIC-4 M1 content Java CRUD + generate · `test_content_api.py` ✅ |
+| 2026-07-01 | 开发 | EPIC-4 M1 `POST /ai/content/generate` · mock/RAG/template · pytest 6 passed |
+| 2026-07-01 | 开发 | commit `75e96cb` EPIC-3 M1 Admin 关键词页 · B-04 全关 |
 | 2026-06-29 | 开发 | EPIC-3 M1 Admin 关键词列表页：八阶段 Tab + AI 生成 + 项目详情入口 |
 | 2026-06-29 | 开发 | 分批 commit C1–C5 + EPIC-3 keywords（579b668…95ab73c）· 工作区干净 |
 | 2026-06-29 | 开发 | EPIC-3 M1 `POST /ai/keywords/generate` · mock + RAG · pytest 7 passed |
