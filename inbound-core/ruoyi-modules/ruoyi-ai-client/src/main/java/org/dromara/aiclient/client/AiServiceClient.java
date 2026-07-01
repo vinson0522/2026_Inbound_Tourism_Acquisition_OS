@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.aiclient.config.AiServiceProperties;
 import org.dromara.aiclient.model.AiApiResponse;
 import org.dromara.aiclient.model.AiHealthData;
+import org.dromara.aiclient.model.ContentGenerateData;
+import org.dromara.aiclient.model.ContentGenerateRequest;
 import org.dromara.aiclient.model.KeywordGenerateData;
 import org.dromara.aiclient.model.KeywordGenerateRequest;
 import org.dromara.aiclient.model.RagSearchData;
@@ -153,6 +155,39 @@ public class AiServiceClient {
             );
         } catch (JsonProcessingException ex) {
             throw new IllegalStateException("Failed to parse keywords generate response", ex);
+        }
+    }
+
+    /**
+     * POST /ai/content/generate — FR-301/302 content script generation.
+     */
+    public AiApiResponse<ContentGenerateData> contentGenerate(ContentGenerateRequest request) {
+        String url = normalizeBaseUrl() + "/ai/content/generate";
+        String jsonBody;
+        try {
+            jsonBody = objectMapper.writeValueAsString(request);
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Failed to serialize content generate request", ex);
+        }
+        int timeoutMs = Math.max(Math.toIntExact(properties.getReadTimeoutMs()), 120_000);
+        HttpResponse response = HttpRequest.post(url)
+            .header("Authorization", "Bearer " + properties.getInternalToken())
+            .header("Accept", MediaType.APPLICATION_JSON_VALUE)
+            .body(jsonBody, ContentType.JSON.getValue())
+            .timeout(timeoutMs)
+            .execute();
+        if (!response.isOk()) {
+            throw new IllegalStateException(
+                "Content generate failed: HTTP " + response.getStatus() + " " + response.body()
+            );
+        }
+        try {
+            return objectMapper.readValue(
+                response.body(),
+                objectMapper.getTypeFactory().constructParametricType(AiApiResponse.class, ContentGenerateData.class)
+            );
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Failed to parse content generate response", ex);
         }
     }
 

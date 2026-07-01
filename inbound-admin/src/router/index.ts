@@ -109,6 +109,13 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'ProjectKeywords',
         hidden: true,
         meta: { title: '机会词列表', activeMenu: '/keywords/index', noCache: true }
+      },
+      {
+        path: ':projectId/content-tasks',
+        component: () => import('@/views/tourgeo/content/index.vue'),
+        name: 'ProjectContentTasks',
+        hidden: true,
+        meta: { title: '内容任务', activeMenu: '/content-tasks/index', noCache: true }
       }
     ]
   },
@@ -125,6 +132,22 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/tourgeo/keywords/index.vue'),
         name: 'KeywordsList',
         meta: { title: '机会词列表', icon: 'list' }
+      }
+    ]
+  },
+  {
+    path: '/content-tasks',
+    component: Layout,
+    redirect: '/content-tasks/index',
+    name: 'TourgeoContent',
+    meta: { title: '内容 Agent', icon: 'video-camera' },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/tourgeo/content/index.vue'),
+        name: 'ContentTasksList',
+        meta: { title: '内容任务', icon: 'list' }
       }
     ]
   },

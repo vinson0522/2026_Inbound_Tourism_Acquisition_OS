@@ -124,11 +124,11 @@
           <el-table-column label="创建时间" width="160" class-name="hidden-md-only">
             <template #default="{ row }">{{ formatTime(row.createdAt) }}</template>
           </el-table-column>
-          <el-table-column label="操作" width="140" fixed="right" align="center">
+          <el-table-column label="操作" width="180" fixed="right" align="center">
             <template #default="{ row }">
               <el-button link type="danger" :disabled="generating" @click="handleDelete(row)">删除</el-button>
-              <el-tooltip content="内容任务转化 FR-205" placement="top">
-                <el-button link disabled>转任务</el-button>
+              <el-tooltip content="创建内容任务 FR-205" placement="top">
+                <el-button link type="primary" :disabled="generating" @click="goCreateContent(row)">创建内容</el-button>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -374,6 +374,19 @@ async function runGenerate(pid: number) {
   } finally {
     generating.value = false;
   }
+}
+
+function goCreateContent(row: KeywordOpportunityVo) {
+  const pid = projectId.value;
+  if (!pid) {
+    ElMessage.warning('请先选择项目');
+    return;
+  }
+  router.push({
+    name: 'ProjectContentTasks',
+    params: { projectId: pid },
+    query: { action: 'create', keywordId: String(row.id) }
+  });
 }
 
 async function handleDelete(row: KeywordOpportunityVo) {

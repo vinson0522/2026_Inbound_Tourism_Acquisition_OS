@@ -324,3 +324,92 @@ export interface KeywordGenerateResult {
   needsHumanReview?: boolean;
   captureMethod?: string;
 }
+
+/** FR-301/302 内容任务 */
+export type ContentTaskStatus =
+  | 'DRAFT'
+  | 'GENERATING'
+  | 'GENERATED'
+  | 'ADOPTED'
+  | 'DISCARDED'
+  | 'FAILED';
+
+export interface StoryboardSceneVo {
+  scene?: number;
+  duration?: number;
+  visual?: string;
+  note?: string;
+}
+
+export interface GeneratedContentVo {
+  id: number;
+  taskId: number;
+  title?: string;
+  hook?: string;
+  targetAudience?: string;
+  script?: string;
+  storyboardJson?: StoryboardSceneVo[];
+  voiceover?: string;
+  onScreenText?: string;
+  hashtags?: string;
+  cta?: string;
+  landingPageSuggestion?: string;
+  needsHumanReview?: boolean;
+  version?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ContentTaskVo {
+  id: number;
+  projectId: number;
+  keywordId?: number;
+  keywordText?: string;
+  platform: string;
+  format?: string;
+  duration?: number;
+  tone?: string;
+  language?: string;
+  targetMarket?: string;
+  status: ContentTaskStatus;
+  needsHumanReview?: boolean | null;
+  contentTitle?: string;
+  contentVersion?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ContentTaskDetailVo extends ContentTaskVo {
+  generatedContent?: GeneratedContentVo;
+}
+
+export interface ContentTaskQuery {
+  pageNum: number;
+  pageSize: number;
+  status?: ContentTaskStatus | '';
+  platform?: string;
+  format?: string;
+  keyword?: string;
+  needsHumanReview?: boolean | '';
+}
+
+export interface ContentTaskForm {
+  keywordId: number;
+  platform: string;
+  format?: string;
+  duration?: number;
+  tone?: string;
+  language?: string;
+  targetMarket?: string;
+}
+
+export interface ContentGenerateForm {
+  useRag?: boolean;
+}
+
+export interface ContentGenerateResult {
+  contentId: number;
+  version?: number;
+  needsHumanReview?: boolean;
+  captureMethod?: string;
+}

@@ -141,6 +141,8 @@ tenant:
     - knowledge_asset
     - knowledge_chunk
     - keyword_opportunity
+    - content_task
+    - generated_content
     - diagnostic_run
     - diagnostic_result
     - probe_task

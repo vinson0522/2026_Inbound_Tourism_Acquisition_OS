@@ -54,6 +54,15 @@ class Settings(BaseSettings):
         "Follow the user message schema; one entry per requested lifecycle stage."
     )
 
+    content_mock_llm: bool = False
+    content_model: str = "openai/gpt-4o-mini"
+    content_template_name: str = "content_script_v1"
+    content_prompt_fallback: str = (
+        "You generate inbound tourism short-form video scripts as JSON only. "
+        "Include hook, script, voiceover, on_screen_text, cta, and storyboard scenes "
+        "with scene, duration, visual, note. Set needs_human_review true; cite chunk_id when using RAG."
+    )
+
     @property
     def has_embedding_key(self) -> bool:
         return bool(self.openai_api_key)
