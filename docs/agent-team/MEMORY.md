@@ -5,10 +5,10 @@
 
 | 字段 | 值 |
 |------|-----|
-| **最后更新** | 2026-07-01 |
+| **最后更新** | 2026-07-02 |
 | **更新角色** | 技术总监 |
-| **Git 远程** | ✅ `origin/main` pushed · C9 `96dcd4e` + C10 `91b3ea4`（+2 commits） |
-| **当前 EPIC 焦点** | **EPIC-7 M1** ✅ 功能完成 · ⏳ **C11 commit+push** → 签核关闭 |
+| **Git 远程** | ✅ `origin/main` pushed · C11 `76da501` EPIC-7 leads |
+| **当前 EPIC 焦点** | **EPIC-8 M1** ✅ 功能签核 · ⏳ **C12 commit+push** |
 
 ---
 
@@ -142,9 +142,24 @@
 | 1 | UI | 线索列表线框 | [→UI](HANDOFFS/2026-07-01-tech-director-to-ui-epic7-leads-list.md) | ✅ |
 | 2 | 开发 Java | public leads + Admin list | [→Java](HANDOFFS/2026-07-01-tech-director-to-dev-java-epic7-leads.md) | ✅ smoke |
 | 3 | 开发 Admin | 线索列表 | [→Admin](HANDOFFS/2026-07-01-tech-director-to-dev-admin-epic7-leads.md) | ✅ build |
-| — | 总览 | Sprint 索引 | [EPIC-7 M1](HANDOFFS/2026-07-01-tech-director-epic7-m1-leads-sprint.md) | 功能 ✅ · **C11 ⏳** |
+| — | 总览 | Sprint 索引 | [EPIC-7 M1](HANDOFFS/2026-07-01-tech-director-epic7-m1-leads-sprint.md) | ✅ **关闭** |
 
-**技术总监签核（2026-07-01）**：✅ **功能验收** · ADR-14 · **C11 commit+push 后正式关闭**
+**技术总监签核（2026-07-02）**：✅ **EPIC-7 M1 正式关闭** — C11 `76da501` · `test_public_leads_api` · ADR-14
+
+**ADR-14**：M1 公开 POST + Admin 列表；CRM/归因 → M2
+
+### EPIC-8 M1 Sprint — FR-701/702 报告中心（2026-07-02 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | 报告中心线框 | [→UI](HANDOFFS/2026-07-02-tech-director-to-ui-epic8-reports-list.md) | ✅ |
+| 2 | 开发 Java | report list + weekly + export | [→Java](HANDOFFS/2026-07-02-tech-director-to-dev-java-epic8-reports.md) | ✅ smoke |
+| 3 | 开发 Admin | 报告中心页 | [→Admin](HANDOFFS/2026-07-02-tech-director-to-dev-admin-epic8-reports.md) | ✅ build |
+| — | 总览 | Sprint 索引 | [EPIC-8 M1](HANDOFFS/2026-07-02-tech-director-epic8-m1-reports-sprint.md) | 功能 ✅ · **C12 ⏳** |
+
+**技术总监签核（2026-07-02）**：✅ **EPIC-8 M1 功能验收** — compile ✅ · smoke `test_reports_api` docx **2885B** · ADR-15 · **C12 待 commit**
+
+**ADR-15**：M1 列表 + 手动周报 + 导出；月报/白标/定时 → M2
 
 ### 未提交增量 — commit 批次
 
@@ -160,9 +175,10 @@
 | **C8** | EPIC-4 M1 全栈 | `feat(core,ai,admin): EPIC-4 M1 content…` | ✅ `23a46f6` |
 | **C9** | EPIC-6 docs + ADR-13/14 + EPIC-7 HANDOFFs | `docs: EPIC-6/7 Sprint HANDOFFs and ADR-13/14` | ✅ |
 | **C10** | EPIC-6 M1 全栈 landing | `feat(core,ai,admin): EPIC-6 M1 landing page generate` | ✅ `91b3ea4` |
-| **C11** | EPIC-7 M1 全栈 leads | `feat(core,admin): EPIC-7 M1 public leads and Admin list` | `test_public_leads_api` |
+| **C11** | EPIC-7 M1 全栈 leads | `feat(core,admin): EPIC-7 M1 public leads and Admin list` | ✅ `76da501` |
+| **C12** | EPIC-8 M1 报告中心 | `feat(core,admin): EPIC-8 M1 report center and weekly report` | `test_reports_api` |
 
-**执行**：C1–C10 ✅ · push ✅ · **C11 ⏳**（~20 文件工作区）
+**执行**：C1–C11 ✅ · push ✅ · **C12 ⏳** EPIC-8
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -230,6 +246,8 @@
 - **EPIC-6 M1 FR-501~505 Admin 落地页（2026-07-01）** ✅ `/landing-pages` 列表 + 创建 dialog + AI 生成 + JSON/SEO 预览 drawer · 关键词「转落地页」· `pnpm build:prod` ✅
 - **EPIC-7 M1 FR-601 leads Java（2026-07-01）** ✅ `POST /api/v1/public/leads` + `GET .../leads` 列表/详情 · Turnstile M1 stub · IP+landingPageId 限流 · `tenant.excludes` 加 `lead` · `test_public_leads_api.py` ✅
 - **EPIC-7 M1 FR-601 Admin 线索页（2026-07-01）** ✅ `/leads` 侧栏 + 列表/筛选/脱敏 + 详情 drawer · `maskPii` · `pnpm build:prod` ✅
+- **EPIC-8 M1 FR-701/702 Admin 报告中心（2026-07-02）** ✅ `/reports` 侧栏 + 列表/筛选 + 周报 dialog + 预览 drawer + DOCX/PDF 下载 · `pnpm build:prod` ✅
+- **EPIC-8 M1 FR-701/702 report Java（2026-07-02）** ✅ `ReportController` list/detail/weekly/export · 周报聚合 5 域 KPI + 3 条静态 recommendations · `WeeklyHtmlReportRenderer`/`WeeklyDocxReportRenderer` · DIAGNOSTIC 复用 FR-106 · `tenant.excludes` 加 `report` · `test_reports_api.py` ✅（docx 2884B）
 - **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ **已提交** `f40cf8d` — `ai.embed` worker · asset#1 READY
 - **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` / `e22cd43` / `f96ba7e`（已 push）
 - **EPIC-2 M1 代码** ✅ **已提交** `54d8ca5` / `6ba5e1e` / `48926d2`（已 push）
@@ -298,9 +316,9 @@
 
 ## UI 设计
 
-- **已完成**：… landing-page-list (EPIC-6 M1) ✅ · **leads-list (EPIC-7 M1)** ✅
-- **HANDOFF**：[线索列表 → 开发](HANDOFFS/2026-07-01-ui-to-developer-leads-list.md)
-- **待办**：落地页 M2 编辑 · 线索导出/CRM M2
+- **已完成**：reports-list (EPIC-8 M1) ✅ · leads-list (EPIC-7 M1) ✅ · landing-page-list (EPIC-6 M1) ✅
+- **HANDOFF**：[报告中心 → 开发](HANDOFFS/2026-07-02-ui-to-developer-reports-list.md)
+- **待办**：落地页 M2 编辑 · 线索 CRM M2 · 报告白标/月报 M2（FR-703~705）
 
 ---
 
@@ -316,18 +334,19 @@
 | B-05 | ~~EPIC-3 M1 仓库签核~~ | 技术总监 | **已关闭** 2026-07-01 · `75e96cb` |
 | B-06 | ~~EPIC-4 M1 C8 未 commit~~ | 开发 | **已关闭** · `23a46f6` |
 | B-07 | ~~EPIC-6 M1 C9+C10 未 commit/push~~ | 开发 | ✅ **已关闭** C10 `91b3ea4` + C9 docs |
-| B-08 | EPIC-7 M1 **C11 未 commit/push** | 开发 | ⏳ ~20 文件工作区 |
+| B-08 | ~~EPIC-7 M1 C11 未 commit/push~~ | 开发 | ✅ **已关闭** C11 `76da501` |
+| B-09 | ~~EPIC-8 M1 Java report API 未实现~~ | 开发 Java | ✅ **已关闭** smoke docx 2885B |
+| B-10 | EPIC-8 M1 **C12 未 commit/push** | 开发 | ⏳ ~25 文件工作区 |
 
 ---
 
-## 下一步（跨角色 · 2026-07-01）
+## 下一步（跨角色 · 2026-07-02）
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P0** | **开发** | **C11** commit EPIC-7 全栈 + `git push` | `test_public_leads_api.py` |
-| **P1** | **技术总监** | EPIC-7 M1 正式签核关闭 | C11 后 |
-| **P2** | **开发** | 全量 smoke 10/10（+ `test_public_leads_api`） | 可选 |
-| **P3** | **技术总监** | 排 **EPIC-8 M1 报告** 或 **EPIC-6 M2 Astro** | CLAUDE EPIC 顺序 |
+| **P0** | **开发** | **C12** commit + push（Java + Admin + docs + wireframe） | `test_reports_api` ✅ |
+| **P1** | **技术总监** | EPIC-8 M1 签核关闭 | C12 后 |
+| **P2** | **开发** | Admin `/reports` 端到端联调（可选） | Java 已就绪 |
 | **P4** | **开发** | diagnostic smoke 9/9 恢复 | `DIAGNOSE_MOCK_LLM=true` |
 
 ---
@@ -336,7 +355,12 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-07-01 | 技术总监 | EPIC-7 M1 **功能签核 ✅** · 待 C11 commit；EPIC-6 正式关闭 |
+| 2026-07-02 | 开发 Java | EPIC-8 M1 Report API list/weekly/export · `test_reports_api.py` ✅ |
+| 2026-07-02 | 技术总监 | **EPIC-8 M1 功能签核 ✅** · 复核 smoke docx 2885B · 待 C12 |
+| 2026-07-02 | 开发 Java | EPIC-8 Report API + weekly 聚合 + export · `test_reports_api` ✅ |
+| 2026-07-02 | UI 设计 | EPIC-8 M1 reports-list 线框 FR-701/702 · 周报 dialog · DOCX/PDF · HANDOFF 开发 |
+| 2026-07-02 | 技术总监 | **EPIC-7 M1 正式关闭** C11 `76da501` · 排 **EPIC-8 M1** HANDOFF + ADR-15 |
+| 2026-07-01 | 技术总监 | EPIC-7 M1 功能签核 ✅ · C11 commit |
 | 2026-07-01 | 开发 Admin | EPIC-7 M1 线索列表 + 详情 drawer + 侧栏 `/leads` · build ✅ |
 | 2026-07-01 | 开发 | EPIC-7 M1 FR-601 public leads + Admin list/detail · `test_public_leads_api.py` ✅ |
 | 2026-07-01 | 技术总监 | **EPIC-6 M1 功能签核 ✅** · 排 **EPIC-7 M1** HANDOFF + ADR-14 · B-07 C9/C10 |

@@ -150,6 +150,7 @@ tenant:
     - diagnostic_result
     - probe_task
     - question_bank
+    - report
 
 # MyBatisPlus配置
 # https://baomidou.com/config/

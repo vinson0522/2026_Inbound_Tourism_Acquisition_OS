@@ -513,3 +513,49 @@ export interface LeadQuery {
   source?: string;
   status?: LeadStatus | '';
 }
+
+/** FR-701/702 报告中心 */
+export type ReportType = 'DIAGNOSTIC' | 'WEEKLY' | 'MONTHLY' | 'CUSTOM';
+
+export interface ReportSummary {
+  runId?: number;
+  geoScore?: number;
+  periodStart?: string;
+  periodEnd?: string;
+  geo?: { runs?: number; latestScore?: number; delta?: number };
+  keywords?: { newCount?: number; byStage?: Record<string, number> };
+  content?: { tasksCreated?: number; generated?: number };
+  landing?: { draftCount?: number };
+  leads?: { newCount?: number };
+  recommendations?: string[];
+  probe_mode?: string;
+  sampled_at?: string;
+  region?: string;
+  platforms?: string;
+}
+
+export interface ReportVo {
+  id: number;
+  projectId: number;
+  type: ReportType;
+  period?: string;
+  summary?: string | ReportSummary;
+  summaryPreview?: string;
+  createdAt?: string;
+}
+
+export interface ReportDetailVo extends ReportVo {
+  summary?: string | ReportSummary;
+}
+
+export interface ReportQuery {
+  pageNum: number;
+  pageSize: number;
+  type?: ReportType | '';
+  period?: string;
+}
+
+export interface WeeklyReportForm {
+  periodStart: string;
+  periodEnd: string;
+}

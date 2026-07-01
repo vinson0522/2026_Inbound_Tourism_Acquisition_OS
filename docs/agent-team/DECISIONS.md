@@ -153,6 +153,17 @@
   - **M1 不做**：FR-602~607、Python 跟进 AI、`inbound-landing` 公网页（与 EPIC-6 M2 合并排）
 - **影响**：[EPIC-7 M1 Sprint](HANDOFFS/2026-07-01-tech-director-epic7-m1-leads-sprint.md)
 
+### ADR-20260702-15 | EPIC-8 M1 仅 FR-701/702 报告列表 + 手动周报
+- **状态**：已采纳
+- **决策者**：技术总监
+- **背景**：FR-106 已实现诊断导出并写 `report` 表，但无报告中心 UI；PRD FR-702 周报是 MVP 交付物
+- **决策**：
+  - **M1 做**：`GET .../reports` 列表/详情；`POST .../reports/weekly` Java 聚合（诊断/关键词/内容/落地页/线索）；DOCX/PDF 导出；Admin `/reports`
+  - **M1 复用**：`DiagnosticReportExportServiceImpl` 渲染/Gotenberg；DIAGNOSTIC 行按 summary.runId 再导出
+  - **M1 不做**：FR-703 月报、FR-704 白标模板、FR-705 推送、XXL-Job 定时、MinIO `file_url`、LLM 周报摘要
+  - 周报建议：3 条静态模板（按 KPI 阈值选文案）
+- **影响**：[EPIC-8 M1 Sprint](HANDOFFS/2026-07-02-tech-director-epic8-m1-reports-sprint.md)；`ruoyi-diagnostic` ReportController
+
 ---
 
 ## 待讨论

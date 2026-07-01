@@ -130,6 +130,13 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'ProjectLeads',
         hidden: true,
         meta: { title: '询盘线索', activeMenu: '/leads/index', noCache: true }
+      },
+      {
+        path: ':projectId/reports',
+        component: () => import('@/views/tourgeo/reports/index.vue'),
+        name: 'ProjectReports',
+        hidden: true,
+        meta: { title: '报告列表', activeMenu: '/reports/index', noCache: true }
       }
     ]
   },
@@ -194,6 +201,22 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/tourgeo/leads/index.vue'),
         name: 'LeadsList',
         meta: { title: '询盘线索', icon: 'list' }
+      }
+    ]
+  },
+  {
+    path: '/reports',
+    component: Layout,
+    redirect: '/reports/index',
+    name: 'TourgeoReports',
+    meta: { title: '报告中心', icon: 'documentation' },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/tourgeo/reports/index.vue'),
+        name: 'ReportsList',
+        meta: { title: '报告列表', icon: 'list' }
       }
     ]
   },
