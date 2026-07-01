@@ -6,9 +6,9 @@
 | 字段 | 值 |
 |------|-----|
 | **最后更新** | 2026-07-01 |
-| **更新角色** | 开发 |
-| **Git 远程** | ⚠️ 本地无 `origin` remote；`git push` 待配置仓库 URL |
-| **当前 EPIC 焦点** | **EPIC-4 M1** ✅ 正式关闭 · `23a46f6` C8 · 下一：技术总监签核 / push |
+| **更新角色** | 技术总监 |
+| **Git 远程** | ✅ `origin` SSH · C9/C10 pushed 待完成 |
+| **当前 EPIC 焦点** | **EPIC-6 M1** ✅ 仓库关闭 · **EPIC-7 M1** 下一 Sprint |
 
 ---
 
@@ -121,7 +121,32 @@
 
 **ADR-12**：M1 仅选题+脚本；分镜导出/排期/多语言 → M2
 
-### 未提交增量 — commit 批次（技术总监 2026-06-29 定案）
+### EPIC-6 M1 Sprint — FR-501~505 落地页 Agent（2026-07-01）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | 落地页列表线框 | [→UI](HANDOFFS/2026-07-01-tech-director-to-ui-epic6-landing-list.md) | ✅ |
+| 2 | 开发 Python | `/ai/landing/generate` | [→AI](HANDOFFS/2026-07-01-tech-director-to-dev-ai-epic6-landing.md) | ✅ pytest 6 |
+| 3 | 开发 Java | landing CRUD + generate | [→Java](HANDOFFS/2026-07-01-tech-director-to-dev-java-epic6-landing.md) | ✅ smoke |
+| 4 | 开发 Admin | 列表 + JSON 预览 | [→Admin](HANDOFFS/2026-07-01-tech-director-to-dev-admin-epic6-landing.md) | ✅ build |
+| — | 总览 | Sprint 索引 | [EPIC-6 M1](HANDOFFS/2026-07-01-tech-director-epic6-m1-landing-sprint.md) | 功能 ✅ · 仓库 ⏳ |
+
+**技术总监签核（2026-07-01）**：✅ **功能关闭** · ADR-13 · **C10 commit 后正式关 Sprint**
+
+**ADR-13**：M1 草稿+预览；Astro/公开表单 → M2/EPIC-7
+
+### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | 线索列表线框 | [→UI](HANDOFFS/2026-07-01-tech-director-to-ui-epic7-leads-list.md) | ✅ |
+| 2 | 开发 Java | public leads + Admin list | [→Java](HANDOFFS/2026-07-01-tech-director-to-dev-java-epic7-leads.md) | ⏳ |
+| 3 | 开发 Admin | 线索列表 | [→Admin](HANDOFFS/2026-07-01-tech-director-to-dev-admin-epic7-leads.md) | ⏳ |
+| — | 总览 | Sprint 索引 | [EPIC-7 M1](HANDOFFS/2026-07-01-tech-director-epic7-m1-leads-sprint.md) | — |
+
+**ADR-14**：M1 公开 POST + Admin 列表；CRM/归因 → M2
+
+### 未提交增量 — commit 批次
 
 | 批次 | 范围 | 建议 message 前缀 | smoke |
 |:----:|------|-------------------|-------|
@@ -132,10 +157,11 @@
 | **C5** | Sprint HANDOFFs + MEMORY + DECISIONS ADR-10/11 + design README | `docs: M2.2/EPIC-3 Sprint HANDOFFs and MEMORY` | — |
 | **C6** | EPIC-3 Admin 关键词页 | `feat(admin): EPIC-3 M1 keywords list page` | ✅ `75e96cb` |
 | **C7** | EPIC-4 Sprint HANDOFFs + content-task 线框 + ADR-12 | `docs: EPIC-4 M1 Sprint HANDOFFs…` | ✅ `4d8e1e2` |
-| **C8** | EPIC-4 M1 全栈（Python/Java/Admin + smoke + keywords FR-205 链） | `feat(core,ai,admin): EPIC-4 M1 content task and script generate` | `test_content_api` + pytest |
-| **C7b** | EPIC-3 Sprint 签核文案修正 | `docs: close EPIC-3 M1 sprint sign-off` | — |
+| **C8** | EPIC-4 M1 全栈 | `feat(core,ai,admin): EPIC-4 M1 content…` | ✅ `23a46f6` |
+| **C9** | EPIC-6 docs + ADR-13/14 + EPIC-7 HANDOFFs | `docs: EPIC-6/7 Sprint HANDOFFs and ADR-13/14` | ✅ |
+| **C10** | EPIC-6 M1 全栈 landing | `feat(core,ai,admin): EPIC-6 M1 landing page generate` | ✅ `91b3ea4` · pytest 6/6 + `test_landing_api` ✅ |
 
-**执行**：**C8 ⏳** 为 EPIC-4 M1 仓库关闭前置；C1–C7 ✅。
+**执行**：C1–C10 ✅ · C10 `91b3ea4` · push 待完成
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -153,6 +179,7 @@
 
 - **负责目录**：`deploy/`、`cert/`、`docs/INFRA_ACCESS.local.md`
 - **验证时间**：2026-06-27（本机 Docker bootstrap ✅）
+- **Git 远程（2026-07-01）** ✅ `origin` = `git@github.com:vinson0522/2026_Inbound_Tourism_Acquisition_OS.git`（SSH）· `git push -u origin main` 成功 · **25 commits** · `deploy/.env` 未入库（`.gitignore`）
 
 ### 本机（资源提供人 Windows — **主开发路径 ADR-09**）
 
@@ -185,7 +212,7 @@
 - **负责目录**：`inbound-core/`、`inbound-ai/`、`database/`、`inbound-probe-extension/`
 - **6/29 增量二（2026-06-29）** ✅ **已提交** `a87b780` Story3 · `91c215b` Phase2.1 · `06c4660` docs wireframes
 - **Sprint HANDOFF 归档（2026-06-29）** ✅ **已提交** `3ac6853` — 2026-06-25~27 HANDOFF + INFRA/DECISIONS
-- **Push 状态** ⏳ 本地 **8 个 feat** + **5 个 docs** 待 push；需先 `git remote add origin <url>`
+- **Push 状态** ✅ **2026-07-01** 运维 SSH push 完成（25 commits → `origin/main`）
 - **EPIC-2 M2 FR-106（2026-06-29）** ✅ DOCX + PDF 报告导出 runId=2；`test_diagnostic_report_export.py` docx/pdf；PDF ~32KB 含 geo_score
 - **EPIC-2 M2.2 FR-108 trends API（2026-06-29）** ✅ `GET /api/v1/projects/{id}/diagnostics/trends?limit=12` · 租户隔离 · 从 `diagnostic_result` 聚合 6 分项 · `DiagnosticMetricsAggregatorTest` + `test_diagnostic_trends.py`（runId=2/3 · 2 点 ASC）
 - **EPIC-2 M2.2 FR-108 Admin 趋势页（2026-06-29）** ✅ `/diagnostics/trends` · ECharts 折线+分项柱图 · run 多选 2–6 · 空态「至少需要 2 次成功诊断」· 详情页链趋势
@@ -197,9 +224,12 @@
 - **EPIC-4 M1 FR-301/302 content AI（2026-07-01）** ✅ `POST /ai/content/generate` · hook/script/voiceover/storyboard_json · `CONTENT_MOCK_LLM` · RAG top-3 · `content_script_v1` · `test_content_generate.py` 6 passed
 - **EPIC-4 M1 FR-301/302 content Java（2026-07-01）** ✅ 并入 `ruoyi-project` · `GET/POST/DELETE .../content-tasks` + 详情 + `POST .../generate` · Feign `/ai/content/generate` · `tenant.excludes` 加 `content_task`/`generated_content` · `test_content_api.py` ✅
 - **EPIC-4 M1 FR-301/302 Admin 内容任务页（2026-07-01）** ✅ `/content-tasks` · 列表/创建/生成/预览 drawer · 关键词「创建内容」FR-205 · `vite build` ✅
+- **EPIC-6 M1 FR-502~505 landing AI（2026-07-01）** ✅ `POST /ai/landing/generate` · PRD §20.3 八模块 `content_json` · `seo_meta_json`/`form_config_json` · `LANDING_MOCK_LLM` · `landing_generate_v1` · `test_landing_generate.py` 6 passed
+- **EPIC-6 M1 FR-501~505 landing Java（2026-07-01）** ✅ `GET/POST/DELETE .../landing-pages` + 详情 + `POST .../generate` · Feign `/ai/landing/generate` · `tenant.excludes` 加 `landing_page` · `test_landing_api.py` ✅
+- **EPIC-6 M1 FR-501~505 Admin 落地页（2026-07-01）** ✅ `/landing-pages` 列表 + 创建 dialog + AI 生成 + JSON/SEO 预览 drawer · 关键词「转落地页」· `pnpm build:prod` ✅
 - **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ **已提交** `f40cf8d` — `ai.embed` worker · asset#1 READY
-- **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` / `e22cd43` / `f96ba7e`（待 push）
-- **EPIC-2 M1 代码** ✅ **已提交** `54d8ca5` / `6ba5e1e` / `48926d2`（待 push）
+- **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` / `e22cd43` / `f96ba7e`（已 push）
+- **EPIC-2 M1 代码** ✅ **已提交** `54d8ca5` / `6ba5e1e` / `48926d2`（已 push）
 - **Admin 浏览器走查（2026-06-29）** ✅ `pnpm dev` :5173 · admin/admin123 · Java :8080 + Docker ADR-09
 
   | 路径 | 结果 | 说明 |
@@ -220,10 +250,25 @@
   - `test_knowledge_rag_search` ✅ asset#1 · 1 hit · chunkId=5
   - `test_keywords_api` ✅ inspiration · insertedCount=3 · total 4→7
   - `test_content_api` ✅ task create → generate → detail → delete
-- **C8 smoke 回归（2026-07-01）** ✅ EPIC-4 必测：`pytest test_content_generate` 6 passed · `test_content_api` ✅
-  - 全量 9/9：**6/9** — `test_diagnostic_e2e` RUNNING 超时（runId=1 卡住）· `test_diagnostic_trends` 0 点（PG 卷重置后无历史 run）· `test_diagnostic_report_export` runId=2 无 SUCCESS 数据
-  - 其余 6 项 ✅：projects · embed · ai_health · rag_search · keywords · content
-- **E2E（本机 Docker ADR-09）** ✅ runId=2/3 · `SUCCESS` · `geo_score=85.00` · **DIAGNOSE_MOCK_LLM**（Docker ai-api）
+- **C8 后全量 smoke 9/9（2026-07-01 10:28 · commit `23a46f6`）** — 前提：Docker 4 容器 healthy + Java `:8080` + `inbound-ai` `:8090`
+  - **结果：6/9**（EPIC-4 相关 **2/2 ✅**；EPIC-2 diagnostic 链 **0/3 ❌** 环境阻塞，非 C8 回归）
+
+  | # | 脚本 | 结果 | 备注 |
+  |---|------|:----:|------|
+  | 1 | `test_projects_api` | ✅ | project id=3 新建 |
+  | 2 | `test_diagnostic_e2e` | ❌ | runId=**2** · 240s 轮询仍 `RUNNING` · diagnose MQ worker 未消费（ai-api 日志无 `/ai/diagnose`） |
+  | 3 | `test_embed_e2e` | ✅ | direct embed READY · RAG 1 hit chunkId=2 |
+  | 4 | `test_diagnostic_report_export` | ❌ | runId=2 非 SUCCESS · 返回 JSON 83B（无可用报告） |
+  | 5 | `test_diagnostic_trends` | ❌ | `runs=0`（无 SUCCESS 历史 run） |
+  | 6 | `test_ai_health` | ✅ | `/health` + `/ai/health` litellm=ready |
+  | 7 | `test_knowledge_rag_search` | ✅ | asset#1 · 1 hit chunkId=2 |
+  | 8 | `test_keywords_api` | ✅ | insertedCount=3 · inspiration total 4→7 |
+  | 9 | `test_content_api` | ✅ | taskId=6 · generate · detail · delete |
+
+  - **EPIC-4 必测**：`uv run pytest tests/test_content_generate.py -q` **6 passed**（同会话）
+  - **根因（diagnostic 3 项）**：本机 PG 卷重置后无 SUCCESS run；`DIAGNOSE_MOCK_LLM` 未开 / diagnose worker 未跑通 → run 卡在 RUNNING
+  - **修复建议**：`deploy/.env` 设 `DIAGNOSE_MOCK_LLM=true` → `docker compose up -d ai-api`；或取消 runId=1/2 后重跑 e2e
+- **E2E（本机 Docker ADR-09）** ⚠️ 历史 runId=2/3 SUCCESS 已随 PG 卷丢失；需 mock 或真 Gemini 重跑
 - **工作台 FR-006 MVP（2026-06-26）** ✅ `getDashboard` 聚合诊断列表；`/dashboard` 编译与运行正常
 - **待办**：真 embedding 生产 Key 轮换；真 Gemini E2E（Q12 配额恢复后）
 
@@ -240,7 +285,7 @@
    - `AI_SERVICE_INTERNAL_TOKEN=dev_internal_token_change_me`
 3. `cd inbound-core && mvn -pl ruoyi-admin spring-boot:run -Dspring-boot.run.profiles=dev`
 4. `cd inbound-admin && pnpm dev`
-5. Smoke（6/29 全量）：`test_projects_api` / `test_diagnostic_e2e` / `test_embed_e2e` / `test_diagnostic_report_export` / `test_diagnostic_trends` / `test_ai_health` / `test_knowledge_rag_search` / `test_keywords_api`
+5. Smoke（C8 后 9/9）：见上表 · 当前 **6/9** · EPIC-4 **2/2 ✅**
 
 ### 开发联调步骤（SSH 隧道 — **备用**，ADR-05）
 
@@ -250,9 +295,9 @@
 
 ## UI 设计
 
-- **已完成**：… keywords-list / **content-task-list（EPIC-4 M1 预研）**
-- **HANDOFF**：[内容任务 → 开发](HANDOFFS/2026-06-29-ui-to-developer-content-task-list.md)（预研，待技术总监定稿）
-- **待办**：内容任务详情/脚本编辑线框（M2）；落地页线框（EPIC-6）
+- **已完成**：… landing-page-list (EPIC-6 M1) ✅ · **leads-list (EPIC-7 M1)** ✅
+- **HANDOFF**：[线索列表 → 开发](HANDOFFS/2026-07-01-ui-to-developer-leads-list.md)
+- **待办**：落地页 M2 编辑 · 线索导出/CRM M2
 
 ---
 
@@ -266,19 +311,20 @@
 | B-03b | 本地 GEO E2E **真 Gemini**（grounded-api） | 开发 | ⏳ 配额用尽；`DIAGNOSE_MOCK_LLM=false` 时 FAILED |
 | B-04 | ~~工作区未 commit（C1–C6）~~ | 开发 | **已关闭** 2026-07-01 · `2ffa3d7` Admin 关键词页 |
 | B-05 | ~~EPIC-3 M1 仓库签核~~ | 技术总监 | **已关闭** 2026-07-01 · `75e96cb` |
-| B-06 | ~~EPIC-4 M1 C8 未 commit~~ | 开发 | **已关闭** 2026-07-01 · `23a46f6` |
+| B-06 | ~~EPIC-4 M1 C8 未 commit~~ | 开发 | **已关闭** · `23a46f6` |
+| B-07 | ~~EPIC-6 M1 C9+C10 未 commit/push~~ | 开发 | ✅ **已关闭** C10 `91b3ea4` + C9 docs |
 
 ---
 
-## 下一步（跨角色 · 窗口派发 2026-07-01）
+## 下一步（跨角色 · 2026-07-01）
 
-| 优先级 | 窗口 | 动作 | 说明 |
-|:------:|------|------|------|
-| **P0** | **技术总监** | EPIC-4 M1 签核归档 + 排 EPIC-6 / EPIC-3 M2 | C8 完成 |
-| **P1** | **运维** | `git remote` + push（~24 commits） | 含 `23a46f6` |
-| **P2** | **开发** | 修复 diagnostic smoke（runId=1 卡住 / 补 seed run） | 9/9 回归 |
-| **P3** | **UI** | 浏览器走查 content 页截图 | 可选 |
-| **P4** | **开发备用** | 真 Gemini E2E | B-03b |
+| 优先级 | 窗口 | 动作 |
+|:------:|------|------|
+| **P0** | **开发** | **C10** commit EPIC-6 全栈 + **C9** docs · `git push` |
+| **P1** | **开发 Java** | `POST /api/v1/public/leads` + Admin list | [HANDOFF](HANDOFFS/2026-07-01-tech-director-to-dev-java-epic7-leads.md) |
+| **P2** | **开发 Admin** | 线索列表页 | [HANDOFF](HANDOFFS/2026-07-01-tech-director-to-dev-admin-epic7-leads.md) · 线框 ✅ |
+| **P4** | **开发** | 恢复 diagnostic smoke 9/9 | `DIAGNOSE_MOCK_LLM=true` |
+| **P5** | **开发备用** | EPIC-3 M2 FR-203 / 真 Gemini B-03b | 低优 |
 
 ---
 
@@ -286,7 +332,15 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-07-01 | 开发 | commit `23a46f6` C8 EPIC-4 全栈 · pytest 6 + test_content_api ✅ |
+| 2026-07-01 | 技术总监 | **EPIC-6 M1 功能签核 ✅** · 排 **EPIC-7 M1** HANDOFF + ADR-14 · B-07 C9/C10 |
+| 2026-07-01 | 开发 | C10 `91b3ea4` EPIC-6 landing 全栈 · pytest 6/6 + `test_landing_api` ✅ |
+| 2026-07-01 | 开发 | EPIC-6 M1 Admin 落地页列表/创建/预览 drawer · 关键词转落地页 · build ✅ |
+| 2026-07-01 | 开发 | EPIC-6 M1 landing Java CRUD + generate · `test_landing_api.py` ✅ |
+| 2026-07-01 | 开发 | EPIC-6 M1 `POST /ai/landing/generate` · 八模块 content_json · pytest 6 passed |
+| 2026-07-01 | UI 设计 | EPIC-7 M1 leads-list 线框 FR-601 · 详情 drawer · PII 脱敏 · HANDOFF 开发 |
+| 2026-07-01 | UI 设计 | EPIC-6 M1 landing-page-list 线框 FR-501~505 · 创建/预览 · HANDOFF 开发 |
+| 2026-07-01 | 运维 | Git `origin` SSH 配置 + `git push -u origin main`（25 commits）；`deploy/.env` 未入库 |
+| 2026-07-01 | 开发 | C8 后全量 smoke **6/9**（EPIC-4 2/2 ✅ · diagnostic 3 项 MQ/mock 阻塞） |
 | 2026-07-01 | 开发 | commit `4d8e1e2` C7 EPIC-4 docs/wireframe |
 | 2026-07-01 | 开发 | EPIC-4 M1 content Java CRUD + generate · `test_content_api.py` ✅ |
 | 2026-07-01 | 开发 | EPIC-4 M1 `POST /ai/content/generate` · mock/RAG/template · pytest 6 passed |

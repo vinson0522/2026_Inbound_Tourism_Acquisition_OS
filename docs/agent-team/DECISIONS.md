@@ -132,6 +132,27 @@
   - `needs_human_review` 默认 true；Prompt 读 `template` 表
 - **影响**：[EPIC-4 M1 Sprint](HANDOFFS/2026-06-29-tech-director-epic4-m1-content-sprint.md)；`ruoyi-project` 或 `ruoyi-content`；`inbound-ai` content router
 
+### ADR-20260701-13 | EPIC-6 M1 仅 FR-501~505 草稿 MVP
+- **状态**：已采纳
+- **决策者**：技术总监
+- **背景**：EPIC-6 全量含 Astro 发布、A/B、托管；DDL `landing_page` 已就绪；EPIC-4 内容可链 `landing_page_suggestion`
+- **决策**：
+  - **M1 做**：Python `/ai/landing/generate`；Java `landing_page` CRUD + generate；Admin 列表 + JSON/SEO 预览；status 保持 `DRAFT`
+  - **M1 模板**：5 类 template_type（destination/route/theme/visa/event）；`content_json` 按 PRD §20.3 最小模块集
+  - **M1 不做**：FR-506 HTML 导出、FR-507 Astro 公网发布、Turnstile 公开表单（→ EPIC-7）、GrapesJS 编辑
+  - 同步 Feign 调 AI；`needs_human_review` 默认 true
+- **影响**：[EPIC-6 M1 Sprint](HANDOFFS/2026-07-01-tech-director-epic6-m1-landing-sprint.md)；`inbound-landing` Astro **M2**
+
+### ADR-20260701-14 | EPIC-7 M1 仅 FR-601 公开表单 + Admin 列表
+- **状态**：已采纳
+- **决策者**：技术总监
+- **背景**：EPIC-7 全量含 CRM/归因/广告；EPIC-6 已生成 `form_config_json`；闭环需 lead 落库
+- **决策**：
+  - **M1 做**：Java `POST /api/v1/public/leads` + Admin `GET .../leads` 列表/详情；status 默认 NEW
+  - **M1 Turnstile**：配置占位；本地 dev 可 skip
+  - **M1 不做**：FR-602~607、Python 跟进 AI、`inbound-landing` 公网页（与 EPIC-6 M2 合并排）
+- **影响**：[EPIC-7 M1 Sprint](HANDOFFS/2026-07-01-tech-director-epic7-m1-leads-sprint.md)
+
 ---
 
 ## 待讨论

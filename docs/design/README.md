@@ -17,6 +17,8 @@
 | [wireframes/diagnostic-trends.md](./wireframes/diagnostic-trends.md) | GEO 诊断 · 趋势对比 FR-108 |
 | [wireframes/keywords-list.md](./wireframes/keywords-list.md) | 关键词洞察 · 机会词列表 FR-201/202 |
 | [wireframes/content-task-list.md](./wireframes/content-task-list.md) | 内容 Agent · 内容任务列表 EPIC-4 M1（预研） |
+| [wireframes/landing-page-list.md](./wireframes/landing-page-list.md) | 落地页 Agent · 页面列表 EPIC-6 M1 |
+| [wireframes/leads-list.md](./wireframes/leads-list.md) | 线索与转化 · 询盘线索列表 EPIC-7 M1 |
 | [wireframes/projects-list.md](./wireframes/projects-list.md) | 客户项目列表 + FR-001 创建线框 |
 | [wireframes/project-detail.md](./wireframes/project-detail.md) | 客户项目详情 · Story 3 Tab（品牌/竞品/知识库） |
 | [../agent-team/HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md](../agent-team/HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md) | UI → 开发（工作台/GEO） |
@@ -25,6 +27,8 @@
 | [../agent-team/HANDOFFS/2026-06-29-ui-to-developer-diagnostic-trends.md](../agent-team/HANDOFFS/2026-06-29-ui-to-developer-diagnostic-trends.md) | UI → 开发（趋势对比 FR-108） |
 | [../agent-team/HANDOFFS/2026-06-29-ui-to-developer-keywords-list.md](../agent-team/HANDOFFS/2026-06-29-ui-to-developer-keywords-list.md) | UI → 开发（关键词列表 FR-201/202） |
 | [../agent-team/HANDOFFS/2026-06-29-ui-to-developer-content-task-list.md](../agent-team/HANDOFFS/2026-06-29-ui-to-developer-content-task-list.md) | UI → 开发（内容任务 EPIC-4 M1 预研） |
+| [../agent-team/HANDOFFS/2026-07-01-ui-to-developer-landing-page-list.md](../agent-team/HANDOFFS/2026-07-01-ui-to-developer-landing-page-list.md) | UI → 开发（落地页 EPIC-6 M1） |
+| [../agent-team/HANDOFFS/2026-07-01-ui-to-developer-leads-list.md](../agent-team/HANDOFFS/2026-07-01-ui-to-developer-leads-list.md) | UI → 开发（线索 EPIC-7 M1） |
 
 ---
 
@@ -37,8 +41,8 @@
 | GEO 诊断 | `/diagnostics` | ✅ [列表](wireframes/diagnostics-list.md) + [详情](wireframes/diagnostic-detail.md) + [趋势 FR-108](wireframes/diagnostic-trends.md) |
 | 关键词洞察 | `/projects/:projectId/keywords`（侧栏 `/keywords` 重定向） | ✅ [keywords-list.md](wireframes/keywords-list.md) FR-201/202 M1 |
 | 内容 Agent | `/content` | 🔶 [content-task-list.md](wireframes/content-task-list.md) EPIC-4 M1 预研 |
-| 落地页 Agent | `/landing` | 待设计 |
-| 线索与转化 | `/leads` | 待设计 |
+| 落地页 Agent | `/landing` | ✅ [landing-page-list.md](wireframes/landing-page-list.md) EPIC-6 M1 |
+| 线索与转化 | `/leads` | ✅ [leads-list.md](wireframes/leads-list.md) EPIC-7 M1 |
 | 报告中心 | `/reports` | 待设计 |
 | 系统设置 | `/settings/*` | 沿用若依系统菜单 |
 
@@ -82,6 +86,8 @@ Token 落地时优先在 `variables.module.scss` 的 `:root` 追加 `--tg-*` 变
 
 | 日期 | 作者 | 说明 |
 |------|------|------|
+| 2026-07-01 | UI 设计 | EPIC-7 M1 询盘线索列表 + 详情 drawer 线框 + HANDOFF |
+| 2026-07-01 | UI 设计 | EPIC-6 M1 落地页列表 + 创建/预览线框 + HANDOFF |
 | 2026-06-29 | UI 设计 | EPIC-4 M1 内容任务列表预研线框 + HANDOFF |
 | 2026-06-29 | UI 设计 | EPIC-3 M1 关键词机会词列表线框 FR-201/202 + HANDOFF 开发 |
 | 2026-06-29 | UI 设计 | FR-108 诊断趋势对比线框 + HANDOFF |
