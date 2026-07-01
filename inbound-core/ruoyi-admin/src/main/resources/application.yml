@@ -143,6 +143,7 @@ tenant:
     - keyword_opportunity
     - content_task
     - generated_content
+    - landing_page
     - diagnostic_run
     - diagnostic_result
     - probe_task

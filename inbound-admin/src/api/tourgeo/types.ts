@@ -413,3 +413,64 @@ export interface ContentGenerateResult {
   needsHumanReview?: boolean;
   captureMethod?: string;
 }
+
+/** FR-501~505 落地页 */
+export type LandingPageStatus = 'DRAFT' | 'EDITING' | 'READY' | 'PUBLISHED' | 'ARCHIVED';
+
+export interface LandingPageVo {
+  id: number;
+  projectId: number;
+  keywordId?: number;
+  keywordText?: string;
+  templateType: string;
+  title: string;
+  slug: string;
+  status: LandingPageStatus;
+  moduleCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface LandingPageDetailVo extends LandingPageVo {
+  contentJson?: Record<string, unknown>;
+  seoMetaJson?: Record<string, unknown>;
+  formConfigJson?: Record<string, unknown>;
+  whatsappLink?: string;
+}
+
+export interface LandingPageQuery {
+  pageNum: number;
+  pageSize: number;
+  status?: LandingPageStatus | '';
+  templateType?: string;
+  title?: string;
+  slug?: string;
+  keyword?: string;
+}
+
+export interface LandingPageForm {
+  keywordId: number;
+  templateType: string;
+  title?: string;
+  slug?: string;
+  language?: string;
+  targetMarket?: string;
+}
+
+export interface LandingGenerateForm {
+  useRag?: boolean;
+}
+
+export interface LandingGenerateResult {
+  pageId: number;
+  needsHumanReview?: boolean;
+  captureMethod?: string;
+  moduleCount?: number;
+}
+
+export interface LandingModuleItem {
+  key?: string;
+  type?: string;
+  content?: Record<string, unknown>;
+  [key: string]: unknown;
+}

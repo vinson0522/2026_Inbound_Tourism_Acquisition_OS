@@ -130,6 +130,9 @@
               <el-tooltip content="创建内容任务 FR-205" placement="top">
                 <el-button link type="primary" :disabled="generating" @click="goCreateContent(row)">创建内容</el-button>
               </el-tooltip>
+              <el-tooltip content="转落地页 FR-205" placement="top">
+                <el-button link type="primary" :disabled="generating" @click="goCreateLanding(row)">转落地页</el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -384,6 +387,19 @@ function goCreateContent(row: KeywordOpportunityVo) {
   }
   router.push({
     name: 'ProjectContentTasks',
+    params: { projectId: pid },
+    query: { action: 'create', keywordId: String(row.id) }
+  });
+}
+
+function goCreateLanding(row: KeywordOpportunityVo) {
+  const pid = projectId.value;
+  if (!pid) {
+    ElMessage.warning('请先选择项目');
+    return;
+  }
+  router.push({
+    name: 'ProjectLandingPages',
     params: { projectId: pid },
     query: { action: 'create', keywordId: String(row.id) }
   });

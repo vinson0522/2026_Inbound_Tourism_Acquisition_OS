@@ -11,6 +11,8 @@ import org.dromara.aiclient.model.AiApiResponse;
 import org.dromara.aiclient.model.AiHealthData;
 import org.dromara.aiclient.model.ContentGenerateData;
 import org.dromara.aiclient.model.ContentGenerateRequest;
+import org.dromara.aiclient.model.LandingGenerateData;
+import org.dromara.aiclient.model.LandingGenerateRequest;
 import org.dromara.aiclient.model.KeywordGenerateData;
 import org.dromara.aiclient.model.KeywordGenerateRequest;
 import org.dromara.aiclient.model.RagSearchData;
@@ -188,6 +190,39 @@ public class AiServiceClient {
             );
         } catch (JsonProcessingException ex) {
             throw new IllegalStateException("Failed to parse content generate response", ex);
+        }
+    }
+
+    /**
+     * POST /ai/landing/generate — FR-502~505 landing page generation.
+     */
+    public AiApiResponse<LandingGenerateData> landingGenerate(LandingGenerateRequest request) {
+        String url = normalizeBaseUrl() + "/ai/landing/generate";
+        String jsonBody;
+        try {
+            jsonBody = objectMapper.writeValueAsString(request);
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Failed to serialize landing generate request", ex);
+        }
+        int timeoutMs = Math.max(Math.toIntExact(properties.getReadTimeoutMs()), 120_000);
+        HttpResponse response = HttpRequest.post(url)
+            .header("Authorization", "Bearer " + properties.getInternalToken())
+            .header("Accept", MediaType.APPLICATION_JSON_VALUE)
+            .body(jsonBody, ContentType.JSON.getValue())
+            .timeout(timeoutMs)
+            .execute();
+        if (!response.isOk()) {
+            throw new IllegalStateException(
+                "Landing generate failed: HTTP " + response.getStatus() + " " + response.body()
+            );
+        }
+        try {
+            return objectMapper.readValue(
+                response.body(),
+                objectMapper.getTypeFactory().constructParametricType(AiApiResponse.class, LandingGenerateData.class)
+            );
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Failed to parse landing generate response", ex);
         }
     }
 

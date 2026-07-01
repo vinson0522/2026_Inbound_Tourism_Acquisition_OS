@@ -116,6 +116,13 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'ProjectContentTasks',
         hidden: true,
         meta: { title: '内容任务', activeMenu: '/content-tasks/index', noCache: true }
+      },
+      {
+        path: ':projectId/landing-pages',
+        component: () => import('@/views/tourgeo/landing/index.vue'),
+        name: 'ProjectLandingPages',
+        hidden: true,
+        meta: { title: '页面草稿', activeMenu: '/landing-pages/index', noCache: true }
       }
     ]
   },
@@ -148,6 +155,22 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/tourgeo/content/index.vue'),
         name: 'ContentTasksList',
         meta: { title: '内容任务', icon: 'list' }
+      }
+    ]
+  },
+  {
+    path: '/landing-pages',
+    component: Layout,
+    redirect: '/landing-pages/index',
+    name: 'TourgeoLanding',
+    meta: { title: '落地页 Agent', icon: 'link' },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/tourgeo/landing/index.vue'),
+        name: 'LandingPagesList',
+        meta: { title: '页面草稿', icon: 'list' }
       }
     ]
   },

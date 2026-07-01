@@ -63,6 +63,16 @@ class Settings(BaseSettings):
         "with scene, duration, visual, note. Set needs_human_review true; cite chunk_id when using RAG."
     )
 
+    landing_mock_llm: bool = False
+    landing_model: str = "openai/gpt-4o-mini"
+    landing_template_name: str = "landing_generate_v1"
+    landing_prompt_fallback: str = (
+        "You generate inbound tourism English landing pages as JSON only. "
+        "Return title, content_json.modules (keys: hero, why_this_trip, itinerary, what_we_provide, "
+        "traveler_reviews, faq, lead_form, whatsapp_cta), seo_meta_json, and form_config_json. "
+        "Set needs_human_review true; cite chunk_ids when using RAG."
+    )
+
     @property
     def has_embedding_key(self) -> bool:
         return bool(self.openai_api_key)
