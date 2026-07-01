@@ -7,8 +7,8 @@
 |------|-----|
 | **最后更新** | 2026-07-03 |
 | **更新角色** | 运维 |
-| **Git 远程** | ✅ `origin/main` · C12 `e127485` |
-| **当前 EPIC 焦点** | **EPIC-6 M2** ✅ 功能签核 · ⏳ **C13 commit+push**（~57 文件） |
+| **Git 远程** | ✅ `origin/main` · C13 `71c374d` |
+| **当前 EPIC 焦点** | **EPIC-6 M2** ✅ 关闭 · C13 pushed |
 
 ---
 
@@ -190,9 +190,9 @@
 | **C10** | EPIC-6 M1 全栈 landing | `feat(core,ai,admin): EPIC-6 M1 landing page generate` | ✅ `91b3ea4` |
 | **C11** | EPIC-7 M1 全栈 leads | `feat(core,admin): EPIC-7 M1 public leads and Admin list` | ✅ `76da501` |
 | **C12** | EPIC-8 M1 报告中心 | `feat(core,admin): EPIC-8 M1 report center and weekly report` | ✅ `e127485` |
-| **C13** | EPIC-6 M2 Astro 发布 | `feat(landing,core,admin): EPIC-6 M2 Astro publish and Turnstile leads` | `test_landing_publish_e2e` |
+| **C13** | EPIC-6 M2 Astro 发布 | `feat(landing,core,admin,deploy): EPIC-6 M2 Astro publish and Turnstile leads` | ✅ `71c374d` |
 
-**执行**：C1–C12 ✅ · push ✅ · **C13 ⏳** EPIC-6 M2
+**执行**：C1–C13 ✅ · push ✅
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -356,7 +356,7 @@
 | B-08 | ~~EPIC-7 M1 C11 未 commit/push~~ | 开发 | ✅ **已关闭** C11 `76da501` |
 | B-09 | ~~EPIC-8 M1 Java report API 未实现~~ | 开发 Java | ✅ **已关闭** smoke docx 2885B |
 | B-10 | ~~EPIC-8 M1 C12 未 commit/push~~ | 开发 | ✅ **已关闭** C12 `e127485` |
-| B-11 | EPIC-6 M2 **C13 未 commit/push** | 开发 | ⏳ ~57 文件工作区 |
+| B-11 | ~~EPIC-6 M2 C13 未 commit/push~~ | 开发 | ✅ **已关闭** `71c374d` |
 
 ---
 
@@ -374,7 +374,7 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-07-03 | 技术总监 | **EPIC-6 M2 功能签核 ✅** · 五棒齐 · 待 C13 commit |
+| 2026-07-03 | 开发 | C13 `71c374d` EPIC-6 M2 全栈 push · smoke publish + astro ✅ |
 | 2026-07-03 | 开发 Admin | EPIC-6 M2 落地页发布/下线/公网预览 · drawer + 列表 · build:prod ✅ |
 | 2026-07-03 | 开发 Landing | EPIC-6 M2 Astro `/p/[projectId]/[slug]` 八模块 + Turnstile LeadForm · `pnpm build` · 404 smoke ✅ |
 | 2026-07-03 | 开发 Java | EPIC-6 M2 public landing + publish/unpublish + CORS + Turnstile siteverify · smoke ✅ |
