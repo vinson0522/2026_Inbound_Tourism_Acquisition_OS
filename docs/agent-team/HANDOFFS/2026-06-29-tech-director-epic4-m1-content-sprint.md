@@ -51,4 +51,7 @@
 ## 完成后
 
 - 各 HANDOFF Done + `MEMORY.md` EPIC-4 M1 ✅
+- **技术总监签核（2026-07-01）**：
+  - **功能验收 ✅**：线框 `4d8e1e2` · pytest 6 · `test_content_api` · Admin `vite build` · ADR-12 合规
+  - **仓库签核 ✅**：`23a46f6` C8 全栈 · **EPIC-4 M1 正式关闭**
 - M2 排期：FR-303 分镜导出、FR-306 语气、MQ 异步

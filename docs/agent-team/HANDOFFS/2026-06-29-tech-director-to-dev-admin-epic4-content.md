@@ -47,5 +47,5 @@
   - 列表 + 筛选（status/platform 服务端；keyword/needsHumanReview 当前页客户端）+ 创建抽屉 + 关键词选择
   - 「生成脚本」loading → 预览 drawer（hook/script/voiceover/storyboard/CTA + 待审核 Tag）
   - 关键词页「创建内容」→ `?action=create&keywordId=` 预填
-  - `pnpm vite build` ✅
+  - `pnpm vite build` ✅ · C8 `23a46f6`
 - **遗留**：M2 详情页编辑、采纳/驳回 API、服务端 needsHumanReview 筛选

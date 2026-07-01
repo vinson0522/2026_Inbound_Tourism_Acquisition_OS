@@ -51,5 +51,5 @@
   - `ContentTaskController` 并入 `ruoyi-project`：`GET/POST/DELETE /api/v1/projects/{projectId}/content-tasks`、详情含 `generatedContent`、`POST .../generate` → Feign `/ai/content/generate`
   - `ruoyi-ai-client`：`ContentGenerateRequest/Data`、`StoryboardScene`、`AiServiceClient.contentGenerate()`
   - `tenant.excludes` 追加 `content_task`、`generated_content`；`PgContentTaskStatusTypeHandler` + `PgJsonbListMapTypeHandler`
-  - `deploy/scripts/test_content_api.py` ✅（需 Docker `ai-api` 含 content router + Java :8080）
-- **遗留**：M1 生成后 task status 仍 `DRAFT`（ADR-12）；Admin 内容列表待 UI HANDOFF
+  - `deploy/scripts/test_content_api.py` ✅（C8 `23a46f6` · Docker ai-api + Java :8080）
+- **遗留**：M1 生成后 task status 仍 `DRAFT`（ADR-12）

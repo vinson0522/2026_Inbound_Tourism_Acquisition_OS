@@ -69,5 +69,5 @@
   - **输出**：`hook` / `script` / `voiceover` / `on_screen_text` / `cta` / `storyboard_json[]` + `title` / `target_audience` / `hashtags` / `landing_page_suggestion`（DDL 对齐）
   - **Mock**：`CONTENT_MOCK_LLM` 或无 Key → `capture_method=content-mock`；可选 RAG top-3
   - **Prompt**：`template_service.load_content_script_prompt` → `content_script_v1` + config fallback
-  - **测试**：`tests/test_content_generate.py` **6 passed**
+  - **测试**：`tests/test_content_generate.py` **6 passed**（C8 `23a46f6`）
 - **遗留**：M2 LangGraph Agent；MQ `ai.content`；分镜导出 FR-303

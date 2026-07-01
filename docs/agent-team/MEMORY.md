@@ -8,7 +8,7 @@
 | **最后更新** | 2026-07-01 |
 | **更新角色** | 开发 |
 | **Git 远程** | ⚠️ 本地无 `origin` remote；`git push` 待配置仓库 URL |
-| **当前 EPIC 焦点** | **EPIC-4 M1** FR-301/302 内容 Agent（Python ✅ · Java ✅ · Admin ✅） |
+| **当前 EPIC 焦点** | **EPIC-4 M1** ✅ 正式关闭 · `23a46f6` C8 · 下一：技术总监签核 / push |
 
 ---
 
@@ -100,10 +100,10 @@
 | 1 | UI | 关键词列表线框 | [→UI](HANDOFFS/2026-06-29-tech-director-to-ui-epic3-keywords-list.md) | ✅ |
 | 2 | 开发 Python | `/ai/keywords/generate` | [→AI](HANDOFFS/2026-06-29-tech-director-to-dev-ai-epic3-keywords.md) | ✅ |
 | 3 | 开发 Java | keyword CRUD + generate | [→Java](HANDOFFS/2026-06-29-tech-director-to-dev-java-epic3-keywords.md) | ✅ 2026-06-29 |
-| 4 | 开发 Admin | 列表 + 生成 | [→Admin](HANDOFFS/2026-06-29-tech-director-to-dev-admin-epic3-keywords.md) | ✅ 实现 · ⏳ **未 commit** |
-| — | 总览 | Sprint 索引 | [EPIC-3 M1](HANDOFFS/2026-06-29-tech-director-epic3-m1-keywords-sprint.md) | 功能 ✅ · 仓库 ⏳ |
+| 4 | 开发 Admin | 列表 + 生成 | [→Admin](HANDOFFS/2026-06-29-tech-director-to-dev-admin-epic3-keywords.md) | ✅ `75e96cb` |
+| — | 总览 | Sprint 索引 | [EPIC-3 M1](HANDOFFS/2026-06-29-tech-director-epic3-m1-keywords-sprint.md) | ✅ **关闭** |
 
-**技术总监签核（2026-06-29）**：功能四棒 ✅ · smoke 8/8 · ADR-11 ✅；**仓库关闭待 Admin commit（C6）**
+**技术总监签核（2026-07-01）**：✅ **EPIC-3 M1 正式关闭** — C6 `75e96cb` · smoke 8/8 · ADR-11
 
 **ADR-11**：M1 仅生成+列表；FR-203 评分 → [M2 可选](HANDOFFS/2026-06-29-tech-director-epic3-m2-keyword-score-sprint.md)
 
@@ -111,11 +111,13 @@
 
 | # | 角色 | 任务 | HANDOFF | 状态 |
 |---|------|------|---------|:----:|
-| 1 | UI | 内容任务列表线框 | [→UI](HANDOFFS/2026-06-29-tech-director-to-ui-epic4-content-list.md) | ⏳ |
-| 2 | 开发 Python | `/ai/content/generate` | [→AI](HANDOFFS/2026-06-29-tech-director-to-dev-ai-epic4-content.md) | ✅ 2026-07-01 |
-| 3 | 开发 Java | content CRUD + generate | [→Java](HANDOFFS/2026-06-29-tech-director-to-dev-java-epic4-content.md) | ✅ 2026-07-01 |
-| 4 | 开发 Admin | 列表 + 脚本预览 | [→Admin](HANDOFFS/2026-06-29-tech-director-to-dev-admin-epic4-content.md) | ✅ 2026-07-01 |
-| — | 总览 | Sprint 索引 | [EPIC-4 M1](HANDOFFS/2026-06-29-tech-director-epic4-m1-content-sprint.md) | — |
+| 1 | UI | 内容任务列表线框 | [→UI](HANDOFFS/2026-06-29-tech-director-to-ui-epic4-content-list.md) | ✅ `4d8e1e2` |
+| 2 | 开发 Python | `/ai/content/generate` | [→AI](HANDOFFS/2026-06-29-tech-director-to-dev-ai-epic4-content.md) | ✅ `23a46f6` |
+| 3 | 开发 Java | content CRUD + generate | [→Java](HANDOFFS/2026-06-29-tech-director-to-dev-java-epic4-content.md) | ✅ `23a46f6` |
+| 4 | 开发 Admin | 列表 + 脚本预览 | [→Admin](HANDOFFS/2026-06-29-tech-director-to-dev-admin-epic4-content.md) | ✅ `23a46f6` |
+| — | 总览 | Sprint 索引 | [EPIC-4 M1](HANDOFFS/2026-06-29-tech-director-epic4-m1-content-sprint.md) | ✅ **关闭** |
+
+**技术总监签核（2026-07-01）**：✅ **EPIC-4 M1 正式关闭** — C7 `4d8e1e2` docs · C8 `23a46f6` 全栈 · pytest 6 + `test_content_api` ✅ · ADR-12
 
 **ADR-12**：M1 仅选题+脚本；分镜导出/排期/多语言 → M2
 
@@ -128,9 +130,12 @@
 | **C3** | Phase 2.2 Docling（document_parser/embed/file_storage + tests + pyproject） | `feat(ai): EPIC-10 Phase 2.2 Docling embed pipeline` | `pytest inbound-ai/tests/test_embed_docling_pipeline.py` |
 | **C4** | FR-106 PDF/Gotenberg + dashboard 跳转 + report export smoke | `feat(core,admin,deploy): FR-106 PDF export and dashboard fixes` | `test_diagnostic_report_export` |
 | **C5** | Sprint HANDOFFs + MEMORY + DECISIONS ADR-10/11 + design README | `docs: M2.2/EPIC-3 Sprint HANDOFFs and MEMORY` | — |
-| **C6** | EPIC-3 Admin 关键词页（`keyword.ts` / `keywords/index.vue` / router / detail 入口 + HANDOFF Done） | `feat(admin): EPIC-3 M1 keywords list page` | 浏览器 `/keywords` |
+| **C6** | EPIC-3 Admin 关键词页 | `feat(admin): EPIC-3 M1 keywords list page` | ✅ `75e96cb` |
+| **C7** | EPIC-4 Sprint HANDOFFs + content-task 线框 + ADR-12 | `docs: EPIC-4 M1 Sprint HANDOFFs…` | ✅ `4d8e1e2` |
+| **C8** | EPIC-4 M1 全栈（Python/Java/Admin + smoke + keywords FR-205 链） | `feat(core,ai,admin): EPIC-4 M1 content task and script generate` | `test_content_api` + pytest |
+| **C7b** | EPIC-3 Sprint 签核文案修正 | `docs: close EPIC-3 M1 sprint sign-off` | — |
 
-**执行**：C1–C5 ✅ 已完成；**C6 ⏳** 为 EPIC-3 M1 仓库关闭前置。不含 `deploy/.env`。
+**执行**：**C8 ⏳** 为 EPIC-4 M1 仓库关闭前置；C1–C7 ✅。
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -215,6 +220,9 @@
   - `test_knowledge_rag_search` ✅ asset#1 · 1 hit · chunkId=5
   - `test_keywords_api` ✅ inspiration · insertedCount=3 · total 4→7
   - `test_content_api` ✅ task create → generate → detail → delete
+- **C8 smoke 回归（2026-07-01）** ✅ EPIC-4 必测：`pytest test_content_generate` 6 passed · `test_content_api` ✅
+  - 全量 9/9：**6/9** — `test_diagnostic_e2e` RUNNING 超时（runId=1 卡住）· `test_diagnostic_trends` 0 点（PG 卷重置后无历史 run）· `test_diagnostic_report_export` runId=2 无 SUCCESS 数据
+  - 其余 6 项 ✅：projects · embed · ai_health · rag_search · keywords · content
 - **E2E（本机 Docker ADR-09）** ✅ runId=2/3 · `SUCCESS` · `geo_score=85.00` · **DIAGNOSE_MOCK_LLM**（Docker ai-api）
 - **工作台 FR-006 MVP（2026-06-26）** ✅ `getDashboard` 聚合诊断列表；`/dashboard` 编译与运行正常
 - **待办**：真 embedding 生产 Key 轮换；真 Gemini E2E（Q12 配额恢复后）
@@ -257,16 +265,20 @@
 | B-03a | 本地 GEO E2E **mock LLM**（`DIAGNOSE_MOCK_LLM=true`） | 开发 | ✅ 2026-06-29 runId=2/3 · geo_score=85 |
 | B-03b | 本地 GEO E2E **真 Gemini**（grounded-api） | 开发 | ⏳ 配额用尽；`DIAGNOSE_MOCK_LLM=false` 时 FAILED |
 | B-04 | ~~工作区未 commit（C1–C6）~~ | 开发 | **已关闭** 2026-07-01 · `2ffa3d7` Admin 关键词页 |
-| B-05 | EPIC-3 M1 **仓库签核** | 技术总监 | ⏳ 待全栈验收签核 |
+| B-05 | ~~EPIC-3 M1 仓库签核~~ | 技术总监 | **已关闭** 2026-07-01 · `75e96cb` |
+| B-06 | ~~EPIC-4 M1 C8 未 commit~~ | 开发 | **已关闭** 2026-07-01 · `23a46f6` |
 
 ---
 
-## 下一步（跨角色）
+## 下一步（跨角色 · 窗口派发 2026-07-01）
 
-| 优先级 | 窗口 | 动作 | HANDOFF |
-|:------:|------|------|---------|
-| **P0** | **UI 设计** | EPIC-4 内容任务列表线框定稿 | [→UI content](HANDOFFS/2026-06-29-tech-director-to-ui-epic4-content-list.md) |
-| **P1** | **运维** | `git remote` + push | — |
+| 优先级 | 窗口 | 动作 | 说明 |
+|:------:|------|------|------|
+| **P0** | **技术总监** | EPIC-4 M1 签核归档 + 排 EPIC-6 / EPIC-3 M2 | C8 完成 |
+| **P1** | **运维** | `git remote` + push（~24 commits） | 含 `23a46f6` |
+| **P2** | **开发** | 修复 diagnostic smoke（runId=1 卡住 / 补 seed run） | 9/9 回归 |
+| **P3** | **UI** | 浏览器走查 content 页截图 | 可选 |
+| **P4** | **开发备用** | 真 Gemini E2E | B-03b |
 
 ---
 
@@ -274,7 +286,8 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-07-01 | 开发 | EPIC-4 M1 Admin 内容任务列表 + 预览 drawer + FR-205 跳转 |
+| 2026-07-01 | 开发 | commit `23a46f6` C8 EPIC-4 全栈 · pytest 6 + test_content_api ✅ |
+| 2026-07-01 | 开发 | commit `4d8e1e2` C7 EPIC-4 docs/wireframe |
 | 2026-07-01 | 开发 | EPIC-4 M1 content Java CRUD + generate · `test_content_api.py` ✅ |
 | 2026-07-01 | 开发 | EPIC-4 M1 `POST /ai/content/generate` · mock/RAG/template · pytest 6 passed |
 | 2026-07-01 | 开发 | commit `75e96cb` EPIC-3 M1 Admin 关键词页 · B-04 全关 |
