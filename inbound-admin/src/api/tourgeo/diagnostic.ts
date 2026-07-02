@@ -10,6 +10,8 @@ import type {
   DiagnosticRunQuery,
   DiagnosticRunVO,
   DiagnosticCalibrationVO,
+  DiagnosticScheduleForm,
+  DiagnosticScheduleVO,
   DiagnosticTrendPointVO,
   DiagnosticTrendsData,
   PageResult,
@@ -124,6 +126,61 @@ function mapCalibrationSide(raw?: Record<string, unknown>) {
     brandMentioned: raw.brandMentioned != null ? Boolean(raw.brandMentioned) : undefined,
     rank: raw.rank != null ? Number(raw.rank) : null,
     citationCount: raw.citationCount != null ? Number(raw.citationCount) : undefined
+  };
+}
+
+/** FR-109 获取定时诊断计划 */
+export async function getDiagnosticSchedule(projectId: number): Promise<DiagnosticScheduleVO> {
+  const res = await request.get(`${BASE}/projects/${projectId}/diagnostics/schedule`);
+  return mapScheduleVo(res.data);
+}
+
+/** FR-109 保存定时诊断计划（upsert） */
+export async function upsertDiagnosticSchedule(
+  projectId: number,
+  form: DiagnosticScheduleForm
+): Promise<DiagnosticScheduleVO> {
+  const res = await request({
+    url: `${BASE}/projects/${projectId}/diagnostics/schedule`,
+    method: 'put',
+    data: {
+      enabled: form.enabled,
+      frequency: form.frequency,
+      market: form.market,
+      locale: form.locale,
+      region: form.region,
+      probeModes: form.probeModes,
+      models: form.models?.length ? form.models : ['Gemini'],
+      sampleCount: form.sampleCount ?? 3,
+      calibrationRatio: form.probeModes.includes('browser-extension')
+        ? (form.calibrationRatio ?? 0) / 100
+        : 0,
+      questionScope: form.questionScope ?? 'all'
+    }
+  });
+  return mapScheduleVo(res.data);
+}
+
+function mapScheduleVo(raw: Record<string, unknown>): DiagnosticScheduleVO {
+  const questionScope = String(raw.questionScope ?? 'all');
+  return {
+    id: raw.id != null ? Number(raw.id) : undefined,
+    projectId: raw.projectId != null ? Number(raw.projectId) : undefined,
+    configured: raw.configured != null ? Boolean(raw.configured) : raw.id != null,
+    enabled: Boolean(raw.enabled),
+    frequency: (raw.frequency === 'MONTHLY' ? 'MONTHLY' : 'WEEKLY') as DiagnosticScheduleVO['frequency'],
+    market: String(raw.market ?? 'US'),
+    locale: String(raw.locale ?? 'en-US'),
+    region: raw.region ? String(raw.region) : undefined,
+    questionScope,
+    probeModes: (raw.probeModes as string[]) ?? ['grounded-api'],
+    models: (raw.models as string[]) ?? ['Gemini'],
+    sampleCount: Number(raw.sampleCount ?? 3),
+    calibrationRatio: raw.calibrationRatio != null ? Number(raw.calibrationRatio) : 0,
+    nextRunAt: raw.nextRunAt ? String(raw.nextRunAt) : null,
+    lastTriggeredAt: raw.lastTriggeredAt ? String(raw.lastTriggeredAt) : null,
+    lastRunId: raw.lastRunId != null ? Number(raw.lastRunId) : null,
+    lastRunName: raw.lastRunName ? String(raw.lastRunName) : null
   };
 }
 

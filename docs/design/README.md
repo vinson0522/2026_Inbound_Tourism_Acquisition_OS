@@ -12,7 +12,7 @@
 |------|------|
 | [tokens.md](./tokens.md) | 品牌色、字体、间距、圆角、阴影、语义色 |
 | [wireframes/dashboard.md](./wireframes/dashboard.md) | 工作台（项目概览）线框 |
-| [wireframes/diagnostics-list.md](./wireframes/diagnostics-list.md) | GEO 诊断 · 诊断任务列表线框 |
+| [wireframes/diagnostics-list.md](./wireframes/diagnostics-list.md) | GEO 诊断 · 诊断任务列表 FR-103 + **M3 定时计划 FR-109** |
 | [wireframes/diagnostic-detail.md](./wireframes/diagnostic-detail.md) | GEO 诊断 · 诊断详情/结果（EPIC-2 + **M2 校准 Tab FR-115**） |
 | [wireframes/diagnostic-trends.md](./wireframes/diagnostic-trends.md) | GEO 诊断 · 趋势对比 FR-108 |
 | [wireframes/keywords-list.md](./wireframes/keywords-list.md) | 关键词洞察 · 机会词列表 FR-201/202 |
@@ -46,6 +46,7 @@
 | [../agent-team/HANDOFFS/2026-07-09-ui-to-developer-billing-m2.md](../agent-team/HANDOFFS/2026-07-09-ui-to-developer-billing-m2.md) | UI → 开发（计费编辑/重置 EPIC-9 M2） |
 | [../agent-team/HANDOFFS/2026-07-09-ui-to-developer-viral-breakdown.md](../agent-team/HANDOFFS/2026-07-09-ui-to-developer-viral-breakdown.md) | UI → 开发（爆款拆解 EPIC-5 M1） |
 | [../agent-team/HANDOFFS/2026-07-10-ui-to-developer-leads-m3.md](../agent-team/HANDOFFS/2026-07-10-ui-to-developer-leads-m3.md) | UI → 开发（线索 WhatsApp 归因 + AI 跟进 EPIC-7 M3） |
+| [../agent-team/HANDOFFS/2026-07-10-ui-to-developer-diagnostic-schedule-m3.md](../agent-team/HANDOFFS/2026-07-10-ui-to-developer-diagnostic-schedule-m3.md) | UI → 开发（定时诊断 EPIC-2 M3 FR-109） |
 
 ---
 
@@ -55,7 +56,7 @@
 |----------|---------------------|----------------|
 | 工作台 | `/dashboard` | ✅ [dashboard.md](./wireframes/dashboard.md) |
 | 客户项目 | `/projects` | ✅ [列表](wireframes/projects-list.md) + [详情 Story 3](wireframes/project-detail.md) |
-| GEO 诊断 | `/diagnostics` | ✅ [列表](wireframes/diagnostics-list.md) + [详情](wireframes/diagnostic-detail.md) + [趋势 FR-108](wireframes/diagnostic-trends.md) |
+| GEO 诊断 | `/diagnostics` | ✅ [列表 M1+**M3 FR-109**](wireframes/diagnostics-list.md) + [详情](wireframes/diagnostic-detail.md) + [趋势 FR-108](wireframes/diagnostic-trends.md) |
 | 关键词洞察 | `/projects/:projectId/keywords`（侧栏 `/keywords` 重定向） | ✅ [keywords-list.md](wireframes/keywords-list.md) FR-201/202 M1 |
 | 内容 Agent | `/content` | 🔶 [content-task-list.md](wireframes/content-task-list.md) EPIC-4 M1 · ✅ [viral-breakdown-list.md](wireframes/viral-breakdown-list.md) EPIC-5 M1 FR-401~403 |
 | 落地页 Agent | `/landing` | ✅ [列表 M1](wireframes/landing-page-list.md) · ✅ [发布 M2](wireframes/landing-page-publish.md) |
@@ -103,6 +104,7 @@ Token 落地时优先在 `variables.module.scss` 的 `:root` 追加 `--tg-*` 变
 
 | 日期 | 作者 | 说明 |
 |------|------|------|
+| 2026-07-10 | UI 设计 | EPIC-2 M3 diagnostics-list §M3 定时计划 Tab FR-109 + HANDOFF |
 | 2026-07-10 | UI 设计 | EPIC-7 M3 leads-list §M3 WhatsApp 归因 + AI 跟进弹窗 FR-602/603 + HANDOFF |
 | 2026-07-09 | UI 设计 | EPIC-5 M1 viral-breakdown-list 上传+七维拆解 drawer FR-401~403 + HANDOFF |
 | 2026-07-05 | UI 设计 | EPIC-11 M1 探针节点列表线框 FR-113 + HANDOFF |

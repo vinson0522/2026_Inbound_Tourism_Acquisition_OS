@@ -1,8 +1,9 @@
-# 线框：GEO 诊断 · 诊断任务列表
+# 线框：GEO 诊断 · 诊断任务列表（M1 + M3）
 
-> **PRD**：§6.1 GEO 诊断 → 诊断任务 · FR-103 批量诊断任务  
+> **PRD**：§6.1 GEO 诊断 → 诊断任务 · **FR-103** 批量诊断任务 · **FR-109** 定时诊断（M3）  
+> **EPIC**：EPIC-2 M1 · **M3** · ADR-20260710-26  
 > **路由**：`/diagnostics`（项目上下文下：`/projects/:projectId/diagnostics` 二选一，开发优先后者 REST 风格）  
-> **数据表**：`diagnostic_run`（`001_schema.sql`）
+> **数据表**：`diagnostic_run` · **`diagnostic_schedule`**（M3 · `001_schema.sql` 追加）
 
 ---
 
@@ -156,3 +157,206 @@
 - 搜索卡片 + `transition`
 - `el-card` header 工具栏 + `right-toolbar`
 - `pagination` 组件（项目内已有）
+
+---
+
+## M3 增量 · 定时计划 Tab（FR-109）
+
+> **PRD**：FR-109 按周/月自动发起诊断 · **ADR-20260710-26**  
+> **前置**：M1 诊断列表 + 新建 drawer ✅ · `DiagnosticRunServiceImpl.createRun` ✅  
+> **关联 Java**：`GET/PUT .../diagnostics/schedule` · `DiagnosticScheduleJob` 每小时 due 检查
+
+**M3 范围（本页）**：
+- ✅ 页级 **`el-tabs`** — **「诊断任务」**（默认 · M1 列表不变）| **「定时计划」**
+- ✅ 定时计划表单 — `enabled` · 频率 `WEEKLY`/`MONTHLY` · 复用新建 drawer 诊断参数字段
+- ✅ 只读区 — 下次执行 · 最近触发 · 最近 run 链详情
+- ✅ footnote — 超额跳过 · 不承诺排名 · 无通知
+- ❌ 邮件/企微通知 · XXL-Job · 自由 cron · 每项目多计划 · 诊断结果缓存
+
+**约束**（ADR-26）：
+- 每项目 **仅 1 条** `diagnostic_schedule`（upsert）
+- 触发时复用 `createRun` · 任务名默认 `{项目名}-定时-{YYYY-MM-DD}`
+- 额度不足：**skip** + warn 日志 · **不创建 run** · UI 不弹错（footnote 说明）
+
+**权限**：
+- 查看计划：`tourgeo:diagnostic:view`（与列表一致）
+- 保存计划：`tourgeo:diagnostic:edit`（与「新建诊断任务」一致）
+- 只读角色：表单 disabled · 隐藏「保存计划」
+
+---
+
+### M3 页级 Tab 结构
+
+**位置**：`tg-page-header` 与合规 hint **下方** · 列表/搜索 **上方**。
+
+```
+┌─ el-tabs v-model="activePageTab" ─────────────────────────────────────┐
+│ [诊断任务]  [定时计划]                                                  │
+└─────────────────────────────────────────────────────────────────────────┘
+
+activePageTab === 'runs'     → 现有 M1 搜索区 + 表格 + 新建 drawer（不变）
+activePageTab === 'schedule' → 下方「定时计划」单卡表单（本节）
+```
+
+**路由**（P2 可选）：`?tab=schedule` 深链定时 Tab；M3 可仅内存切换。
+
+**副标题**（定时 Tab 内 `el-page-header` 或 card 标题下）：
+> 按周或按月自动创建 GEO 诊断任务；到点由系统触发，无需手工新建。
+
+---
+
+### M3 布局增量（ASCII）
+
+```
+定时计划 Tab (el-card shadow="hover"):
+┌─ 定时 GEO 诊断 ────────────────────────────────────────────────────────┐
+│ 启用定时计划    [el-switch v-model="enabled"]  关闭后 Job 不触发          │
+│ ── 执行频率 (FR-109) ──                                                 │
+│ ( ) 每周 WEEKLY    ( ) 每月 MONTHLY   el-radio-group                    │
+│   周：自上次成功触发起每 7 日 · 月：每自然月同日（无 31 日则月末）         │
+│ ── 诊断参数（与「新建诊断任务」一致，不含任务名称） ──                    │
+│ 目标市场*       [US ▼]     来自 project target_markets                 │
+│ 语言/地区*      [en-US ▼]                                               │
+│ 问题范围*       ( )全部  ( )按阶段  ( )自定义数量                         │
+│ 探针模式*       [✓] grounded-api  [ ] browser-extension  [ ] headless   │
+│ AI 平台*        [✓] Perplexity  [✓] Gemini  [ ] OpenAI                  │
+│ 采样次数*       [ 3 ]  el-input-number min=1 max=10                     │
+│ 校准比例        [====●====] 0–30%  （须勾选 browser-extension）          │
+│ ── 执行状态（只读 · GET schedule 响应） ──                               │
+│ 下次执行        2026-07-17 02:00   或 enabled=false 时「—」              │
+│ 最近触发        2026-07-10 02:00   从未触发「—」                         │
+│ 最近任务        [#42 Q2-US-定时-2026-07-10]  link → /diagnostics/42       │
+│                 无 lastRunId 时「暂无自动任务」                           │
+│ ℹ GEO 诊断使用联网检索采样，不承诺排名保证（同新建 drawer alert）          │
+│ footnote 卡（见下）                                                      │
+│                              [保存计划] primary  （diagnostic:edit）     │
+└──────────────────────────────────────────────────────────────────────────┘
+
+未配置过 schedule（GET 404 或空默认）:
+  enabled=false · frequency=WEEKLY · 字段套用与新建 drawer 相同默认值
+  提示 el-alert info「尚未保存定时计划，配置后点击保存。」
+
+保存成功:
+  ElMessage.success「定时计划已保存」
+  刷新 nextRunAt / lastTriggeredAt / lastRunId
+```
+
+---
+
+### 定时计划表单字段
+
+| 字段 | 组件 | 必填 | API 字段 | 说明 |
+|------|------|:----:|----------|------|
+| 启用 | `el-switch` | — | `enabled` | 默认 `false`；关闭仍允许保存参数 |
+| 执行频率 | `el-radio-group` | ✅ | `frequency` | `WEEKLY` \| `MONTHLY` |
+| 目标市场 | `el-select` | ✅ | `market` | 与新建 drawer 同源 `marketOptions` |
+| 语言/地区 | `el-select` | ✅ | `locale` | en-US / en-GB / en-AU |
+| 问题范围 | `el-radio-group` | ✅ | `questionScope` → `question_scope_json` | all / stage / custom |
+| 探针模式 | `el-checkbox-group` | ✅ | `probeModes` → `probe_modes_json` | grounded-api 默认勾选 |
+| AI 平台 | `el-checkbox-group` | ✅ | `models` → `models_json` | 至少 1 项 |
+| 采样次数 | `el-input-number` | ✅ | `sampleCount` | 1–10 · 默认 3 |
+| 校准比例 | `el-slider` | — | `calibrationRatio` | 0–30% · 同 drawer 联动 browser-extension |
+
+**只读展示**（`el-descriptions` :column="1" border）：
+
+| UI 标签 | API 字段 | 展示 |
+|---------|----------|------|
+| 下次执行 | `nextRunAt` | `YYYY-MM-DD HH:mm` · `enabled=false` 显示「已暂停」 |
+| 最近触发 | `lastTriggeredAt` | 时间或 `—` |
+| 最近任务 | `lastRunId` + `lastRunName`（可选） | `el-link` → `/diagnostics/runs/:runId` 或项目内详情路由 · 无 run「暂无自动任务」 |
+
+---
+
+### 交互与校验
+
+| 动作 | 行为 |
+|------|------|
+| 切换 Tab | 进入「定时计划」时 `GET .../diagnostics/schedule` · loading skeleton |
+| 保存 | `PUT .../diagnostics/schedule` 全量 upsert · `:loading` on 按钮 |
+| 校验失败 | 与新建 drawer 相同（市场/平台/采样必填） |
+| `enabled=false` | 表单可编辑 · 只读区「下次执行」显示「已暂停」 |
+| 最近任务链接 | 新 Tab 或 `router.push` 到已有 `detail.vue` |
+| 项目切换 | 重置 Tab 到「诊断任务」或保持 Tab 但 reload schedule |
+
+**与新建 drawer 差异**：
+
+| 项 | 新建 drawer | 定时计划 |
+|----|-------------|----------|
+| 任务名称 | 用户输入 | **无** · Job 自动生成 |
+| 提交 API | `POST .../diagnostics` 202 | `PUT .../schedule` 200 |
+| 立即执行 | 是 | 否 · 等 `nextRunAt` |
+
+---
+
+### M3 合规 footnote（`el-card shadow="never"` · 表单下方）
+
+```
+┌─ 定时执行说明 ─────────────────────────────────────────────────────────┐
+│ · 系统 **每小时** 检查到期计划（Spring `@Scheduled`）；到点自动创建诊断任务。 │
+│ · **每周**：自上次成功触发起间隔 7 日；**每月**：每自然月相同日期（无该日则月末）。 │
+│ · 若当月 **GEO 诊断额度不足**，本次触发 **跳过** 并记录日志，不创建任务。     │
+│ · 诊断结果为采样时刻 AI 回答，**不承诺排名保证**；M3 **不发送** 邮件/企微通知。 │
+│ · 每项目仅支持 **一条** 定时计划；如需变更参数请编辑后保存。                  │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+页顶既有合规 hint（M1）在 Tab 外 **保留**；定时 Tab 内重复 info alert（与新建 drawer 同文案）即可。
+
+---
+
+### M3 关联 API
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/v1/projects/{projectId}/diagnostics/schedule` | 单条计划 · 无记录可 404 + 前端默认空表单 |
+| PUT | `/api/v1/projects/{projectId}/diagnostics/schedule` | upsert · 返回完整 Vo 含 `nextRunAt` |
+
+**响应 Vo 建议**（`DiagnosticScheduleVo`）：
+
+```typescript
+{
+  enabled: boolean
+  frequency: 'WEEKLY' | 'MONTHLY'
+  market: string
+  locale: string
+  questionScope: string
+  probeModes: string[]
+  models: string[]
+  sampleCount: number
+  calibrationRatio: number
+  nextRunAt: string | null
+  lastTriggeredAt: string | null
+  lastRunId: number | null
+  lastRunName?: string
+}
+```
+
+---
+
+### M3 实现参考
+
+- Tab 容器：参考 [keywords-list.md](./keywords-list.md) 页内 `el-tabs` · 或 [project-detail.md](./project-detail.md) border-card
+- 表单字段：**直接复用** `diagnostics/index.vue` 新建 drawer 表单项（抽 `DiagnosticRunParamsForm` 组件 P2）
+- 只读区：`el-descriptions` · 最近任务 `el-link type="primary"`
+- 文件：`inbound-admin/src/views/tourgeo/diagnostics/index.vue` · `api/tourgeo/diagnostic.ts`
+
+---
+
+### M3 范围边界
+
+| 包含 | 不包含 |
+|------|--------|
+| 页级「定时计划」Tab + 单条 upsert 表单 | FR-109「到点通知」邮件/企微 |
+| enabled + WEEKLY/MONTHLY | 自定义 cron / XXL-Job UI |
+| 下次执行 / 最近 run 链接 | 多计划列表 / 计划历史 |
+| 超额 skip footnote | 超额 Admin 内告警条（仅日志） |
+| 复用探针/平台/采样参数 | 定时任务单独缓存 GEO 结果 |
+
+---
+
+## 版本
+
+| 日期 | 作者 | 说明 |
+|------|------|------|
+| 2026-07-10 | UI 设计 | **§M3** 定时计划 Tab FR-109 · enabled/频率/参数复用 · nextRun/lastRun · ADR-26 footnote |
+| 2026-06-26 | UI 设计 | M1 初版 · FR-103 列表 + 新建 drawer |

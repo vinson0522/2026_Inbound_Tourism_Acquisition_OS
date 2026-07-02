@@ -11,16 +11,20 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.diagnostic.domain.bo.CreateDiagnosticBo;
+import org.dromara.diagnostic.domain.bo.DiagnosticScheduleUpsertBo;
 import org.dromara.diagnostic.domain.vo.DiagnosticCalibrationVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticResultVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticRunVo;
+import org.dromara.diagnostic.domain.vo.DiagnosticScheduleVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticTrendsVo;
 import org.dromara.diagnostic.domain.vo.ProbeTaskVo;
 import org.dromara.diagnostic.service.IDiagnosticRunService;
+import org.dromara.diagnostic.service.IDiagnosticScheduleService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,6 +50,7 @@ public class DiagnosticController extends BaseController {
 
     private final IDiagnosticRunService diagnosticRunService;
     private final IDiagnosticReportExportService diagnosticReportExportService;
+    private final IDiagnosticScheduleService diagnosticScheduleService;
 
     @SaCheckLogin
     @Log(title = "GEO诊断", businessType = BusinessType.INSERT)
@@ -65,6 +70,23 @@ public class DiagnosticController extends BaseController {
         PageQuery pageQuery
     ) {
         return diagnosticRunService.queryPageList(projectId, pageQuery);
+    }
+
+    /** FR-109 定时诊断计划 */
+    @SaCheckLogin
+    @GetMapping("/projects/{projectId}/diagnostics/schedule")
+    public R<DiagnosticScheduleVo> getSchedule(@NotNull @PathVariable Long projectId) {
+        return R.ok(diagnosticScheduleService.getByProject(projectId));
+    }
+
+    @SaCheckLogin
+    @Log(title = "GEO诊断定时计划", businessType = BusinessType.UPDATE)
+    @PutMapping("/projects/{projectId}/diagnostics/schedule")
+    public R<DiagnosticScheduleVo> upsertSchedule(
+        @NotNull @PathVariable Long projectId,
+        @Validated @RequestBody DiagnosticScheduleUpsertBo bo
+    ) {
+        return R.ok(diagnosticScheduleService.upsert(projectId, bo));
     }
 
     /** FR-108 诊断趋势序列（按 finished_at ASC） */

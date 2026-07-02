@@ -16,6 +16,9 @@ public interface IDiagnosticRunService {
 
     Long createRun(Long projectId, CreateDiagnosticBo bo);
 
+    /** 定时 Job 触发 — 显式 tenantId，无登录用户 */
+    Long createRunForSchedule(Long projectId, Long tenantId, CreateDiagnosticBo bo);
+
     void handleProbeCallback(ProbeCallbackBo bo);
 
     TableDataInfo<DiagnosticRunVo> queryPageList(Long projectId, PageQuery pageQuery);

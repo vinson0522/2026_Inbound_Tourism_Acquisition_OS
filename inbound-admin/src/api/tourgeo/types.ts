@@ -241,6 +241,42 @@ export interface CreateDiagnosticForm {
   calibrationRatio: number;
 }
 
+/** FR-109 定时诊断计划 */
+export interface DiagnosticScheduleVO {
+  id?: number;
+  projectId?: number;
+  configured?: boolean;
+  enabled: boolean;
+  frequency: 'WEEKLY' | 'MONTHLY';
+  market: string;
+  locale: string;
+  region?: string;
+  questionScope: string;
+  probeModes: string[];
+  models: string[];
+  sampleCount: number;
+  /** 0–1 小数 */
+  calibrationRatio: number;
+  nextRunAt: string | null;
+  lastTriggeredAt: string | null;
+  lastRunId: number | null;
+  lastRunName?: string | null;
+}
+
+export interface DiagnosticScheduleForm {
+  enabled: boolean;
+  frequency: 'WEEKLY' | 'MONTHLY';
+  market: string;
+  locale: string;
+  region: string;
+  questionScope: 'all' | 'stage' | 'custom';
+  probeModes: string[];
+  models: string[];
+  sampleCount: number;
+  /** 0–30 整数，与新建 drawer 一致 */
+  calibrationRatio: number;
+}
+
 export interface PageResult<T> {
   rows: T[];
   total: number;

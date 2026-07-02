@@ -10,10 +10,12 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.diagnostic.domain.bo.ProbeCallbackBo;
 import org.dromara.diagnostic.service.IDiagnosticRunService;
+import org.dromara.diagnostic.service.IDiagnosticScheduleService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DiagnosticInternalController extends BaseController {
 
     private final IDiagnosticRunService diagnosticRunService;
+    private final IDiagnosticScheduleService diagnosticScheduleService;
     private final AiServiceProperties aiServiceProperties;
 
     @PostMapping("/probe-callback")
@@ -33,6 +36,20 @@ public class DiagnosticInternalController extends BaseController {
         validateInternalToken(request);
         diagnosticRunService.handleProbeCallback(bo);
         return R.ok();
+    }
+
+    /** smoke / 内网手动触发定时诊断 */
+    @PostMapping("/schedule-trigger")
+    public R<Long> scheduleTrigger(
+        @RequestParam Long projectId,
+        @RequestParam(defaultValue = "true") boolean force,
+        HttpServletRequest request
+    ) {
+        validateInternalToken(request);
+        if (projectId == null) {
+            throw new ServiceException("projectId 不能为空", HttpStatus.BAD_REQUEST);
+        }
+        return R.ok(diagnosticScheduleService.triggerForProject(projectId, force));
     }
 
     private void validateInternalToken(HttpServletRequest request) {

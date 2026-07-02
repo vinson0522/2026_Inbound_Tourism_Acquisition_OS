@@ -105,7 +105,16 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long createRun(Long projectId, CreateDiagnosticBo bo) {
-        Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        return createRunInternal(projectId, BusinessTenantHelper.getBusinessTenantId(), LoginHelper.getUserId(), bo);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long createRunForSchedule(Long projectId, Long tenantId, CreateDiagnosticBo bo) {
+        return createRunInternal(projectId, tenantId, null, bo);
+    }
+
+    private Long createRunInternal(Long projectId, Long tenantId, Long userId, CreateDiagnosticBo bo) {
         CustomerProject project = getOwnedProjectOrThrow(projectId, tenantId);
         quotaService.checkAndConsume(tenantId, QuotaType.DIAGNOSTICS_PER_MONTH, 1);
 
@@ -121,7 +130,6 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
 
         List<PlatformModel> platforms = PlatformModelResolver.resolveModels(modelNames);
         OffsetDateTime now = OffsetDateTime.now();
-        Long userId = LoginHelper.getUserId();
 
         BigDecimal calibrationRatio = bo.getCalibrationRatio() == null ? BigDecimal.ZERO : bo.getCalibrationRatio();
         boolean dualModeCalibration = calibrationRatio.compareTo(BigDecimal.ZERO) > 0

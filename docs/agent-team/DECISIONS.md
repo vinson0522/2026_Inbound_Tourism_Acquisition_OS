@@ -273,6 +273,16 @@
   - 点击与表单线索 M3 弱关联：按 landing_page_id 聚合展示，不强绑 lead_id
 - **影响**：[EPIC-7 M3 Sprint](HANDOFFS/2026-07-10-tech-director-epic7-m3-leads-sprint.md)
 
+### ADR-20260710-26 | EPIC-2 M3 仅 FR-109 定时诊断（Spring Scheduled）
+- **状态**：已采纳
+- **决策者**：技术总监（完整版路线图 #7 · 末项 Sprint）
+- **背景**：手动 createRun 已稳定；客户需周/月自动复测；PRD FR-109；XXL-Job 未入 compose MVP
+- **决策**：
+  - **M3 做**：`diagnostic_schedule` 每项目 1 条 · WEEKLY/MONTHLY · `@Scheduled`  hourly due 检查 · Admin Tab · smoke
+  - **M3 不做**：邮件/企微通知 · XXL-Job · 自由 cron · 多 schedule/项目 · 诊断结果缓存
+  - 超额：skip 并写 warn 日志，不创建 run
+- **影响**：[EPIC-2 M3 Sprint](HANDOFFS/2026-07-10-tech-director-epic2-m3-schedule-sprint.md)
+
 ---
 
 ## 待讨论

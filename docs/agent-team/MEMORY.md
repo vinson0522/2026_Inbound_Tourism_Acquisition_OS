@@ -5,10 +5,10 @@
 
 | 字段 | 值 |
 |------|-----|
-| **最后更新** | 2026-07-02 |
-| **更新角色** | 开发 |
-| **Git 远程** | ✅ `origin/main` · C22 `18b17c0` |
-| **当前 EPIC 焦点** | **EPIC-2 M3** 定时诊断（FR-109）· 路线图 #7 |
+| **最后更新** | 2026-07-10 |
+| **更新角色** | 技术总监 |
+| **Git 远程** | ✅ `origin/main` · C23 `83d1d87` |
+| **当前 EPIC 焦点** | **维护轨** · 完整版路线图 #1–#7 全部关闭 |
 
 ---
 
@@ -202,7 +202,7 @@
 | 4 | M2 计费 | EPIC-9 · FR-804 扩展 | 套餐 CRUD + 周期重置 | ✅ C20 `942eddb` |
 | 5 | M1 素材 | EPIC-5 · FR-401~403 | 爆款拆解 MVP | ✅ C21 `fb28a96` |
 | 6 | M3 线索 | EPIC-7 · FR-602/603 | WhatsApp 追踪 + AI 跟进话术 | ✅ C22 `18b17c0` |
-| 7 | M3 诊断 | EPIC-2 · FR-109 | 定时诊断任务 | ⏳ **下一 Sprint** |
+| 7 | M3 诊断 | EPIC-2 · FR-109 | 定时诊断任务 | ⏳ **当前** |
 | — | 维护 | — | smoke 9/9 · 扩展真 Perplexity hook | 并行 |
 
 ### EPIC-7 M2 Sprint — FR-605 轻量 CRM（2026-07-07 排期）
@@ -287,7 +287,18 @@
 
 **技术总监签核（2026-07-10）**：✅ **EPIC-7 M3 正式关闭** — C22 `18b17c0` · `test_leads_whatsapp_ai` leadId=44 clicks=6 · pytest 7 · Admin/Landing build ✅ · 路线图 #6 ✅
 
-### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
+### EPIC-2 M3 Sprint — FR-109 定时诊断（2026-07-10 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | 定时计划线框 | [→UI](HANDOFFS/2026-07-10-tech-director-to-ui-epic2-schedule-m3.md) | ✅ |
+| 2 | 开发 Java | schedule + Job | [→Java](HANDOFFS/2026-07-10-tech-director-to-dev-java-epic2-schedule-m3.md) | ✅ |
+| 3 | 开发 Admin | 定时计划 UI | [→Admin](HANDOFFS/2026-07-10-tech-director-to-dev-admin-epic2-schedule-m3.md) | ✅ |
+| — | 总览 | Sprint 索引 | [EPIC-2 M3](HANDOFFS/2026-07-10-tech-director-epic2-m3-schedule-sprint.md) | — |
+
+**ADR-26**：Spring `@Scheduled` · 每项目 1 schedule · 无 XXL-Job M3
+
+**技术总监签核（2026-07-02）**：✅ **EPIC-2 M3 正式关闭** — C23 `83d1d87` · `test_diagnostic_schedule` runId=11 · Admin `build:prod` ✅ · **路线图 #7 ✅ 全部关闭**
 
 | # | 角色 | 任务 | HANDOFF | 状态 |
 |---|------|------|---------|:----:|
@@ -339,8 +350,9 @@
 | **C20** | EPIC-9 M2 计费 | `feat(core,admin): EPIC-9 M2 subscription CRUD and period reset` | ✅ `942eddb` |
 | **C21** | EPIC-5 M1 爆款 | `feat(core,ai,admin): EPIC-5 M1 viral video breakdown MVP` | ✅ `fb28a96` |
 | **C22** | EPIC-7 M3 线索 | `feat(core,ai,admin,landing): EPIC-7 M3 WhatsApp tracking and AI followup` | ✅ `18b17c0` |
+| **C23** | EPIC-2 M3 定时诊断 | `feat(core,admin): EPIC-2 M3 scheduled diagnostic runs FR-109` | ✅ `83d1d87` |
 
-**执行**：C1–C22 ✅ · push ✅
+**执行**：C1–C23 ✅ · push ✅ · **完整版路线图 #1–#7 全部关闭** · 进入维护轨
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -432,6 +444,8 @@
 - **EPIC-9 M2 FR-804 billing Java（2026-07-09）** ✅ `PUT /api/v1/settings/billing/subscription` · `SubscriptionPeriodResetJob`（02:00）· `POST /api/v1/internal/billing/period-reset` · ADR-23 · `test_billing_period_reset.py` ✅
 - **EPIC-11 M1 FR-112~114 probe Java（2026-07-05）** ✅ `ProbeController` register/poll/result/adapters + `GET /nodes` · `createRun` browser-extension 分叉 · `test_probe_extension_e2e.py` ✅
 - **EPIC-11 M2 FR-115/116 probe Java（2026-07-09）** ✅ platform-adapters API · calibration GET · calibration_ratio 分叉 · seed chatgpt · `test_probe_calibration.py` ✅ runId=7
+- **EPIC-2 M3 FR-109 diagnostic schedule Java（2026-07-02）** ✅ `diagnostic_schedule` DDL · `GET/PUT .../diagnostics/schedule` · `DiagnosticScheduleJob` hourly · `createRunForSchedule` · `hasRemainingQuota` skip · internal `schedule-trigger` · `tenant.excludes` + `diagnostic_schedule` · `test_diagnostic_schedule.py` ✅ runId=11 · **C23 并入**
+- **EPIC-2 M3 FR-109 Admin 定时计划 Tab（2026-07-02）** ✅ `diagnostics/index.vue` Tab「诊断任务|定时计划」· schedule 表单/只读区/footnote · `getDiagnosticSchedule`/`upsertDiagnosticSchedule` · `?tab=schedule` · `pnpm build:prod` ✅ · **C23 并入**
 - **EPIC-11 M1 FR-112~114 probe Extension（2026-07-05）** ✅ Plasmo MV3 · background poll 30s · perplexity content hook + mock · adapter parse · popup · `pnpm build` ✅
 - **EPIC-11 M2 FR-112 ChatGPT Extension（2026-07-09）** ✅ `adapters/chatgpt.ts` + `contents/chatgpt.ts` · seed parse_rules 对齐 · background 轮换 poll perplexity/chatgpt · mock 可测 · `pnpm build` + `test:adapter` ✅
 - **EPIC-11 M1 FR-113 Admin 探针节点（2026-07-05）** ✅ `/settings/probe-nodes` 只读列表 · 在线/离线 · 空态安装引导 · `pnpm build:prod` ✅
@@ -506,9 +520,9 @@
 
 ## UI 设计
 
-- **已完成**：… probe-adapters (EPIC-11 M2) ✅ · billing-settings §M2 (EPIC-9 M2) ✅ · viral-breakdown-list (EPIC-5 M1) ✅ · **leads-list §M3 (EPIC-7 M3)** ✅
-- **HANDOFF**：[UI→开发 leads M3](HANDOFFS/2026-07-10-ui-to-developer-leads-m3.md) ✅
-- **待办**：—（M3 开发由 Java / AI / Landing / Admin 窗口接手）
+- **已完成**：… leads-list §M3 (EPIC-7 M3) ✅ · **diagnostics-list §M3 (EPIC-2 M3)** ✅
+- **HANDOFF**：[UI→开发 diagnostic schedule M3](HANDOFFS/2026-07-10-ui-to-developer-diagnostic-schedule-m3.md) ✅
+- **待办**：—（M3 开发由 Java / Admin 窗口接手）
 
 ---
 
@@ -536,15 +550,16 @@
 | B-17 | ~~EPIC-9 M2 C20 未 commit/push~~ | 开发 | ✅ **已关闭** C20 `942eddb` · smoke ✅ |
 | B-18 | ~~EPIC-5 M1 C21 未 commit/push~~ | 开发 | ✅ **已关闭** C21 `fb28a96` · smoke materialId=3 |
 | B-19 | ~~EPIC-7 M3 C22 未 commit/push~~ | 开发 | ✅ **已关闭** C22 `18b17c0` · smoke leadId=44 |
+| B-20 | ~~EPIC-2 M3 C23 未 commit/push~~ | 开发 | ✅ **已关闭** C23 `83d1d87` · smoke runId=11 |
 
 ---
 
-## 下一步（跨角色 · 2026-07-02）
+## 下一步（跨角色 · 2026-07-10）
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P0** | **技术总监** | 派发 **EPIC-2 M3** 定时诊断 | 路线图 #7 |
-| **P1** | **开发** | diagnostic smoke 9/9 | 维护轨 |
+| **P0** | **开发** | diagnostic smoke 9/9 回归 | 维护轨 |
+| **P1** | **开发** | 扩展真 Perplexity hook · 探针 E2E | 维护轨 |
 
 ---
 
@@ -552,6 +567,11 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-02 | 开发 | C23 `83d1d87` EPIC-2 M3 定时诊断全栈 commit+push · smoke runId=11 · **路线图 #7 ✅ 全部关闭** · B-20 关闭 |
+| 2026-07-02 | 开发 Admin | EPIC-2 M3 定时计划 Tab · schedule API 对接 · `build:prod` ✅ · EPIC-2 M3 Admin 完成 |
+| 2026-07-02 | 开发 Java | EPIC-2 M3 FR-109 `diagnostic_schedule` + Job + smoke runId=8 · Java 端完成 · 待 C23 commit |
+| 2026-07-10 | UI 设计 | EPIC-2 M3 `diagnostics-list` §M3 定时计划 Tab FR-109 · enabled/频率/参数复用 · nextRun/lastRun · footnote · UI→开发 HANDOFF ✅ |
+| 2026-07-10 | 技术总监 | C22 已关闭 · 派发 **EPIC-2 M3** 定时诊断 · ADR-26 · 3 条 HANDOFF · 路线图 #7 末项 |
 | 2026-07-02 | 开发 | C22 `18b17c0` EPIC-7 M3 WhatsApp+AI 全栈 commit+push · **EPIC-7 M3 正式关闭** · 路线图 #6 ✅ · B-19 关闭 |
 | 2026-07-10 | 技术总监 | EPIC-7 M3 五端复核 ✅ · smoke leadId=43 · 派发 C22 · B-19 打开 |
 | 2026-07-02 | 开发 Admin | EPIC-7 M3 leads drawer WhatsApp 归因 + AI 跟进弹窗 · `build:prod` ✅ |
