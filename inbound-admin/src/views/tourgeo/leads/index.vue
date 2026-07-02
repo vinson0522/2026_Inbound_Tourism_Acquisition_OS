@@ -148,7 +148,7 @@
     <el-drawer
       v-model="detailVisible"
       :title="detailTitle"
-      size="560px"
+      size="640px"
       destroy-on-close
       class="lead-detail-drawer"
       @closed="resetDetail"
@@ -161,92 +161,193 @@
             <span class="detail-id">#{{ detail.id }}</span>
           </div>
 
-          <h4 class="section-title">联系人</h4>
-          <el-descriptions :column="1" border size="small">
-            <el-descriptions-item label="姓名">{{ detail.name?.trim() || '—' }}</el-descriptions-item>
-            <el-descriptions-item label="邮箱">
-              <span v-if="detail.email">
-                <el-link :href="`mailto:${detail.email}`" type="primary">{{ detail.email }}</el-link>
-                <el-button link type="primary" class="copy-btn" @click="copyText(detail.email, '邮箱')">复制</el-button>
-              </span>
-              <span v-else>—</span>
-            </el-descriptions-item>
-            <el-descriptions-item label="电话">
-              <span v-if="detail.phone">
-                {{ detail.phone }}
-                <el-button link type="primary" class="copy-btn" @click="copyText(detail.phone!, '电话')">复制</el-button>
-              </span>
-              <span v-else>—</span>
-            </el-descriptions-item>
-          </el-descriptions>
+          <el-tabs v-model="activeTab" class="detail-tabs">
+            <el-tab-pane label="CRM 跟进" name="crm">
+              <div class="crm-section">
+                <div class="crm-row">
+                  <span class="crm-label">状态</span>
+                  <el-tooltip v-if="isTerminal" content="终态不可变更" placement="top">
+                    <el-select v-model="editStatus" disabled style="width: 160px">
+                      <el-option
+                        v-for="opt in statusOptions"
+                        :key="opt"
+                        :label="statusMeta(opt).label"
+                        :value="opt"
+                      />
+                    </el-select>
+                  </el-tooltip>
+                  <el-select v-else v-model="editStatus" style="width: 160px" :disabled="statusSaving">
+                    <el-option
+                      v-for="opt in statusOptions"
+                      :key="opt"
+                      :label="statusMeta(opt).label"
+                      :value="opt"
+                    />
+                  </el-select>
+                  <el-button
+                    type="primary"
+                    plain
+                    :disabled="!statusDirty || isTerminal"
+                    :loading="statusSaving"
+                    @click="saveStatus"
+                  >
+                    保存状态
+                  </el-button>
+                  <span v-if="statusDirty && !isTerminal" class="unsaved-hint">未保存</span>
+                </div>
 
-          <h4 class="section-title">行程需求</h4>
-          <el-descriptions :column="1" border size="small">
-            <el-descriptions-item label="出行日期">{{ formatDate(detail.travelDate) }}</el-descriptions-item>
-            <el-descriptions-item label="人数">
-              {{ detail.partySize != null ? `${detail.partySize} 人` : '—' }}
-            </el-descriptions-item>
-            <el-descriptions-item label="预算">{{ detail.budget?.trim() || '—' }}</el-descriptions-item>
-            <el-descriptions-item label="留言">
-              <el-input
-                v-if="detail.message?.trim()"
-                :model-value="detail.message"
-                type="textarea"
-                :rows="4"
-                readonly
-              />
-              <span v-else>—</span>
-            </el-descriptions-item>
-          </el-descriptions>
-
-          <h4 class="section-title">来源归因</h4>
-          <el-descriptions :column="1" border size="small">
-            <el-descriptions-item label="来源渠道">
-              <el-tag size="small" :type="sourceMeta(detail.source).type">
-                {{ sourceMeta(detail.source).label }}
-              </el-tag>
-              <span v-if="detail.source" class="source-raw">{{ detail.source }}</span>
-            </el-descriptions-item>
-            <el-descriptions-item label="落地页">
-              <div v-if="detail.landingPageTitle">
-                <div>{{ detail.landingPageTitle }}</div>
-                <div v-if="detail.landingPageSlug" class="landing-slug">/{{ detail.landingPageSlug }}</div>
+                <div class="crm-row">
+                  <span class="crm-label">负责人</span>
+                  <span class="assignee-name">{{ detail.assigneeName?.trim() || '—' }}</span>
+                  <el-button link type="primary" :loading="assigneeSaving" @click="assignToMe">指派给我</el-button>
+                </div>
+                <p v-if="!detail.assigneeName" class="crm-hint">尚未指派负责人，可点击「指派给我」</p>
               </div>
-              <span v-else>—</span>
-            </el-descriptions-item>
-            <el-descriptions-item label="关键词">
-              <span v-if="detail.keywordText">
-                {{ detail.keywordText }}
-                <el-tag v-if="detail.keywordMarket" size="small" type="info" class="ml-1">{{ detail.keywordMarket }}</el-tag>
-              </span>
-              <span v-else>—</span>
-            </el-descriptions-item>
-          </el-descriptions>
 
-          <h4 class="section-title">UTM</h4>
-          <template v-if="hasUtm">
-            <el-descriptions :column="2" border size="small" class="utm-grid">
-              <el-descriptions-item v-for="item in utmItems" :key="item.key" :label="item.label">
-                {{ item.value }}
-              </el-descriptions-item>
-            </el-descriptions>
-          </template>
-          <el-empty v-else description="无 UTM 参数" :image-size="48" />
+              <h4 class="section-title">添加跟进</h4>
+              <el-form label-position="top" class="followup-form" @submit.prevent="submitFollowup">
+                <el-form-item label="跟进内容" required>
+                  <el-input
+                    v-model="followupForm.content"
+                    type="textarea"
+                    :rows="3"
+                    maxlength="2000"
+                    show-word-limit
+                    placeholder="记录本次沟通要点…"
+                    :disabled="isTerminal || followupSaving"
+                  />
+                </el-form-item>
+                <el-form-item label="渠道">
+                  <el-select
+                    v-model="followupForm.channel"
+                    clearable
+                    placeholder="未指定"
+                    style="width: 160px"
+                    :disabled="isTerminal || followupSaving"
+                  >
+                    <el-option
+                      v-for="opt in LEAD_FOLLOWUP_CHANNEL_OPTIONS"
+                      :key="opt.value || 'none'"
+                      :label="opt.label"
+                      :value="opt.value"
+                    />
+                  </el-select>
+                </el-form-item>
+                <el-button
+                  type="primary"
+                  :loading="followupSaving"
+                  :disabled="isTerminal"
+                  @click="submitFollowup"
+                >
+                  添加跟进记录
+                </el-button>
+                <p v-if="isTerminal" class="crm-hint">终态线索不可新增跟进</p>
+              </el-form>
 
-          <h4 class="section-title">设备</h4>
-          <el-tooltip v-if="detail.device" :content="detail.device" placement="top" :show-after="400">
-            <p class="device-text">{{ detail.device }}</p>
-          </el-tooltip>
-          <span v-else>—</span>
+              <h4 class="section-title">跟进时间线</h4>
+              <el-timeline v-if="timelineItems.length" class="followup-timeline">
+                <el-timeline-item
+                  v-for="(item, idx) in timelineItems"
+                  :key="item.key ?? idx"
+                  :timestamp="formatTime(item.createdAt)"
+                  placement="top"
+                >
+                  <div class="timeline-head">
+                    <span class="timeline-operator">{{ item.operatorName || '—' }}</span>
+                    <el-tag v-if="item.channelLabel" size="small" type="info">{{ item.channelLabel }}</el-tag>
+                  </div>
+                  <p class="timeline-content">{{ item.content }}</p>
+                </el-timeline-item>
+              </el-timeline>
+              <el-empty v-else description="暂无跟进记录，请添加第一条跟进" :image-size="48" />
+            </el-tab-pane>
+
+            <el-tab-pane label="线索信息" name="info">
+              <h4 class="section-title">联系人</h4>
+              <el-descriptions :column="1" border size="small">
+                <el-descriptions-item label="姓名">{{ detail.name?.trim() || '—' }}</el-descriptions-item>
+                <el-descriptions-item label="邮箱">
+                  <span v-if="detail.email">
+                    <el-link :href="`mailto:${detail.email}`" type="primary">{{ detail.email }}</el-link>
+                    <el-button link type="primary" class="copy-btn" @click="copyText(detail.email, '邮箱')">复制</el-button>
+                  </span>
+                  <span v-else>—</span>
+                </el-descriptions-item>
+                <el-descriptions-item label="电话">
+                  <span v-if="detail.phone">
+                    {{ detail.phone }}
+                    <el-button link type="primary" class="copy-btn" @click="copyText(detail.phone!, '电话')">复制</el-button>
+                  </span>
+                  <span v-else>—</span>
+                </el-descriptions-item>
+              </el-descriptions>
+
+              <h4 class="section-title">行程需求</h4>
+              <el-descriptions :column="1" border size="small">
+                <el-descriptions-item label="出行日期">{{ formatDate(detail.travelDate) }}</el-descriptions-item>
+                <el-descriptions-item label="人数">
+                  {{ detail.partySize != null ? `${detail.partySize} 人` : '—' }}
+                </el-descriptions-item>
+                <el-descriptions-item label="预算">{{ detail.budget?.trim() || '—' }}</el-descriptions-item>
+                <el-descriptions-item label="留言">
+                  <el-input
+                    v-if="detail.message?.trim()"
+                    :model-value="detail.message"
+                    type="textarea"
+                    :rows="4"
+                    readonly
+                  />
+                  <span v-else>—</span>
+                </el-descriptions-item>
+              </el-descriptions>
+
+              <h4 class="section-title">来源归因</h4>
+              <el-descriptions :column="1" border size="small">
+                <el-descriptions-item label="来源渠道">
+                  <el-tag size="small" :type="sourceMeta(detail.source).type">
+                    {{ sourceMeta(detail.source).label }}
+                  </el-tag>
+                  <span v-if="detail.source" class="source-raw">{{ detail.source }}</span>
+                </el-descriptions-item>
+                <el-descriptions-item label="落地页">
+                  <div v-if="detail.landingPageTitle">
+                    <div>{{ detail.landingPageTitle }}</div>
+                    <div v-if="detail.landingPageSlug" class="landing-slug">/{{ detail.landingPageSlug }}</div>
+                  </div>
+                  <span v-else>—</span>
+                </el-descriptions-item>
+                <el-descriptions-item label="关键词">
+                  <span v-if="detail.keywordText">
+                    {{ detail.keywordText }}
+                    <el-tag v-if="detail.keywordMarket" size="small" type="info" class="ml-1">{{ detail.keywordMarket }}</el-tag>
+                  </span>
+                  <span v-else>—</span>
+                </el-descriptions-item>
+              </el-descriptions>
+
+              <h4 class="section-title">UTM</h4>
+              <template v-if="hasUtm">
+                <el-descriptions :column="2" border size="small" class="utm-grid">
+                  <el-descriptions-item v-for="item in utmItems" :key="item.key" :label="item.label">
+                    {{ item.value }}
+                  </el-descriptions-item>
+                </el-descriptions>
+              </template>
+              <el-empty v-else description="无 UTM 参数" :image-size="48" />
+
+              <h4 class="section-title">设备</h4>
+              <el-tooltip v-if="detail.device" :content="detail.device" placement="top" :show-after="400">
+                <p class="device-text">{{ detail.device }}</p>
+              </el-tooltip>
+              <span v-else>—</span>
+            </el-tab-pane>
+          </el-tabs>
         </template>
       </div>
 
       <template #footer>
         <el-button @click="detailVisible = false">关闭</el-button>
-        <el-tooltip content="CRM 跟进 M2 · FR-605" placement="top">
-          <el-button disabled>变更状态</el-button>
-        </el-tooltip>
-        <el-tooltip content="FR-603 M2" placement="top">
+        <el-tooltip content="FR-603 M3" placement="top">
           <el-button disabled>AI 跟进建议</el-button>
         </el-tooltip>
       </template>
@@ -255,17 +356,28 @@
 </template>
 
 <script setup name="LeadsList" lang="ts">
-import { getLead, listLeads } from '@/api/tourgeo/lead';
-import type { LeadDetailVo, LeadVo } from '@/api/tourgeo/types';
+import { createFollowup, getLead, listLeads, patchLead } from '@/api/tourgeo/lead';
+import type { LeadDetailVo, LeadStatus, LeadVo } from '@/api/tourgeo/types';
 import ProjectSelector from '@/components/tourgeo/ProjectSelector.vue';
-import { LEAD_SOURCE_OPTIONS, LEAD_STATUS_OPTIONS, leadSourceMeta, leadStatusMeta } from '@/constants/lead';
+import {
+  getAllowedNextStatuses,
+  isTerminalLeadStatus,
+  LEAD_FOLLOWUP_CHANNEL_OPTIONS,
+  LEAD_SOURCE_OPTIONS,
+  LEAD_STATUS_OPTIONS,
+  leadFollowupChannelLabel,
+  leadSourceMeta,
+  leadStatusMeta
+} from '@/constants/lead';
 import { useProjectStore } from '@/store/modules/project';
+import { useUserStore } from '@/store/modules/user';
 import { maskEmail, maskPhone } from '@/utils/maskPii';
 import { ElMessage } from 'element-plus';
 
 const route = useRoute();
 const router = useRouter();
 const projectStore = useProjectStore();
+const userStore = useUserStore();
 
 const loading = ref(false);
 const leadList = ref<LeadVo[]>([]);
@@ -275,6 +387,15 @@ const detailVisible = ref(false);
 const detailLoading = ref(false);
 const detail = ref<LeadDetailVo | null>(null);
 const activeLeadId = ref<number | null>(null);
+const activeTab = ref<'crm' | 'info'>('crm');
+const editStatus = ref<LeadStatus>('NEW');
+const statusSaving = ref(false);
+const assigneeSaving = ref(false);
+const followupSaving = ref(false);
+const followupForm = reactive({
+  content: '',
+  channel: ''
+});
 
 const queryParams = reactive({
   pageNum: 1,
@@ -360,6 +481,44 @@ const utmItems = computed(() => {
 });
 
 const hasUtm = computed(() => utmItems.value.length > 0);
+
+const isTerminal = computed(() => (detail.value ? isTerminalLeadStatus(detail.value.status) : false));
+
+const statusOptions = computed(() =>
+  detail.value ? getAllowedNextStatuses(detail.value.status) : (['NEW'] as LeadStatus[])
+);
+
+const statusDirty = computed(() => detail.value != null && editStatus.value !== detail.value.status);
+
+type TimelineItem = {
+  key: string;
+  content: string;
+  createdAt?: string;
+  operatorName?: string;
+  channelLabel?: string;
+};
+
+const timelineItems = computed((): TimelineItem[] => {
+  if (!detail.value) return [];
+  const items: TimelineItem[] = [...(detail.value.followups ?? [])]
+    .reverse()
+    .map((row) => ({
+      key: `fu-${row.id}`,
+      content: row.content,
+      createdAt: row.createdAt,
+      operatorName: row.operatorName || '—',
+      channelLabel: leadFollowupChannelLabel(row.channel)
+    }));
+  if (detail.value.createdAt) {
+    items.push({
+      key: 'system-created',
+      content: '线索由落地页表单创建。',
+      createdAt: detail.value.createdAt,
+      operatorName: '系统'
+    });
+  }
+  return items;
+});
 
 function statusMeta(status: string) {
   return leadStatusMeta(status);
@@ -480,8 +639,10 @@ async function openDetail(row: LeadVo) {
   detailLoading.value = true;
   detail.value = null;
   activeLeadId.value = row.id;
+  activeTab.value = 'crm';
   try {
     detail.value = await getLead(pid, row.id);
+    syncCrmFormFromDetail();
   } catch {
     ElMessage.error('线索不存在或无权访问');
     detailVisible.value = false;
@@ -490,9 +651,91 @@ async function openDetail(row: LeadVo) {
   }
 }
 
+function syncCrmFormFromDetail() {
+  if (!detail.value) return;
+  editStatus.value = detail.value.status;
+  followupForm.content = '';
+  followupForm.channel = '';
+}
+
+async function refreshDetail() {
+  const pid = projectId.value;
+  const leadId = activeLeadId.value;
+  if (!pid || !leadId) return;
+  detail.value = await getLead(pid, leadId);
+  syncCrmFormFromDetail();
+}
+
+async function saveStatus() {
+  const pid = projectId.value;
+  const leadId = activeLeadId.value;
+  if (!pid || !leadId || !detail.value || !statusDirty.value) return;
+  statusSaving.value = true;
+  try {
+    detail.value = await patchLead(pid, leadId, { status: editStatus.value });
+    syncCrmFormFromDetail();
+    ElMessage.success('状态已更新');
+    await getList();
+  } catch {
+    if (detail.value) {
+      editStatus.value = detail.value.status;
+    }
+  } finally {
+    statusSaving.value = false;
+  }
+}
+
+async function assignToMe() {
+  const pid = projectId.value;
+  const leadId = activeLeadId.value;
+  const uid = Number(userStore.userId);
+  if (!pid || !leadId) return;
+  if (!uid) {
+    ElMessage.warning('无法获取当前用户');
+    return;
+  }
+  assigneeSaving.value = true;
+  try {
+    detail.value = await patchLead(pid, leadId, { assigneeId: uid });
+    syncCrmFormFromDetail();
+    ElMessage.success('负责人已更新');
+    await getList();
+  } finally {
+    assigneeSaving.value = false;
+  }
+}
+
+async function submitFollowup() {
+  const pid = projectId.value;
+  const leadId = activeLeadId.value;
+  if (!pid || !leadId || isTerminal.value) return;
+  const content = followupForm.content.trim();
+  if (content.length < 2) {
+    ElMessage.warning('跟进内容至少 2 字');
+    return;
+  }
+  followupSaving.value = true;
+  try {
+    await createFollowup(pid, leadId, {
+      content,
+      channel: followupForm.channel || undefined
+    });
+    followupForm.content = '';
+    followupForm.channel = '';
+    await refreshDetail();
+    ElMessage.success('跟进记录已添加');
+  } finally {
+    followupSaving.value = false;
+  }
+}
+
 function resetDetail() {
   detail.value = null;
   activeLeadId.value = null;
+  activeTab.value = 'crm';
+  editStatus.value = 'NEW';
+  followupForm.content = '';
+  followupForm.channel = '';
 }
 
 watch(
@@ -608,7 +851,76 @@ onMounted(async () => {
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+  }
+
+  .detail-tabs {
+    :deep(.el-tabs__header) {
+      margin-bottom: 12px;
+    }
+  }
+
+  .crm-section {
+    margin-bottom: 8px;
+  }
+
+  .crm-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .crm-label {
+    width: 56px;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: var(--tg-color-text-secondary, #6b7280);
+  }
+
+  .assignee-name {
+    min-width: 80px;
+    font-weight: 500;
+  }
+
+  .unsaved-hint,
+  .crm-hint {
+    font-size: 12px;
+    color: var(--tg-color-text-secondary, #9ca3af);
+  }
+
+  .crm-hint {
+    margin: 0 0 8px 64px;
+  }
+
+  .followup-form {
+    margin-bottom: 8px;
+  }
+
+  .followup-timeline {
+    padding-left: 4px;
+  }
+
+  .timeline-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .timeline-operator {
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .timeline-content {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 
   .detail-time {

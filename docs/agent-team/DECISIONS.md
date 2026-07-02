@@ -211,6 +211,17 @@
   - mock：`KEYWORD_SCORE_MOCK_LLM=true` deterministic
 - **影响**：[EPIC-3 M2 Sprint](HANDOFFS/2026-07-06-tech-director-epic3-m2-keyword-score-sprint.md)
 
+### ADR-20260707-20 | EPIC-7 M2 仅 FR-605 轻量 CRM
+- **状态**：已采纳
+- **决策者**：技术总监（完整版交付排期）
+- **背景**：M1 公开表单+只读列表已完成；落地页→询盘闭环缺销售侧操作；DDL `lead_followup` + `lead_status` 已就绪
+- **决策**：
+  - **M2 做**：状态机五态流转 · `lead_followup` 增删查 · assignee_id · Admin drawer 可操作
+  - **M2 状态规则**：NEW→FOLLOWING→QUOTED→WON；任意非终态→LOST；WON/LOST 锁定
+  - **M2 不做**：FR-602 WhatsApp 追踪 · FR-603 AI 跟进 · FR-606 归因报表 · FR-607 广告 · CSV 导出
+  - 负责人 M2：指派当前登录用户或手动 assigneeId（无完整成员管理 UI）
+- **影响**：[EPIC-7 M2 Sprint](HANDOFFS/2026-07-07-tech-director-epic7-m2-crm-sprint.md)
+
 ---
 
 ## 待讨论

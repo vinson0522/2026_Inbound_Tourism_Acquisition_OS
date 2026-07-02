@@ -19,7 +19,7 @@
 | [wireframes/content-task-list.md](./wireframes/content-task-list.md) | 内容 Agent · 内容任务列表 EPIC-4 M1（预研） |
 | [wireframes/landing-page-list.md](./wireframes/landing-page-list.md) | 落地页 Agent · 页面列表 EPIC-6 M1 |
 | [wireframes/landing-page-publish.md](./wireframes/landing-page-publish.md) | 落地页 Agent · 发布与公网预览 EPIC-6 M2 |
-| [wireframes/leads-list.md](./wireframes/leads-list.md) | 线索与转化 · 询盘线索列表 EPIC-7 M1 |
+| [wireframes/leads-list.md](./wireframes/leads-list.md) | 线索与转化 · 询盘列表 EPIC-7 M1 + **CRM M2** |
 | [wireframes/reports-list.md](./wireframes/reports-list.md) | 报告中心 · 报告列表 EPIC-8 M1 |
 | [wireframes/billing-settings.md](./wireframes/billing-settings.md) | 系统设置 · 套餐与额度 EPIC-9 M1 |
 | [wireframes/probe-nodes.md](./wireframes/probe-nodes.md) | 系统设置 · 探针节点 EPIC-11 M1 |
@@ -33,6 +33,7 @@
 | [../agent-team/HANDOFFS/2026-06-29-ui-to-developer-content-task-list.md](../agent-team/HANDOFFS/2026-06-29-ui-to-developer-content-task-list.md) | UI → 开发（内容任务 EPIC-4 M1 预研） |
 | [../agent-team/HANDOFFS/2026-07-03-ui-to-developer-landing-publish.md](../agent-team/HANDOFFS/2026-07-03-ui-to-developer-landing-publish.md) | UI → 开发（落地页发布 EPIC-6 M2） |
 | [../agent-team/HANDOFFS/2026-07-01-ui-to-developer-landing-page-list.md](../agent-team/HANDOFFS/2026-07-01-ui-to-developer-landing-page-list.md) | UI → 开发（落地页 EPIC-6 M1） |
+| [../agent-team/HANDOFFS/2026-07-07-ui-to-developer-leads-crm.md](../agent-team/HANDOFFS/2026-07-07-ui-to-developer-leads-crm.md) | UI → 开发（线索 CRM EPIC-7 M2） |
 | [../agent-team/HANDOFFS/2026-07-01-ui-to-developer-leads-list.md](../agent-team/HANDOFFS/2026-07-01-ui-to-developer-leads-list.md) | UI → 开发（线索 EPIC-7 M1） |
 | [../agent-team/HANDOFFS/2026-07-05-ui-to-developer-probe-nodes.md](../agent-team/HANDOFFS/2026-07-05-ui-to-developer-probe-nodes.md) | UI → 开发（探针节点 EPIC-11 M1） |
 | [../agent-team/HANDOFFS/2026-07-04-ui-to-developer-billing-settings.md](../agent-team/HANDOFFS/2026-07-04-ui-to-developer-billing-settings.md) | UI → 开发（计费 EPIC-9 M1） |
@@ -50,7 +51,7 @@
 | 关键词洞察 | `/projects/:projectId/keywords`（侧栏 `/keywords` 重定向） | ✅ [keywords-list.md](wireframes/keywords-list.md) FR-201/202 M1 |
 | 内容 Agent | `/content` | 🔶 [content-task-list.md](wireframes/content-task-list.md) EPIC-4 M1 预研 |
 | 落地页 Agent | `/landing` | ✅ [列表 M1](wireframes/landing-page-list.md) · ✅ [发布 M2](wireframes/landing-page-publish.md) |
-| 线索与转化 | `/leads` | ✅ [leads-list.md](wireframes/leads-list.md) EPIC-7 M1 |
+| 线索与转化 | `/leads` | ✅ [leads-list.md](wireframes/leads-list.md) FR-601 M1 + **FR-605 M2 CRM** |
 | 报告中心 | `/reports` | ✅ [reports-list.md](wireframes/reports-list.md) EPIC-8 M1 |
 | 系统设置 | `/settings/*` | ✅ [billing-settings.md](wireframes/billing-settings.md) FR-804 · ✅ [probe-nodes.md](wireframes/probe-nodes.md) FR-113 · 其余沿用若依 |
 
@@ -94,6 +95,7 @@ Token 落地时优先在 `variables.module.scss` 的 `:root` 追加 `--tg-*` 变
 
 | 日期 | 作者 | 说明 |
 |------|------|------|
+| 2026-07-07 | UI 设计 | EPIC-7 M2 线索 CRM 增量线框 FR-605 + HANDOFF |
 | 2026-07-05 | UI 设计 | EPIC-11 M1 探针节点列表线框 FR-113 + HANDOFF |
 | 2026-07-04 | UI 设计 | EPIC-9 M1 套餐与额度设置线框 + 6 quota 进度条 + HANDOFF |
 | 2026-07-03 | UI 设计 | EPIC-6 M2 落地页发布/公网预览/Astro 八模块 + Turnstile 线框 |

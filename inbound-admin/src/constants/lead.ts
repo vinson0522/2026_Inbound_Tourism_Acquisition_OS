@@ -51,3 +51,47 @@ export function leadSourceMeta(source: string) {
     }
   );
 }
+
+const TERMINAL_STATUSES: LeadStatus[] = ['WON', 'LOST'];
+
+export function isTerminalLeadStatus(status: string): boolean {
+  return TERMINAL_STATUSES.includes(status as LeadStatus);
+}
+
+/** M2 状态机 — 与 Java LeadStatusTransition / ADR-20 一致 */
+export function getAllowedNextStatuses(current: LeadStatus): LeadStatus[] {
+  if (isTerminalLeadStatus(current)) {
+    return [current];
+  }
+  const options = new Set<LeadStatus>([current]);
+  switch (current) {
+    case 'NEW':
+      options.add('FOLLOWING');
+      options.add('LOST');
+      break;
+    case 'FOLLOWING':
+      options.add('QUOTED');
+      options.add('LOST');
+      break;
+    case 'QUOTED':
+      options.add('WON');
+      options.add('LOST');
+      break;
+    default:
+      break;
+  }
+  return Array.from(options);
+}
+
+export const LEAD_FOLLOWUP_CHANNEL_OPTIONS = [
+  { value: '', label: '未指定' },
+  { value: 'email', label: '邮件' },
+  { value: 'phone', label: '电话' },
+  { value: 'whatsapp', label: 'WhatsApp' },
+  { value: 'meeting', label: '会议/视频' }
+] as const;
+
+export function leadFollowupChannelLabel(channel?: string | null): string {
+  if (!channel) return '';
+  return LEAD_FOLLOWUP_CHANNEL_OPTIONS.find((opt) => opt.value === channel)?.label ?? channel;
+}

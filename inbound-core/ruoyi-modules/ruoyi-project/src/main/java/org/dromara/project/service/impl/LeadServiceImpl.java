@@ -9,21 +9,28 @@ import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.project.domain.CustomerProject;
 import org.dromara.project.domain.KeywordOpportunity;
 import org.dromara.project.domain.LandingPage;
 import org.dromara.project.domain.Lead;
+import org.dromara.project.domain.LeadFollowup;
+import org.dromara.project.domain.bo.LeadFollowupCreateBo;
 import org.dromara.project.domain.bo.LeadQueryBo;
+import org.dromara.project.domain.bo.LeadUpdateBo;
 import org.dromara.project.domain.bo.PublicLeadSubmitBo;
 import org.dromara.project.domain.vo.LeadDetailVo;
+import org.dromara.project.domain.vo.LeadFollowupVo;
 import org.dromara.project.domain.vo.LeadVo;
 import org.dromara.project.domain.vo.PublicLeadSubmitVo;
 import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.mapper.KeywordOpportunityMapper;
 import org.dromara.project.mapper.LandingPageMapper;
+import org.dromara.project.mapper.LeadFollowupMapper;
 import org.dromara.project.mapper.LeadMapper;
 import org.dromara.project.service.ILeadService;
 import org.dromara.project.support.BusinessTenantHelper;
+import org.dromara.project.support.LeadStatusTransition;
 import org.dromara.project.support.TurnstileValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +50,7 @@ import java.util.stream.Collectors;
 public class LeadServiceImpl implements ILeadService {
 
     private final LeadMapper leadMapper;
+    private final LeadFollowupMapper leadFollowupMapper;
     private final LandingPageMapper landingPageMapper;
     private final KeywordOpportunityMapper keywordOpportunityMapper;
     private final CustomerProjectMapper customerProjectMapper;
@@ -119,8 +127,83 @@ public class LeadServiceImpl implements ILeadService {
         detail.setMessage(lead.getMessage());
         detail.setUtm(lead.getUtmJson());
         detail.setDevice(lead.getDevice());
+        detail.setAssigneeId(lead.getAssigneeId());
+        enrichAssigneeName(detail);
         enrichDetail(detail, lead);
+        detail.setFollowups(listFollowups(projectId, leadId));
         return detail;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public LeadDetailVo updateLead(Long projectId, Long leadId, LeadUpdateBo bo) {
+        Lead lead = getOwnedLeadOrThrow(projectId, leadId);
+        if (bo == null || (StringUtils.isBlank(bo.getStatus()) && bo.getAssigneeId() == null)) {
+            throw new ServiceException("请提供 status 或 assigneeId");
+        }
+
+        boolean changed = false;
+        if (StringUtils.isNotBlank(bo.getStatus())) {
+            String nextStatus = bo.getStatus().trim().toUpperCase();
+            LeadStatusTransition.validateTransition(lead.getStatus(), nextStatus);
+            lead.setStatus(nextStatus);
+            changed = true;
+        }
+        if (bo.getAssigneeId() != null) {
+            lead.setAssigneeId(bo.getAssigneeId());
+            changed = true;
+        }
+        if (!changed) {
+            throw new ServiceException("请提供 status 或 assigneeId");
+        }
+
+        lead.setUpdatedAt(OffsetDateTime.now());
+        leadMapper.updateById(lead);
+        return queryById(projectId, leadId);
+    }
+
+    @Override
+    public List<LeadFollowupVo> listFollowups(Long projectId, Long leadId) {
+        getOwnedLeadOrThrow(projectId, leadId);
+        Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        List<LeadFollowupVo> rows = leadFollowupMapper.selectVoList(
+            Wrappers.lambdaQuery(LeadFollowup.class)
+                .eq(LeadFollowup::getLeadId, leadId)
+                .eq(LeadFollowup::getTenantId, tenantId)
+                .isNull(LeadFollowup::getDeletedAt)
+                .orderByAsc(LeadFollowup::getCreatedAt)
+        );
+        enrichFollowupOperators(rows);
+        return rows;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public LeadFollowupVo createFollowup(Long projectId, Long leadId, LeadFollowupCreateBo bo) {
+        Lead lead = getOwnedLeadOrThrow(projectId, leadId);
+        if (LeadStatusTransition.isTerminal(lead.getStatus())) {
+            throw new ServiceException("终态线索不可新增跟进");
+        }
+        if (StringUtils.isBlank(bo.getContent())) {
+            throw new ServiceException("跟进内容不能为空");
+        }
+
+        OffsetDateTime now = OffsetDateTime.now();
+        Long operatorId = LoginHelper.getUserId();
+        LeadFollowup entity = new LeadFollowup();
+        entity.setTenantId(lead.getTenantId());
+        entity.setLeadId(leadId);
+        entity.setContent(StringUtils.trim(bo.getContent()));
+        entity.setChannel(StringUtils.trim(bo.getChannel()));
+        entity.setOperatorId(operatorId);
+        entity.setCreatedAt(now);
+        entity.setUpdatedAt(now);
+        entity.setCreatedBy(operatorId);
+        leadFollowupMapper.insert(entity);
+
+        LeadFollowupVo vo = MapstructUtils.convert(entity, LeadFollowupVo.class);
+        enrichFollowupOperator(vo);
+        return vo;
     }
 
     private void enrichDetail(LeadDetailVo detail, Lead lead) {
@@ -183,6 +266,36 @@ public class LeadServiceImpl implements ILeadService {
                     row.setKeywordMarket(kw.getMarket());
                 }
             }
+            enrichAssigneeName(row);
+        }
+    }
+
+    private void enrichAssigneeName(LeadVo row) {
+        if (row.getAssigneeId() == null) {
+            return;
+        }
+        String name = leadMapper.selectUserDisplayName(row.getAssigneeId());
+        if (StringUtils.isNotBlank(name)) {
+            row.setAssigneeName(name);
+        }
+    }
+
+    private void enrichFollowupOperators(List<LeadFollowupVo> rows) {
+        if (rows == null || rows.isEmpty()) {
+            return;
+        }
+        for (LeadFollowupVo row : rows) {
+            enrichFollowupOperator(row);
+        }
+    }
+
+    private void enrichFollowupOperator(LeadFollowupVo row) {
+        if (row.getOperatorId() == null) {
+            return;
+        }
+        String name = leadMapper.selectUserDisplayName(row.getOperatorId());
+        if (StringUtils.isNotBlank(name)) {
+            row.setOperatorName(name);
         }
     }
 

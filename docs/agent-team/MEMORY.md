@@ -5,10 +5,10 @@
 
 | 字段 | 值 |
 |------|-----|
-| **最后更新** | 2026-07-06 |
-| **更新角色** | 开发 |
-| **Git 远程** | ✅ `origin/main` · C15 `3855266` · **C16 `20b7a87`** |
-| **当前 EPIC 焦点** | **EPIC-3 M2 已关闭** · 待技术总监排下一 Sprint |
+| **最后更新** | 2026-07-07 |
+| **更新角色** | 技术总监 |
+| **Git 远程** | ✅ `origin/main` · C16 `20b7a87` · **C17**（待 push） |
+| **当前 EPIC 焦点** | **EPIC-7 M2 已关闭** · 路线图 #1 ✅ · 待 EPIC-8 M2 |
 
 ---
 
@@ -190,6 +190,34 @@
 
 **技术总监签核**：✅ **EPIC-3 M2 正式关闭** — C16 `20b7a87` · pytest 8 + `test_keywords_score` ✅
 
+### 完整版交付路线图（技术总监 · 2026-07-07 定案）
+
+> 客户交付 = 全功能完整版；以下顺序按 **闭环优先 → 交付物 → 差异化 → 商业化 → 增强** 排列，逐项 Sprint 关闭，无需产品侧再选。
+
+| 序 | Sprint | EPIC/FR | 目标 | 状态 |
+|:--:|--------|---------|------|:----:|
+| 1 | **M2 CRM** | EPIC-7 · FR-605 | 线索状态+跟进闭环 | ✅ C17 `PLACEHOLDER` |
+| 2 | M2 报告 | EPIC-8 · FR-703/704 | 月报 + 白标模板 |
+| 3 | M2 探针 | EPIC-11 · FR-115/116 | adapter 配置 + 校准 + 第二平台 |
+| 4 | M2 计费 | EPIC-9 · FR-802/805 | 套餐 CRUD + 周期重置 |
+| 5 | M1 素材 | EPIC-5 · FR-401~403 | 爆款拆解 MVP |
+| 6 | M3 线索 | EPIC-7 · FR-602/603 | WhatsApp 追踪 + AI 跟进话术 |
+| 7 | M3 诊断 | EPIC-2 · FR-109 | 定时诊断任务 |
+| — | 维护 | — | smoke 9/9 · 扩展真 Perplexity hook | 并行 |
+
+### EPIC-7 M2 Sprint — FR-605 轻量 CRM（2026-07-07 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | 线索 CRM 线框增量 | [→UI](HANDOFFS/2026-07-07-tech-director-to-ui-epic7-leads-crm.md) | ✅ |
+| 2 | 开发 Java | 状态机 + followup API | [→Java](HANDOFFS/2026-07-07-tech-director-to-dev-java-epic7-leads-crm.md) | ✅ 2026-07-07 |
+| 3 | 开发 Admin | CRM drawer | [→Admin](HANDOFFS/2026-07-07-tech-director-to-dev-admin-epic7-leads-crm.md) | ✅ 2026-07-07 |
+| — | 总览 | Sprint 索引 | [EPIC-7 M2](HANDOFFS/2026-07-07-tech-director-epic7-m2-crm-sprint.md) | ✅ **关闭** |
+
+**ADR-20**：五态 CRM · 无 AI/WhatsApp/归因 M2
+
+**技术总监签核**：✅ **EPIC-7 M2 正式关闭** — C17 `PLACEHOLDER` · `test_leads_crm` ✅
+
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
 | # | 角色 | 任务 | HANDOFF | 状态 |
@@ -236,8 +264,9 @@
 | **C14** | EPIC-9 M1 计费 | `feat(core,admin): EPIC-9 M1 subscription quota and overage guard` | ✅ `f23e539` |
 | **C15** | EPIC-11 M1 探针 | `feat(core,admin,extension): EPIC-11 M1 browser probe poll and node registry` | ✅ `3855266` |
 | **C16** | EPIC-3 M2 关键词评分 | `feat(ai,core,admin): EPIC-3 M2 keyword opportunity scoring FR-203` | ✅ `20b7a87` |
+| **C17** | EPIC-7 M2 CRM | `feat(core,admin): EPIC-7 M2 light CRM lead status and followups` | ✅ `PLACEHOLDER` |
 
-**执行**：C1–C16 ✅ · push ✅
+**执行**：C1–C17 ✅ · push ⏳
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -313,6 +342,8 @@
 - **EPIC-6 M2 Admin 落地页发布（2026-07-03）** ✅ 列表/ drawer 发布·下线·公网预览 · `publishLandingPage`/`unpublishLandingPage` · `pnpm build:prod` ✅
 - **EPIC-7 M1 FR-601 leads Java（2026-07-01）** ✅ `POST /api/v1/public/leads` + `GET .../leads` 列表/详情 · Turnstile M1 stub · IP+landingPageId 限流 · `tenant.excludes` 加 `lead` · `test_public_leads_api.py` ✅
 - **EPIC-7 M1 FR-601 Admin 线索页（2026-07-01）** ✅ `/leads` 侧栏 + 列表/筛选/脱敏 + 详情 drawer · `maskPii` · `pnpm build:prod` ✅
+- **EPIC-7 M2 FR-605 leads CRM Java（2026-07-07）** ✅ PATCH lead 状态/负责人 · GET/POST followups · `LeadStatusTransition` · 详情 `assigneeName`/`followups[]` · `tenant.excludes` + `lead_followup` · `test_leads_crm.py` ✅
+- **EPIC-7 M2 FR-605 Admin CRM drawer（2026-07-07）** ✅ 双 Tab CRM/线索信息 · 状态保存 · 指派给我 · 跟进 timeline · 终态禁用 · `pnpm build:prod` ✅
 - **EPIC-8 M1 FR-701/702 Admin 报告中心（2026-07-02）** ✅ `/reports` 侧栏 + 列表/筛选 + 周报 dialog + 预览 drawer + DOCX/PDF 下载 · `pnpm build:prod` ✅
 - **EPIC-9 M1 FR-804 billing Java（2026-07-02）** ✅ `GET /api/v1/settings/billing` · `QuotaService.checkAndConsume` · 6 拦截点（项目/诊断/关键词/内容/落地页/周报）· HTTP 402 `code=40201` · `tenant.excludes` 加 `subscription` · `test_billing_quota.py` ✅
 - **EPIC-11 M1 FR-112~114 probe Java（2026-07-05）** ✅ `ProbeController` register/poll/result/adapters + `GET /nodes` · `createRun` browser-extension 分叉 · `test_probe_extension_e2e.py` ✅
@@ -387,9 +418,9 @@
 
 ## UI 设计
 
-- **已完成**：… billing-settings (EPIC-9 M1) ✅ · **probe-nodes (EPIC-11 M1)** ✅
-- **HANDOFF**：[探针节点 → 开发](HANDOFFS/2026-07-05-ui-to-developer-probe-nodes.md)
-- **待办**：线索 CRM M2 · 报告白标/月报 M2 · 探针今日任务量 M2
+- **已完成**：… billing-settings (EPIC-9 M1) ✅ · probe-nodes (EPIC-11 M1) ✅ · **leads-list M2 CRM (EPIC-7 M2)** ✅
+- **HANDOFF**：[线索 CRM → 开发](HANDOFFS/2026-07-07-ui-to-developer-leads-crm.md)
+- **待办**：报告白标/月报 M2 · 探针 M2 · 计费在线升级 M2
 
 ---
 
@@ -411,14 +442,17 @@
 | B-11 | ~~EPIC-6 M2 C13 未 commit/push~~ | 开发 | ✅ **已关闭** `71c374d` |
 | B-12 | ~~EPIC-11 M1 C15 未 commit/push~~ | 开发 | ✅ **已关闭** `3855266` · smoke ✅ |
 | B-13 | ~~EPIC-3 M2 C16 未 commit/push~~ | 开发 | ✅ **已关闭** C16 `20b7a87` · pytest 8 + smoke ✅ |
+| B-14 | ~~EPIC-7 M2 C17 未 commit/push~~ | 开发 | ✅ **已关闭** C17 `PLACEHOLDER` · smoke ✅ |
 
 ---
 
-## 下一步（跨角色 · 2026-07-06）
+## 下一步（跨角色 · 2026-07-07）
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P1** | **技术总监** | C16 后规划下一 Sprint | 候选：EPIC-9 M2 · EPIC-11 M2 · EPIC-7 M2 |
+| **P1** | **技术总监** | C17 后派发 **EPIC-8 M2** 月报+白标 | 路线图 #2 |
+| **P2** | **开发** | diagnostic smoke 9/9 | 维护轨 |
+| **P2** | **开发 Extension** | 真 Perplexity hook | 维护轨 |
 
 ---
 
@@ -426,6 +460,12 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-07 | 开发 | C17 EPIC-7 M2 CRM 全栈 commit+push · **EPIC-7 M2 正式关闭** · 路线图 #1 ✅ |
+| 2026-07-07 | 技术总监 | EPIC-7 M2 三端复核 ✅ · 派发 C17 · B-14 打开 · 路线图 #1 待入库 |
+| 2026-07-07 | 开发 Admin | EPIC-7 M2 CRM drawer · 状态/跟进/负责人 · `build:prod` ✅ |
+| 2026-07-07 | 开发 Java | EPIC-7 M2 PATCH lead + followup CRUD · ADR-20 状态机 · `test_leads_crm.py` ✅ |
+| 2026-07-07 | UI 设计 | EPIC-7 M2 leads-list CRM 增量 FR-605 · 状态/跟进/负责人 · HANDOFF |
+| 2026-07-07 | 技术总监 | 定案完整版路线图 · **EPIC-7 M2** CRM Sprint · ADR-20 · 3 条 HANDOFF |
 | 2026-07-06 | 开发 | C16 EPIC-3 M2 关键词评分全栈 commit+push · **EPIC-3 M2 正式关闭** |
 | 2026-07-06 | 技术总监 | 进度复核 EPIC-3 M2 三端 ✅ · 派发 C16 HANDOFF · B-13 打开 |
 | 2026-07-06 | 开发 Admin | EPIC-3 M2 关键词 score UI · 刷新评分 · 五维 tooltip · `build:prod` ✅ |

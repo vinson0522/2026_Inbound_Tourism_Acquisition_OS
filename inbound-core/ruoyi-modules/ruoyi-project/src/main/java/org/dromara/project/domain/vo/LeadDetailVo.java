@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -21,4 +22,6 @@ public class LeadDetailVo extends LeadVo {
     private Map<String, Object> utm;
 
     private String device;
+
+    private List<LeadFollowupVo> followups;
 }

@@ -28,6 +28,10 @@ public class LeadVo {
 
     private String status;
 
+    private Long assigneeId;
+
+    private String assigneeName;
+
     private String landingPageTitle;
 
     private String landingPageSlug;

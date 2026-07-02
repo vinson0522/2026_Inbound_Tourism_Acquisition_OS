@@ -147,6 +147,7 @@ tenant:
     - generated_content
     - landing_page
     - lead
+    - lead_followup
     - diagnostic_run
     - diagnostic_result
     - probe_task

@@ -516,6 +516,8 @@ export interface LeadVo {
   phone?: string;
   source?: string;
   status: LeadStatus;
+  assigneeId?: number | null;
+  assigneeName?: string | null;
   landingPageTitle?: string;
   landingPageSlug?: string;
   keywordText?: string;
@@ -530,6 +532,28 @@ export interface LeadDetailVo extends LeadVo {
   message?: string;
   utm?: Record<string, string>;
   device?: string;
+  followups?: LeadFollowupVo[];
+}
+
+export interface LeadFollowupVo {
+  id: number;
+  leadId?: number;
+  content: string;
+  channel?: string | null;
+  suggestion?: string | null;
+  operatorId?: number | null;
+  operatorName?: string | null;
+  createdAt?: string;
+}
+
+export interface LeadUpdateForm {
+  status?: LeadStatus;
+  assigneeId?: number | null;
+}
+
+export interface LeadFollowupCreateForm {
+  content: string;
+  channel?: string;
 }
 
 export interface LeadQuery {
