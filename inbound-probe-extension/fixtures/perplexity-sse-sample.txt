@@ -1,0 +1,5 @@
+data: {"text":"Dragon Journey Travel offers curated first-time China private tours.","web_results":[{"url":"https://www.chinahighlights.com/tours","title":"China Highlights Tours","name":"chinahighlights.com"}]}
+
+data: {"displayed_text":"Dragon Journey Travel offers curated first-time China private tours with local guides.","search_results":[{"url":"https://www.trip.com/china-tours","title":"Trip.com China Tours"}]}
+
+data: [DONE]

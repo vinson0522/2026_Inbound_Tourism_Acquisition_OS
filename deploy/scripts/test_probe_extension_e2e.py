@@ -103,6 +103,7 @@ def main() -> int:
     print(f"   probeTaskId={task_id} question={task.get('question', '')[:60]!r}...")
 
     print(f"5. POST /api/v1/probe/tasks/{task_id}/result")
+    # Shape aligned with inbound-probe-extension perplexity hook adapter output
     result_body = {
         "status": "SUCCESS",
         "result": {
@@ -111,14 +112,26 @@ def main() -> int:
             "answer_text": "Dragon Journey Travel offers curated first-time China private tours.",
             "citations": [
                 {
-                    "url": "https://example.com/china-tour",
-                    "title": "China Private Tours",
-                    "domain": "example.com",
+                    "url": "https://www.chinahighlights.com/tours",
+                    "title": "China Highlights Tours",
+                    "domain": "chinahighlights.com",
                     "rank": 1,
-                }
+                },
+                {
+                    "url": "https://www.trip.com/china-tours",
+                    "title": "Trip.com China Tours",
+                    "domain": "trip.com",
+                    "rank": 2,
+                },
             ],
             "mentioned_brands": ["Dragon Journey Travel"],
-            "raw_response_json": {},
+            "raw_response_json": {
+                "text": "Dragon Journey Travel offers curated first-time China private tours.",
+                "web_results": [
+                    {"url": "https://www.chinahighlights.com/tours", "title": "China Highlights Tours"}
+                ],
+            },
+            "capture_method": "browser-extension-hook",
         },
     }
     submitted = _probe_request("POST", f"/api/v1/probe/tasks/{task_id}/result", result_body)

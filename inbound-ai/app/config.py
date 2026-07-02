@@ -13,7 +13,8 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     ai_service_internal_token: str = "dev_internal_token_change_me"
 
-    database_url: str | None = None
+    # Local Docker default (ADR-09); override in prod via deploy/.env
+    database_url: str | None = "postgresql://inbound:inbound_dev_pass@127.0.0.1:5432/inbound_growth"
 
     openai_api_key: str | None = None
     openai_api_base: str | None = None
@@ -24,20 +25,21 @@ class Settings(BaseSettings):
     langfuse_secret_key: str | None = None
     langfuse_host: str | None = None
 
-    rabbitmq_url: str | None = None
-    core_callback_base_url: str | None = None
-    diagnose_worker_enabled: bool = False
+    rabbitmq_url: str | None = "amqp://guest:guest@127.0.0.1:5672/"
+    core_callback_base_url: str | None = "http://localhost:8080"
+    diagnose_worker_enabled: bool = True
     # Pipeline E2E when provider keys/quota unavailable (never use in production)
-    diagnose_mock_llm: bool = False
+    diagnose_mock_llm: bool = True
 
     embedding_model: str = "openai/text-embedding-3-small"
     chunk_size: int = 512
     chunk_overlap: int = 64
     embed_worker_enabled: bool = False
-    embed_mock: bool = False
+    # Local smoke default; prod compose sets EMBED_MOCK=false + OPENAI_API_KEY
+    embed_mock: bool = True
 
     reranker_model: str = "BAAI/bge-reranker-v2-m3"
-    reranker_mock: bool = False
+    reranker_mock: bool = True
     rag_vector_top_k: int = 20
     rag_rerank_top_k: int = 3
 

@@ -10,7 +10,8 @@
     "dev": "plasmo dev",
     "build": "plasmo build",
     "package": "plasmo package",
-    "test:adapter": "node scripts/test-adapter.mjs"
+    "test:adapter": "node scripts/test-adapter.mjs",
+    "test:perplexity-hook": "node scripts/test-perplexity-hook.mjs"
   },
   "dependencies": {
     "plasmo": "0.90.5",

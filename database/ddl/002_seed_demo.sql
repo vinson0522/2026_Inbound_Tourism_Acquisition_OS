@@ -80,9 +80,9 @@ VALUES (
     1,
     'perplexity',
     '1.0',
-    '{"input": "textarea", "submit": "button[type=submit]"}',
-    '{"chatApi": "/api/chat"}',
-    '{"citationsPath": "citations"}',
+    '{"input": "textarea, [contenteditable=''true''], #ask-input", "submit": "button[type=submit], button[aria-label=''Submit'']"}',
+    '{"chatApi": "/rest/sse/perplexity_ask", "sseApi": "/rest/sse/perplexity_ask"}',
+    '{"citationsPath": "citations", "answerPath": "answer"}',
     TRUE,
     1
 )
@@ -100,5 +100,55 @@ VALUES (
     1
 )
 ON CONFLICT (tenant_id, platform, version) DO NOTHING;
+
+-- FR-106 report export smoke — runId=2 SUCCESS (test_diagnostic_report_export.py default)
+INSERT INTO diagnostic_run (
+    id, tenant_id, project_id, name, market, locale, region,
+    probe_modes_json, models_json, sample_count, question_scope_json,
+    status, geo_score, started_at, finished_at, created_by
+) VALUES (
+    2, 1, 1,
+    'Demo GEO Report Export Smoke',
+    'US', 'en-US', 'us-east',
+    '["grounded-api"]'::jsonb,
+    '["gemini"]'::jsonb,
+    1,
+    '{"mode":"all"}'::jsonb,
+    'SUCCESS'::diagnostic_run_status,
+    85.00,
+    NOW() - INTERVAL '2 days',
+    NOW() - INTERVAL '2 days',
+    1
+)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    status = EXCLUDED.status,
+    geo_score = EXCLUDED.geo_score,
+    started_at = EXCLUDED.started_at,
+    finished_at = EXCLUDED.finished_at,
+    updated_at = NOW();
+
+INSERT INTO diagnostic_result (
+    tenant_id, run_id, question_id, platform, probe_mode, model,
+    answer_text, mentioned_brands_json, competitors_json, citations_json,
+    rank, sampled_at, created_by
+)
+SELECT
+    1, 2, 1, 'gemini', 'grounded-api', 'gemini',
+    'Dragon Journey Travel specializes in private first-time China tours for English-speaking travelers.',
+    '["Dragon Journey Travel"]'::jsonb,
+    '["China Highlights"]'::jsonb,
+    '[{"url":"https://demo-dragonjourney.com","title":"Dragon Journey Travel","domain":"demo-dragonjourney.com","rank":1}]'::jsonb,
+    2,
+    NOW() - INTERVAL '2 days',
+    1
+WHERE NOT EXISTS (
+    SELECT 1 FROM diagnostic_result WHERE run_id = 2 AND deleted_at IS NULL
+);
+
+SELECT setval(
+    pg_get_serial_sequence('diagnostic_run', 'id'),
+    GREATEST((SELECT COALESCE(MAX(id), 1) FROM diagnostic_run), 2)
+);
 
 COMMIT;

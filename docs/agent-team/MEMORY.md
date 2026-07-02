@@ -202,8 +202,8 @@
 | 4 | M2 计费 | EPIC-9 · FR-804 扩展 | 套餐 CRUD + 周期重置 | ✅ C20 `942eddb` |
 | 5 | M1 素材 | EPIC-5 · FR-401~403 | 爆款拆解 MVP | ✅ C21 `fb28a96` |
 | 6 | M3 线索 | EPIC-7 · FR-602/603 | WhatsApp 追踪 + AI 跟进话术 | ✅ C22 `18b17c0` |
-| 7 | M3 诊断 | EPIC-2 · FR-109 | 定时诊断任务 | ⏳ **当前** |
-| — | 维护 | — | smoke 9/9 · 扩展真 Perplexity hook | 并行 |
+| 7 | M3 诊断 | EPIC-2 · FR-109 | 定时诊断任务 | ✅ C23 `cfda3a7` |
+| — | **维护** | — | smoke 9/9 · 扩展真 Perplexity hook | ✅ **2026-07-10** 9/9 绿 |
 
 ### EPIC-7 M2 Sprint — FR-605 轻量 CRM（2026-07-07 排期）
 
@@ -294,11 +294,24 @@
 | 1 | UI | 定时计划线框 | [→UI](HANDOFFS/2026-07-10-tech-director-to-ui-epic2-schedule-m3.md) | ✅ |
 | 2 | 开发 Java | schedule + Job | [→Java](HANDOFFS/2026-07-10-tech-director-to-dev-java-epic2-schedule-m3.md) | ✅ |
 | 3 | 开发 Admin | 定时计划 UI | [→Admin](HANDOFFS/2026-07-10-tech-director-to-dev-admin-epic2-schedule-m3.md) | ✅ |
-| — | 总览 | Sprint 索引 | [EPIC-2 M3](HANDOFFS/2026-07-10-tech-director-epic2-m3-schedule-sprint.md) | — |
+| — | 总览 | Sprint 索引 | [EPIC-2 M3](HANDOFFS/2026-07-10-tech-director-epic2-m3-schedule-sprint.md) | ✅ **关闭** |
 
 **ADR-26**：Spring `@Scheduled` · 每项目 1 schedule · 无 XXL-Job M3
 
-**技术总监签核（2026-07-02）**：✅ **EPIC-2 M3 正式关闭** — C23 `cfda3a7` · `test_diagnostic_schedule` runId=11 · Admin `build:prod` ✅ · **路线图 #7 ✅ 全部关闭**
+**技术总监签核（2026-07-10）**：✅ **EPIC-2 M3 正式关闭** — C23 `cfda3a7` · `test_diagnostic_schedule` runId=13 · Admin `build:prod` ✅ · **路线图 #7 ✅ · #1–#7 全部关闭**
+
+### 维护轨 Sprint — smoke 9/9 回归（2026-07-10 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | 开发 Python | embed/RAG smoke 修复 | [→AI](HANDOFFS/2026-07-10-tech-director-to-dev-ai-maintenance-smoke-fix.md) | ✅ |
+| 2 | 开发 Java | 报告导出 smoke | [→Java](HANDOFFS/2026-07-10-tech-director-to-dev-java-maintenance-report-smoke.md) | ✅ |
+| 3 | 开发 Extension | 真 Perplexity hook | [→Extension](HANDOFFS/2026-07-10-tech-director-to-dev-extension-perplexity-hook.md) | ✅ |
+| — | 总览 | Sprint 索引 | [维护轨](HANDOFFS/2026-07-10-tech-director-maintenance-smoke-regression-sprint.md) | ✅ **关闭** |
+
+**技术总监签核（2026-07-10）**：✅ **维护轨 smoke 9/9 正式关闭** — `run_smoke_regression.ps1` 9/9 · `DIAGNOSE_MOCK_LLM=true` docker ai-api · embed/RAG/report/probe hook ✅ · B-21 关闭
+
+**smoke 复核（2026-07-10）**：`run_smoke_regression.ps1` **9/9** · diagnostic_e2e runId=6 geo=85 · Perplexity hook fixture ✅ · `test_probe_extension_e2e` runId=16 ✅
 
 | # | 角色 | 任务 | HANDOFF | 状态 |
 |---|------|------|---------|:----:|
@@ -351,8 +364,9 @@
 | **C21** | EPIC-5 M1 爆款 | `feat(core,ai,admin): EPIC-5 M1 viral video breakdown MVP` | ✅ `fb28a96` |
 | **C22** | EPIC-7 M3 线索 | `feat(core,ai,admin,landing): EPIC-7 M3 WhatsApp tracking and AI followup` | ✅ `18b17c0` |
 | **C23** | EPIC-2 M3 定时诊断 | `feat(core,admin): EPIC-2 M3 scheduled diagnostic runs FR-109` | ✅ `cfda3a7` |
+| **C24** | 维护轨 smoke 9/9 | `fix(ai,deploy,extension): restore smoke 9/9 regression defaults` | ✅ `27361b6` |
 
-**执行**：C1–C23 ✅ · push ✅ · **完整版路线图 #1–#7 全部关闭** · 进入维护轨
+**执行**：C1–C24 ✅ · push ✅ · **完整版路线图 #1–#7 全部关闭** · 维护轨 smoke 9/9 ✅
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -448,11 +462,14 @@
 - **EPIC-2 M3 FR-109 Admin 定时计划 Tab（2026-07-02）** ✅ `diagnostics/index.vue` Tab「诊断任务|定时计划」· schedule 表单/只读区/footnote · `getDiagnosticSchedule`/`upsertDiagnosticSchedule` · `?tab=schedule` · `pnpm build:prod` ✅ · **C23 并入**
 - **EPIC-11 M1 FR-112~114 probe Extension（2026-07-05）** ✅ Plasmo MV3 · background poll 30s · perplexity content hook + mock · adapter parse · popup · `pnpm build` ✅
 - **EPIC-11 M2 FR-112 ChatGPT Extension（2026-07-09）** ✅ `adapters/chatgpt.ts` + `contents/chatgpt.ts` · seed parse_rules 对齐 · background 轮换 poll perplexity/chatgpt · mock 可测 · `pnpm build` + `test:adapter` ✅
+- **维护轨 Perplexity hook Extension（2026-07-02）** ✅ `adapters/perplexity.ts` SSE/NDJSON merge · fetch+XHR+EventSource hooks · `web_results`/`search_results`/`hidden_params` · `005_probe_perplexity_adapter_hook.sql` · `pnpm test:perplexity-hook` 2 citations · `test_probe_extension_e2e` runId=14 · `PLASMO_PUBLIC_PROBE_MOCK=false` 真页面路径
 - **EPIC-11 M1 FR-113 Admin 探针节点（2026-07-05）** ✅ `/settings/probe-nodes` 只读列表 · 在线/离线 · 空态安装引导 · `pnpm build:prod` ✅
 - **EPIC-11 M2 FR-115/116 Admin adapter+校准（2026-07-09）** ✅ `/settings/probe-adapters` · 诊断详情校准 Tab · calibration_ratio 接后端 · `pnpm build:prod` ✅
 - **EPIC-9 M1 FR-804 Admin 计费页（2026-07-02）** ✅ `/settings/billing` 只读用量 · 6×`el-progress` · 超额/预警 alert · Axios 402 全局提示 · `pnpm build:prod` ✅
 - **EPIC-9 M2 FR-804 Admin 计费编辑（2026-07-09）** ✅ 编辑 drawer · 套用模板额度 · 重置本周期用量 dialog · 周期 footnote · `pnpm build:prod` ✅
 - **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ **已提交** `f40cf8d` — `ai.embed` worker · asset#1 READY
+- **维护轨 embed/RAG smoke（2026-07-02）** ✅ config 默认 DATABASE_URL+EMBED_MOCK · embed router 503 · `test_embed_e2e`+`test_knowledge_rag_search` chunkId=3
+- **维护轨 smoke 9/9（2026-07-10）** ✅ `deploy/scripts/run_smoke_regression.ps1` 9/9 · docker ai-api `DIAGNOSE_MOCK_LLM=true` · diagnostic_e2e runId=6 geo=85
 - **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` / `e22cd43` / `f96ba7e`（已 push）
 - **EPIC-2 M1 代码** ✅ **已提交** `54d8ca5` / `6ba5e1e` / `48926d2`（已 push）
 - **Admin 浏览器走查（2026-06-29）** ✅ `pnpm dev` :5173 · admin/admin123 · Java :8080 + Docker ADR-09
@@ -551,6 +568,8 @@
 | B-18 | ~~EPIC-5 M1 C21 未 commit/push~~ | 开发 | ✅ **已关闭** C21 `fb28a96` · smoke materialId=3 |
 | B-19 | ~~EPIC-7 M3 C22 未 commit/push~~ | 开发 | ✅ **已关闭** C22 `18b17c0` · smoke leadId=44 |
 | B-20 | ~~EPIC-2 M3 C23 未 commit/push~~ | 开发 | ✅ **已关闭** C23 `cfda3a7` · smoke runId=11 |
+| B-21 | ~~smoke 9/9 回归：embed/RAG 500 · report export runId=2~~ | 开发 | ✅ **已关闭** 2026-07-10 · `run_smoke_regression.ps1` 9/9 |
+| B-22 | ~~维护轨 C24 未 commit/push（smoke/config/seed/adapter/docs）~~ | 开发 | ✅ **已关闭** C24 `27361b6` · `run_smoke_regression.ps1` 9/9 |
 
 ---
 
@@ -558,8 +577,8 @@
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P0** | **开发** | diagnostic smoke 9/9 回归 | 维护轨 |
-| **P1** | **开发** | 扩展真 Perplexity hook · 探针 E2E | 维护轨 |
+| **P1** | **开发 Extension** | Perplexity **live** 页面手工验证（Chrome + 登录） | B-03b |
+| **P2** | **开发** | 真 Gemini E2E（配额恢复后 `DIAGNOSE_MOCK_LLM=false`） | B-03b |
 
 ---
 
@@ -567,6 +586,9 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-10 | 开发 | C24 `27361b6` 维护轨 smoke 9/9 defaults · `run_smoke_regression.ps1` · B-22 关闭 |
+| 2026-07-10 | 技术总监 | **维护轨 smoke 9/9 签核关闭** · `run_smoke_regression.ps1` · docker ai-api `DIAGNOSE_MOCK_LLM=true` · B-21 关闭 · B-22 打开 |
+| 2026-07-10 | 技术总监 | **EPIC-2 M3 签核关闭** C23 `cfda3a7` · smoke runId=13 · **路线图 #1–#7 全部关闭** · 派发维护轨 |
 | 2026-07-02 | 开发 | C23 `cfda3a7` EPIC-2 M3 定时诊断全栈 commit+push · smoke runId=11 · **路线图 #7 ✅ 全部关闭** · B-20 关闭 |
 | 2026-07-02 | 开发 Admin | EPIC-2 M3 定时计划 Tab · schedule API 对接 · `build:prod` ✅ · EPIC-2 M3 Admin 完成 |
 | 2026-07-02 | 开发 Java | EPIC-2 M3 FR-109 `diagnostic_schedule` + Job + smoke runId=8 · Java 端完成 · 待 C23 commit |
@@ -578,6 +600,7 @@
 | 2026-07-02 | 开发 Landing | EPIC-7 M3 WhatsApp beacon · `sendBeacon` lead-events · `pnpm build` ✅ |
 | 2026-07-02 | 开发 Python | EPIC-7 M3 `/ai/followup/generate` 完整 mock+LLM 路径 · template_service · pytest 7 passed |
 | 2026-07-10 | 技术总监 | C21 已关闭 · 派发 **EPIC-7 M3** WhatsApp+AI跟进 · ADR-25 · 5 条 HANDOFF · 路线图 #6 |
+| 2026-07-02 | 开发 Extension | B-03b 真 Perplexity hook · SSE merge · `test:perplexity-hook` · `test_probe_extension_e2e` runId=14 · 维护轨 #3 ✅ |
 | 2026-07-09 | 开发 | C21 `fb28a96` EPIC-5 M1 爆款拆解全栈 commit+push · **EPIC-5 M1 正式关闭** · 路线图 #5 ✅ · B-18 关闭 |
 | 2026-07-09 | 技术总监 | EPIC-5 M1 四端复核 ✅ · smoke materialId=2 · pytest 4 · 派发 C21 · B-18 打开 · 修正 EPIC-9 签核 |
 | 2026-07-09 | UI 设计 | EPIC-5 M1 `viral-breakdown-list` 上传+拆解+七维 drawer+frames · FR-405 footnote · UI→开发 HANDOFF ✅ |
