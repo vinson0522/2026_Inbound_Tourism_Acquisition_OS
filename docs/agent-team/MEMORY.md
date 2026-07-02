@@ -7,7 +7,7 @@
 |------|-----|
 | **最后更新** | 2026-07-10 |
 | **更新角色** | 技术总监 |
-| **Git 远程** | ✅ `origin/main` · C23 `83d1d87` |
+| **Git 远程** | ✅ `origin/main` · C23 `cfda3a7` |
 | **当前 EPIC 焦点** | **维护轨** · 完整版路线图 #1–#7 全部关闭 |
 
 ---
@@ -298,7 +298,7 @@
 
 **ADR-26**：Spring `@Scheduled` · 每项目 1 schedule · 无 XXL-Job M3
 
-**技术总监签核（2026-07-02）**：✅ **EPIC-2 M3 正式关闭** — C23 `83d1d87` · `test_diagnostic_schedule` runId=11 · Admin `build:prod` ✅ · **路线图 #7 ✅ 全部关闭**
+**技术总监签核（2026-07-02）**：✅ **EPIC-2 M3 正式关闭** — C23 `cfda3a7` · `test_diagnostic_schedule` runId=11 · Admin `build:prod` ✅ · **路线图 #7 ✅ 全部关闭**
 
 | # | 角色 | 任务 | HANDOFF | 状态 |
 |---|------|------|---------|:----:|
@@ -350,7 +350,7 @@
 | **C20** | EPIC-9 M2 计费 | `feat(core,admin): EPIC-9 M2 subscription CRUD and period reset` | ✅ `942eddb` |
 | **C21** | EPIC-5 M1 爆款 | `feat(core,ai,admin): EPIC-5 M1 viral video breakdown MVP` | ✅ `fb28a96` |
 | **C22** | EPIC-7 M3 线索 | `feat(core,ai,admin,landing): EPIC-7 M3 WhatsApp tracking and AI followup` | ✅ `18b17c0` |
-| **C23** | EPIC-2 M3 定时诊断 | `feat(core,admin): EPIC-2 M3 scheduled diagnostic runs FR-109` | ✅ `83d1d87` |
+| **C23** | EPIC-2 M3 定时诊断 | `feat(core,admin): EPIC-2 M3 scheduled diagnostic runs FR-109` | ✅ `cfda3a7` |
 
 **执行**：C1–C23 ✅ · push ✅ · **完整版路线图 #1–#7 全部关闭** · 进入维护轨
 
@@ -550,7 +550,7 @@
 | B-17 | ~~EPIC-9 M2 C20 未 commit/push~~ | 开发 | ✅ **已关闭** C20 `942eddb` · smoke ✅ |
 | B-18 | ~~EPIC-5 M1 C21 未 commit/push~~ | 开发 | ✅ **已关闭** C21 `fb28a96` · smoke materialId=3 |
 | B-19 | ~~EPIC-7 M3 C22 未 commit/push~~ | 开发 | ✅ **已关闭** C22 `18b17c0` · smoke leadId=44 |
-| B-20 | ~~EPIC-2 M3 C23 未 commit/push~~ | 开发 | ✅ **已关闭** C23 `83d1d87` · smoke runId=11 |
+| B-20 | ~~EPIC-2 M3 C23 未 commit/push~~ | 开发 | ✅ **已关闭** C23 `cfda3a7` · smoke runId=11 |
 
 ---
 
@@ -567,7 +567,7 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-07-02 | 开发 | C23 `83d1d87` EPIC-2 M3 定时诊断全栈 commit+push · smoke runId=11 · **路线图 #7 ✅ 全部关闭** · B-20 关闭 |
+| 2026-07-02 | 开发 | C23 `cfda3a7` EPIC-2 M3 定时诊断全栈 commit+push · smoke runId=11 · **路线图 #7 ✅ 全部关闭** · B-20 关闭 |
 | 2026-07-02 | 开发 Admin | EPIC-2 M3 定时计划 Tab · schedule API 对接 · `build:prod` ✅ · EPIC-2 M3 Admin 完成 |
 | 2026-07-02 | 开发 Java | EPIC-2 M3 FR-109 `diagnostic_schedule` + Job + smoke runId=8 · Java 端完成 · 待 C23 commit |
 | 2026-07-10 | UI 设计 | EPIC-2 M3 `diagnostics-list` §M3 定时计划 Tab FR-109 · enabled/频率/参数复用 · nextRun/lastRun · footnote · UI→开发 HANDOFF ✅ |
