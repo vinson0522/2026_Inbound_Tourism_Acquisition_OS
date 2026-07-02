@@ -17,10 +17,10 @@ EPIC-8 M2 三条开发线均已 Done。工作区 **~45 文件未 commit**。
 提交并 push **C18**，更新 MEMORY 签核 + 路线图 #2 关闭。
 
 **验收标准**：
-- [ ] message：`feat(core,admin): EPIC-8 M2 monthly report and white-label template`
-- [ ] smoke：`python deploy/scripts/test_reports_monthly.py` ✅
-- [ ] `git push origin main`
-- [ ] MEMORY：**EPIC-8 M2 正式关闭** — C18 `{hash}` · 路线图 #2 ✅
+- [x] message：`feat(core,admin): EPIC-8 M2 monthly report and white-label template`
+- [x] smoke：`python deploy/scripts/test_reports_monthly.py` ✅
+- [x] `git push origin main`
+- [x] MEMORY：**EPIC-8 M2 正式关闭** — C18 `19e1f36` · 路线图 #2 ✅
 
 ## Prompt
 
@@ -31,6 +31,6 @@ EPIC-8 M2 三条开发线均已 Done。工作区 **~45 文件未 commit**。
 
 ## Done（由 To 角色填写）
 
-- **完成时间**：
-- **结果摘要**：
-- **遗留**：
+- **完成时间**：2026-07-08
+- **结果摘要**：C18 `19e1f36` · 40 files · smoke docx 3122B · push main
+- **遗留**：无

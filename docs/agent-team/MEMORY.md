@@ -5,10 +5,10 @@
 
 | 字段 | 值 |
 |------|-----|
-| **最后更新** | 2026-07-07 |
+| **最后更新** | 2026-07-08 |
 | **更新角色** | 开发 |
-| **Git 远程** | ✅ `origin/main` · C16 `20b7a87` · **C17 `ecb0d46`** |
-| **当前 EPIC 焦点** | **EPIC-7 M2 已关闭** · 路线图 #1 ✅ · 待 EPIC-8 M2 |
+| **Git 远程** | ✅ `origin/main` · C18 `19e1f36` |
+| **当前 EPIC 焦点** | **EPIC-11 M2** 探针 adapter（路线图 #3）· 待技术总监派发 |
 
 ---
 
@@ -197,7 +197,7 @@
 | 序 | Sprint | EPIC/FR | 目标 | 状态 |
 |:--:|--------|---------|------|:----:|
 | 1 | **M2 CRM** | EPIC-7 · FR-605 | 线索状态+跟进闭环 | ✅ C17 `ecb0d46` |
-| 2 | M2 报告 | EPIC-8 · FR-703/704 | 月报 + 白标模板 |
+| 2 | **M2 报告** | EPIC-8 · FR-703/704 | 月报 + 白标模板 | ✅ C18 `19e1f36` |
 | 3 | M2 探针 | EPIC-11 · FR-115/116 | adapter 配置 + 校准 + 第二平台 |
 | 4 | M2 计费 | EPIC-9 · FR-802/805 | 套餐 CRUD + 周期重置 |
 | 5 | M1 素材 | EPIC-5 · FR-401~403 | 爆款拆解 MVP |
@@ -217,6 +217,19 @@
 **ADR-20**：五态 CRM · 无 AI/WhatsApp/归因 M2
 
 **技术总监签核**：✅ **EPIC-7 M2 正式关闭** — C17 `ecb0d46` · `test_leads_crm` ✅
+
+### EPIC-8 M2 Sprint — FR-703/704 月报+白标（2026-07-08 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | 月报+模板线框 | [→UI](HANDOFFS/2026-07-08-tech-director-to-ui-epic8-monthly-whitelabel.md) | ✅ |
+| 2 | 开发 Java | monthly + template API | [→Java](HANDOFFS/2026-07-08-tech-director-to-dev-java-epic8-monthly-whitelabel.md) | ✅ smoke |
+| 3 | 开发 Admin | 月报+模板页 | [→Admin](HANDOFFS/2026-07-08-tech-director-to-dev-admin-epic8-monthly-whitelabel.md) | ✅ build |
+| — | 总览 | Sprint 索引 | [EPIC-8 M2](HANDOFFS/2026-07-08-tech-director-epic8-m2-reports-sprint.md) | ✅ **关闭** |
+
+**ADR-21**：自然月月报+MoM · 租户 REPORT 模板 · 无定时/LLM M2
+
+**技术总监签核**：✅ **EPIC-8 M2 正式关闭** — C18 `19e1f36` · `test_reports_monthly` ✅ docx 3122B
 
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
@@ -265,8 +278,9 @@
 | **C15** | EPIC-11 M1 探针 | `feat(core,admin,extension): EPIC-11 M1 browser probe poll and node registry` | ✅ `3855266` |
 | **C16** | EPIC-3 M2 关键词评分 | `feat(ai,core,admin): EPIC-3 M2 keyword opportunity scoring FR-203` | ✅ `20b7a87` |
 | **C17** | EPIC-7 M2 CRM | `feat(core,admin): EPIC-7 M2 light CRM lead status and followups` | ✅ `ecb0d46` |
+| **C18** | EPIC-8 M2 月报白标 | `feat(core,admin): EPIC-8 M2 monthly report and white-label template` | ✅ `19e1f36` |
 
-**执行**：C1–C17 ✅ · push ✅
+**执行**：C1–C18 ✅ · push ✅
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -344,7 +358,9 @@
 - **EPIC-7 M1 FR-601 Admin 线索页（2026-07-01）** ✅ `/leads` 侧栏 + 列表/筛选/脱敏 + 详情 drawer · `maskPii` · `pnpm build:prod` ✅
 - **EPIC-7 M2 FR-605 leads CRM Java（2026-07-07）** ✅ PATCH lead 状态/负责人 · GET/POST followups · `LeadStatusTransition` · 详情 `assigneeName`/`followups[]` · `tenant.excludes` + `lead_followup` · `test_leads_crm.py` ✅
 - **EPIC-7 M2 FR-605 Admin CRM drawer（2026-07-07）** ✅ 双 Tab CRM/线索信息 · 状态保存 · 指派给我 · 跟进 timeline · 终态禁用 · `pnpm build:prod` ✅
+- **EPIC-8 M2 FR-703/704 Admin 月报+白标（2026-07-08）** ✅ 月报 dialog · MONTHLY 预览 MoM/CRM · `/settings/report-template` 白标页 · `pnpm build:prod` ✅
 - **EPIC-8 M1 FR-701/702 Admin 报告中心（2026-07-02）** ✅ `/reports` 侧栏 + 列表/筛选 + 周报 dialog + 预览 drawer + DOCX/PDF 下载 · `pnpm build:prod` ✅
+- **EPIC-8 M2 FR-703/704 monthly+白标 Java（2026-07-08）** ✅ `POST .../reports/monthly` · `GET/PUT /api/v1/settings/report-template` · MoM/CRM/avgScore 聚合 · 导出白标 weekly/monthly/diagnostic · `template` entity · `test_reports_monthly.py` ✅ docx 3122B
 - **EPIC-9 M1 FR-804 billing Java（2026-07-02）** ✅ `GET /api/v1/settings/billing` · `QuotaService.checkAndConsume` · 6 拦截点（项目/诊断/关键词/内容/落地页/周报）· HTTP 402 `code=40201` · `tenant.excludes` 加 `subscription` · `test_billing_quota.py` ✅
 - **EPIC-11 M1 FR-112~114 probe Java（2026-07-05）** ✅ `ProbeController` register/poll/result/adapters + `GET /nodes` · `createRun` browser-extension 分叉 · `test_probe_extension_e2e.py` ✅
 - **EPIC-11 M1 FR-112~114 probe Extension（2026-07-05）** ✅ Plasmo MV3 · background poll 30s · perplexity content hook + mock · adapter parse · popup · `pnpm build` ✅
@@ -418,9 +434,9 @@
 
 ## UI 设计
 
-- **已完成**：… billing-settings (EPIC-9 M1) ✅ · probe-nodes (EPIC-11 M1) ✅ · **leads-list M2 CRM (EPIC-7 M2)** ✅
-- **HANDOFF**：[线索 CRM → 开发](HANDOFFS/2026-07-07-ui-to-developer-leads-crm.md)
-- **待办**：报告白标/月报 M2 · 探针 M2 · 计费在线升级 M2
+- **已完成**：… billing-settings (EPIC-9 M1) ✅ · probe-nodes (EPIC-11 M1) ✅ · leads-list M2 CRM (EPIC-7 M2) ✅ · **reports-list M2 + report-template-settings (EPIC-8 M2)** ✅
+- **HANDOFF**：[月报+白标 → 开发](HANDOFFS/2026-07-08-ui-to-developer-report-monthly-whitelabel.md)
+- **待办**：探针 M2 · 计费 M2
 
 ---
 
@@ -443,15 +459,16 @@
 | B-12 | ~~EPIC-11 M1 C15 未 commit/push~~ | 开发 | ✅ **已关闭** `3855266` · smoke ✅ |
 | B-13 | ~~EPIC-3 M2 C16 未 commit/push~~ | 开发 | ✅ **已关闭** C16 `20b7a87` · pytest 8 + smoke ✅ |
 | B-14 | ~~EPIC-7 M2 C17 未 commit/push~~ | 开发 | ✅ **已关闭** C17 `ecb0d46` · smoke ✅ |
+| B-15 | ~~EPIC-8 M2 C18 未 commit/push~~ | 开发 | ✅ **已关闭** C18 `19e1f36` · smoke ✅ |
 
 ---
 
-## 下一步（跨角色 · 2026-07-07）
+## 下一步（跨角色 · 2026-07-08）
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P1** | **技术总监** | C17 后派发 **EPIC-8 M2** 月报+白标 | 路线图 #2 |
-| **P2** | **开发** | diagnostic smoke 9/9 | 维护轨 |
+| **P0** | **技术总监** | 派发 **EPIC-11 M2** 探针 adapter | 路线图 #3 |
+| **P1** | **开发** | diagnostic smoke 9/9 | 维护轨 |
 | **P2** | **开发 Extension** | 真 Perplexity hook | 维护轨 |
 
 ---
@@ -460,6 +477,12 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-08 | 开发 | C18 `19e1f36` EPIC-8 M2 月报+白标全栈 commit+push · **EPIC-8 M2 正式关闭** · 路线图 #2 ✅ |
+| 2026-07-08 | 技术总监 | EPIC-8 M2 三端复核 ✅ · smoke docx 3123B · 派发 C18 · B-15 打开 |
+| 2026-07-08 | 开发 Admin | EPIC-8 M2 月报 dialog + 报告模板设置页 · MONTHLY 预览 · `build:prod` ✅ |
+| 2026-07-08 | 开发 Java | EPIC-8 M2 monthly+白标 API · template upsert · 导出套 Logo/footer · `test_reports_monthly.py` ✅ |
+| 2026-07-08 | UI 设计 | EPIC-8 M2 `reports-list` §M2 月报 dialog + `report-template-settings` FR-704 · UI→开发 HANDOFF ✅ |
+| 2026-07-08 | 技术总监 | 定案 **EPIC-8 M2** 月报+白标 · ADR-21 · 3 条 HANDOFF · 路线图 #2 启动 |
 | 2026-07-07 | 开发 | C17 EPIC-7 M2 CRM 全栈 commit+push · **EPIC-7 M2 正式关闭** · 路线图 #1 ✅ |
 | 2026-07-07 | 技术总监 | EPIC-7 M2 三端复核 ✅ · 派发 C17 · B-14 打开 · 路线图 #1 待入库 |
 | 2026-07-07 | 开发 Admin | EPIC-7 M2 CRM drawer · 状态/跟进/负责人 · `build:prod` ✅ |
