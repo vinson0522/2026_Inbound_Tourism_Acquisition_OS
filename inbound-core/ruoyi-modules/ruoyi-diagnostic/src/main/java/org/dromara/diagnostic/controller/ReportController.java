@@ -11,6 +11,7 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
+import org.dromara.diagnostic.domain.bo.MonthlyReportBo;
 import org.dromara.diagnostic.domain.bo.ReportQueryBo;
 import org.dromara.diagnostic.domain.bo.WeeklyReportBo;
 import org.dromara.diagnostic.domain.vo.ReportDetailVo;
@@ -69,6 +70,17 @@ public class ReportController extends BaseController {
         @RequestBody(required = false) WeeklyReportBo bo
     ) {
         return R.ok(reportService.createWeeklyReport(projectId, bo));
+    }
+
+    @SaCheckLogin
+    @Log(title = "增长月报", businessType = BusinessType.INSERT)
+    @RepeatSubmit
+    @PostMapping("/monthly")
+    public R<Long> createMonthly(
+        @NotNull @PathVariable Long projectId,
+        @RequestBody(required = false) MonthlyReportBo bo
+    ) {
+        return R.ok(reportService.createMonthlyReport(projectId, bo));
     }
 
     @SaCheckLogin

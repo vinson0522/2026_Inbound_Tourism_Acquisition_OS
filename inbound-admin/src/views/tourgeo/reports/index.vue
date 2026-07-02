@@ -3,7 +3,7 @@
     <div class="tg-page-header">
       <div>
         <h1 class="tg-page-title">报告列表</h1>
-        <p class="tg-page-sub">报告中心 · GEO 诊断报告与增长周报（FR-701/702）</p>
+        <p class="tg-page-sub">报告中心 · GEO 诊断报告、增长周报与月报（FR-701/702/703）</p>
       </div>
       <project-selector @change="handleProjectChange" />
     </div>
@@ -28,12 +28,10 @@
           <el-button type="primary" icon="Document" :loading="weeklySubmitting" @click="openWeeklyDialog">
             生成本周报告
           </el-button>
-          <el-tooltip content="月度增长报告 FR-703 · M2" placement="top">
-            <el-button disabled>月报</el-button>
-          </el-tooltip>
-          <el-tooltip content="白标模板 FR-704 · M2" placement="top">
-            <el-button disabled>模板配置</el-button>
-          </el-tooltip>
+          <el-button type="primary" plain icon="Calendar" :loading="monthlySubmitting" @click="openMonthlyDialog">
+            生成月报
+          </el-button>
+          <el-button icon="Setting" @click="goReportTemplate">模板配置</el-button>
           <el-form :inline="true" class="toolbar-form" @submit.prevent="handleQuery">
             <el-form-item label="报告类型">
               <el-select v-model="queryParams.type" placeholder="全部" clearable style="width: 120px">
@@ -98,6 +96,10 @@
                 诊断 #{{ diagnosticRunId(row) }}
               </el-button>
               <span v-else-if="row.type === 'WEEKLY'">{{ row.period || '—' }}</span>
+              <span v-else-if="row.type === 'MONTHLY'" class="period-monthly">
+                <span>{{ formatMonthLabel(row.period) }}</span>
+                <span v-if="monthPeriodSub(row)" class="period-sub">{{ monthPeriodSub(row) }}</span>
+              </span>
               <span v-else>{{ row.period || '—' }}</span>
             </template>
           </el-table-column>
@@ -142,7 +144,7 @@
           @pagination="getList"
         />
 
-        <p class="page-hint">诊断报告由 GEO 详情页导出写入；周报由本页手动生成。</p>
+        <p class="page-hint">诊断报告由 GEO 详情页导出写入；周报与月报由本页手动生成。</p>
       </el-card>
     </template>
 
@@ -174,6 +176,47 @@
       </template>
     </el-dialog>
 
+    <el-dialog v-model="monthlyVisible" title="生成增长月报 (FR-703)" width="480px" destroy-on-close @closed="resetMonthlyForm">
+      <el-alert
+        v-if="!hasTenantTemplate"
+        type="info"
+        :closable="false"
+        show-icon
+        class="mb-3"
+      >
+        尚未保存租户报告模板，导出将使用系统默认样式。
+        <el-button link type="primary" @click="goReportTemplateFromDialog">去配置模板</el-button>
+      </el-alert>
+      <el-form label-width="88px">
+        <el-form-item label="自然月" required>
+          <el-date-picker
+            v-model="monthlyMonth"
+            type="month"
+            value-format="YYYY-MM"
+            placeholder="选择月份"
+            :disabled-date="disableFutureMonth"
+            style="width: 100%"
+          />
+        </el-form-item>
+        <el-form-item label="统计区间">
+          <el-input :model-value="monthlyRangeLabel" readonly />
+        </el-form-item>
+        <el-form-item label="报告周期">
+          <el-input :model-value="monthlyMonth || '—'" readonly />
+        </el-form-item>
+        <el-alert type="info" :closable="false" show-icon class="mb-2">
+          聚合 GEO MoM、关键词均分、内容/落地页与 CRM 五态询盘；含 5 条静态优化建议。
+        </el-alert>
+        <el-alert type="warning" :closable="false" show-icon>
+          同周期重复生成将创建新记录；扣减「周报/月报」共用额度。
+        </el-alert>
+      </el-form>
+      <template #footer>
+        <el-button @click="monthlyVisible = false">取消</el-button>
+        <el-button type="primary" :loading="monthlySubmitting" @click="submitMonthly">生成月报</el-button>
+      </template>
+    </el-dialog>
+
     <el-drawer
       v-model="previewVisible"
       :title="previewTitle"
@@ -189,13 +232,116 @@
             <span v-if="previewDetail.type === 'WEEKLY' && parsedPreview?.periodStart" class="preview-range">
               {{ parsedPreview.periodStart }} ~ {{ parsedPreview.periodEnd }}
             </span>
+            <span v-else-if="previewDetail.type === 'MONTHLY'" class="preview-range">
+              {{ formatMonthLabel(previewDetail.period) }}
+              <template v-if="parsedPreview?.periodStart">
+                · {{ parsedPreview.periodStart }} ~ {{ parsedPreview.periodEnd }}
+              </template>
+            </span>
             <span v-else-if="diagnosticRunId(previewDetail)" class="preview-range">
               诊断 #{{ diagnosticRunId(previewDetail) }}
             </span>
             <span class="preview-time">{{ formatTime(previewDetail.createdAt) }}</span>
           </div>
 
-          <template v-if="previewDetail.type === 'WEEKLY'">
+          <p
+            v-if="previewDetail.type === 'MONTHLY' && parsedPreview?.templateSnapshot?.companyName"
+            class="template-snapshot"
+          >
+            导出将使用 {{ parsedPreview.templateSnapshot.companyName }} 模板
+          </p>
+
+          <template v-if="previewDetail.type === 'MONTHLY'">
+            <el-alert
+              v-if="parsedPreview?.geo?.momDelta != null && parsedPreview?.geo?.prevScore != null"
+              type="success"
+              :closable="false"
+              show-icon
+              class="mb-3 mom-alert"
+            >
+              较上月 GEO
+              {{ parsedPreview.geo.momDelta >= 0 ? '+' : '' }}{{ parsedPreview.geo.momDelta }}
+              （{{ parsedPreview.geo.prevScore }} → {{ parsedPreview.geo.latestScore ?? '—' }}）
+            </el-alert>
+            <el-row :gutter="12" class="kpi-row">
+              <el-col :span="8">
+                <div class="kpi-card">
+                  <div class="kpi-label">GEO 分数</div>
+                  <div class="kpi-value">{{ parsedPreview?.geo?.latestScore ?? '—' }}</div>
+                </div>
+              </el-col>
+              <el-col :span="8">
+                <div class="kpi-card">
+                  <div class="kpi-label">询盘</div>
+                  <div class="kpi-value">{{ parsedPreview?.leads?.newCount ?? 0 }}</div>
+                </div>
+              </el-col>
+              <el-col :span="8">
+                <div class="kpi-card">
+                  <div class="kpi-label">成交</div>
+                  <div class="kpi-value">{{ parsedPreview?.leads?.wonCount ?? 0 }}</div>
+                </div>
+              </el-col>
+            </el-row>
+            <el-row :gutter="12" class="kpi-row">
+              <el-col :span="8">
+                <div class="kpi-card">
+                  <div class="kpi-label">新词</div>
+                  <div class="kpi-value">{{ parsedPreview?.keywords?.newCount ?? 0 }}</div>
+                </div>
+              </el-col>
+              <el-col :span="8">
+                <div class="kpi-card">
+                  <div class="kpi-label">均分</div>
+                  <div class="kpi-value">{{ parsedPreview?.keywords?.avgScore ?? '—' }}</div>
+                </div>
+              </el-col>
+              <el-col :span="8">
+                <div class="kpi-card">
+                  <div class="kpi-label">诊断次数</div>
+                  <div class="kpi-value">{{ parsedPreview?.geo?.runs ?? 0 }}</div>
+                </div>
+              </el-col>
+            </el-row>
+
+            <h4 class="section-title">章节摘要</h4>
+            <el-descriptions :column="1" border size="small">
+              <el-descriptions-item label="GEO">
+                诊断 {{ parsedPreview?.geo?.runs ?? 0 }} 次 · 最新分 {{ parsedPreview?.geo?.latestScore ?? '—' }}
+                <span v-if="parsedPreview?.geo?.momDelta != null">
+                  · MoM {{ parsedPreview.geo.momDelta >= 0 ? '+' : '' }}{{ parsedPreview.geo.momDelta }}
+                </span>
+              </el-descriptions-item>
+              <el-descriptions-item label="关键词">
+                新增 {{ parsedPreview?.keywords?.newCount ?? 0 }} 条 · 均分 {{ parsedPreview?.keywords?.avgScore ?? '—' }}
+              </el-descriptions-item>
+              <el-descriptions-item label="内容">
+                任务 {{ parsedPreview?.content?.tasksCreated ?? 0 }} · 生成 {{ parsedPreview?.content?.generated ?? 0 }}
+              </el-descriptions-item>
+              <el-descriptions-item label="落地页">
+                草稿 {{ parsedPreview?.landing?.draftCount ?? 0 }} · 已发布 {{ parsedPreview?.landing?.publishedCount ?? 0 }}
+              </el-descriptions-item>
+              <el-descriptions-item label="询盘 CRM">
+                新增 {{ parsedPreview?.leads?.newCount ?? 0 }} · 成交 {{ parsedPreview?.leads?.wonCount ?? 0 }}
+              </el-descriptions-item>
+            </el-descriptions>
+
+            <h4 v-if="leadStatusRows.length" class="section-title">CRM 五态</h4>
+            <el-descriptions v-if="leadStatusRows.length" :column="2" border size="small" class="mb-2">
+              <el-descriptions-item v-for="row in leadStatusRows" :key="row.status" :label="row.label">
+                {{ row.count }}
+              </el-descriptions-item>
+            </el-descriptions>
+
+            <h4 v-if="parsedPreview?.recommendations?.length" class="section-title">优化建议</h4>
+            <el-timeline v-if="parsedPreview?.recommendations?.length">
+              <el-timeline-item v-for="(item, idx) in parsedPreview!.recommendations!" :key="idx">
+                {{ item }}
+              </el-timeline-item>
+            </el-timeline>
+          </template>
+
+          <template v-else-if="previewDetail.type === 'WEEKLY'">
             <el-row :gutter="12" class="kpi-row">
               <el-col :span="8">
                 <div class="kpi-card">
@@ -317,14 +463,27 @@
 </template>
 
 <script setup name="ReportsList" lang="ts">
-import { createWeeklyReport, downloadReport, getReport, listReports } from '@/api/tourgeo/report';
+import {
+  createMonthlyReport,
+  createWeeklyReport,
+  downloadReport,
+  getReport,
+  getReportTemplate,
+  listReports
+} from '@/api/tourgeo/report';
 import type { ReportDetailVo, ReportSummary, ReportVo } from '@/api/tourgeo/types';
 import ProjectSelector from '@/components/tourgeo/ProjectSelector.vue';
+import { LEAD_STATUS_META, type LeadStatus } from '@/constants/lead';
 import {
   REPORT_TYPE_OPTIONS,
   WEEKLY_REPORT_DISCLAIMER,
+  defaultPreviousMonthStr,
   defaultWeeklyRange,
+  disableFutureMonth,
+  formatMonthLabel,
   isoWeekLabel,
+  monthRangeFromPeriod,
+  parseMonthStr,
   reportTypeMeta
 } from '@/constants/report';
 import { useProjectStore } from '@/store/modules/project';
@@ -342,6 +501,11 @@ const createdAtRange = ref<string[]>([]);
 const weeklyVisible = ref(false);
 const weeklySubmitting = ref(false);
 const weeklyDateRange = ref<string[]>(defaultWeeklyRange());
+
+const monthlyVisible = ref(false);
+const monthlySubmitting = ref(false);
+const monthlyMonth = ref(defaultPreviousMonthStr());
+const hasTenantTemplate = ref(false);
 
 const previewVisible = ref(false);
 const previewLoading = ref(false);
@@ -406,6 +570,23 @@ const previewTitle = computed(() => {
 
 const parsedPreview = computed(() => (previewDetail.value ? parseSummary(previewDetail.value.summary) : null));
 
+const leadStatusRows = computed(() => {
+  const byStatus = parsedPreview.value?.leads?.byStatus;
+  if (!byStatus) return [];
+  return (['NEW', 'FOLLOWING', 'QUOTED', 'WON', 'LOST'] as LeadStatus[]).map((status) => ({
+    status,
+    label: LEAD_STATUS_META[status].label,
+    count: byStatus[status] ?? 0
+  }));
+});
+
+const monthlyRangeLabel = computed(() => {
+  if (!monthlyMonth.value) return '—';
+  const range = monthRangeFromPeriod(monthlyMonth.value);
+  if (!range) return '—';
+  return `${range.start} ~ ${range.end}`;
+});
+
 function typeMeta(type: string) {
   return reportTypeMeta(type);
 }
@@ -453,7 +634,24 @@ function summaryLine(row: ReportVo): string {
     else if (s.geo?.latestScore != null) parts.push(`GEO ${s.geo.latestScore}`);
     return parts.length ? parts.join(' · ') : row.period || '—';
   }
+  if (row.type === 'MONTHLY') {
+    const parts: string[] = [];
+    if (s.geo?.latestScore != null) parts.push(`GEO ${s.geo.latestScore}`);
+    if (s.geo?.momDelta != null) parts.push(`MoM ${s.geo.momDelta >= 0 ? '+' : ''}${s.geo.momDelta}`);
+    if (s.leads?.newCount != null) parts.push(`询盘 ${s.leads.newCount}`);
+    if (s.leads?.wonCount != null) parts.push(`成交 ${s.leads.wonCount}`);
+    if (s.keywords?.newCount != null) parts.push(`新词 ${s.keywords.newCount}`);
+    return parts.length ? parts.join(' · ') : row.period || '—';
+  }
   return row.period || '—';
+}
+
+function monthPeriodSub(row: ReportVo): string {
+  const s = parseSummary(row.summary);
+  if (s?.periodStart && s?.periodEnd) return `${s.periodStart.slice(5)} ~ ${s.periodEnd.slice(5)}`;
+  const range = row.period ? monthRangeFromPeriod(row.period) : null;
+  if (range) return `${range.start.slice(5)} ~ ${range.end.slice(5)}`;
+  return '';
 }
 
 function formatTime(iso?: string): string {
@@ -527,6 +725,67 @@ function handleProjectChange(id: number | null) {
 
 function goDiagnostics() {
   router.push({ name: 'DiagnosticRuns' });
+}
+
+function goReportTemplate() {
+  router.push({ name: 'ReportTemplateSettings' });
+}
+
+function goReportTemplateFromDialog() {
+  monthlyVisible.value = false;
+  goReportTemplate();
+}
+
+async function refreshTemplateStatus() {
+  try {
+    const tpl = await getReportTemplate();
+    hasTenantTemplate.value = tpl.templateId != null && tpl.templateId > 0;
+  } catch {
+    hasTenantTemplate.value = false;
+  }
+}
+
+function openMonthlyDialog() {
+  monthlyMonth.value = defaultPreviousMonthStr();
+  monthlyVisible.value = true;
+  refreshTemplateStatus();
+}
+
+function resetMonthlyForm() {
+  monthlyMonth.value = defaultPreviousMonthStr();
+}
+
+async function submitMonthly() {
+  const pid = projectId.value;
+  if (!pid) {
+    ElMessage.warning('请先选择项目');
+    return;
+  }
+  if (!monthlyMonth.value) {
+    ElMessage.warning('请选择自然月');
+    return;
+  }
+  const parsed = parseMonthStr(monthlyMonth.value);
+  if (!parsed) {
+    ElMessage.warning('月份格式无效');
+    return;
+  }
+  monthlySubmitting.value = true;
+  try {
+    const reportId = await createMonthlyReport(pid, { year: parsed.year, month: parsed.month });
+    ElMessage.success('月报已生成');
+    monthlyVisible.value = false;
+    await getList();
+    if (reportId > 0) {
+      const row = reportList.value.find((r) => r.id === reportId);
+      if (row) openPreview(row);
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : '生成失败';
+    if (msg !== 'error') ElMessage.error(msg);
+  } finally {
+    monthlySubmitting.value = false;
+  }
 }
 
 function goDiagnosticDetail(row: ReportVo) {
@@ -651,6 +910,7 @@ onMounted(async () => {
   }
   syncProjectFromRoute();
   initFiltersFromQuery();
+  await refreshTemplateStatus();
   await getList();
 });
 </script>
@@ -713,6 +973,29 @@ onMounted(async () => {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .period-monthly {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+  }
+
+  .period-sub {
+    font-size: 12px;
+    color: var(--tg-color-text-secondary, #6b7280);
+  }
+
+  .template-snapshot {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: var(--tg-color-text-secondary, #6b7280);
+  }
+
+  .mom-alert {
+    :deep(.el-alert__title) {
+      font-size: 14px;
+    }
   }
 
   .preview-header {

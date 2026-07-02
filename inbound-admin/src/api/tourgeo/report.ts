@@ -2,9 +2,12 @@ import request from '@/utils/request';
 import { blobValidate } from '@/utils/ruoyi';
 import FileSaver from 'file-saver';
 import type {
+  MonthlyReportForm,
   PageResult,
   ReportDetailVo,
   ReportQuery,
+  ReportTemplateSaveForm,
+  ReportTemplateVo,
   ReportVo,
   WeeklyReportForm
 } from './types';
@@ -46,6 +49,39 @@ export async function createWeeklyReport(projectId: number, data: WeeklyReportFo
     return Number((payload as { reportId: number }).reportId);
   }
   return Number(payload);
+}
+
+export async function createMonthlyReport(projectId: number, data: MonthlyReportForm): Promise<number> {
+  const res = await request({
+    url: `${BASE}/projects/${projectId}/reports/monthly`,
+    method: 'post',
+    data
+  });
+  const payload = res.data;
+  if (typeof payload === 'number') return payload;
+  if (payload && typeof payload === 'object' && 'reportId' in payload) {
+    return Number((payload as { reportId: number }).reportId);
+  }
+  return Number(payload);
+}
+
+const TEMPLATE_BASE = `${BASE}/settings/report-template`;
+
+export async function getReportTemplate(): Promise<ReportTemplateVo> {
+  const res = await request({
+    url: TEMPLATE_BASE,
+    method: 'get'
+  });
+  return res.data as ReportTemplateVo;
+}
+
+export async function saveReportTemplate(data: ReportTemplateSaveForm): Promise<ReportTemplateVo> {
+  const res = await request({
+    url: TEMPLATE_BASE,
+    method: 'put',
+    data
+  });
+  return res.data as ReportTemplateVo;
 }
 
 export async function downloadReport(

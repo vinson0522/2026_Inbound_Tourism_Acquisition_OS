@@ -6,6 +6,8 @@ import org.dromara.diagnostic.domain.vo.DiagnosticResultVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticRunVo;
 import org.dromara.diagnostic.domain.vo.ProbeTaskVo;
 
+import org.dromara.project.report.ReportBranding;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -26,4 +28,6 @@ public class DiagnosticReportContext {
     private OffsetDateTime sampledAt;
 
     private String probeModesLabel;
+
+    private ReportBranding branding;
 }

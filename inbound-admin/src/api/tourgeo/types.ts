@@ -574,12 +574,21 @@ export interface ReportSummary {
   geoScore?: number;
   periodStart?: string;
   periodEnd?: string;
-  geo?: { runs?: number; latestScore?: number; delta?: number };
-  keywords?: { newCount?: number; byStage?: Record<string, number> };
+  periodPrevStart?: string;
+  periodPrevEnd?: string;
+  geo?: {
+    runs?: number;
+    latestScore?: number;
+    delta?: number;
+    momDelta?: number;
+    prevScore?: number;
+  };
+  keywords?: { newCount?: number; avgScore?: number; byStage?: Record<string, number> };
   content?: { tasksCreated?: number; generated?: number };
-  landing?: { draftCount?: number };
-  leads?: { newCount?: number };
+  landing?: { draftCount?: number; publishedCount?: number };
+  leads?: { newCount?: number; wonCount?: number; byStatus?: Record<string, number> };
   recommendations?: string[];
+  templateSnapshot?: { companyName?: string; primaryColor?: string; coverTitle?: string };
   probe_mode?: string;
   sampled_at?: string;
   region?: string;
@@ -610,6 +619,39 @@ export interface ReportQuery {
 export interface WeeklyReportForm {
   periodStart: string;
   periodEnd: string;
+}
+
+export interface MonthlyReportForm {
+  year: number;
+  month: number;
+}
+
+export type ReportSectionKey =
+  | 'geo'
+  | 'keywords'
+  | 'content'
+  | 'landing'
+  | 'leads'
+  | 'recommendations';
+
+export interface ReportTemplateVo {
+  templateId?: number | null;
+  logoUrl?: string;
+  coverTitle?: string;
+  companyName?: string;
+  primaryColor?: string;
+  footerText?: string;
+  sections?: ReportSectionKey[];
+  configJson?: Record<string, unknown>;
+}
+
+export interface ReportTemplateSaveForm {
+  logoUrl?: string;
+  coverTitle: string;
+  companyName: string;
+  primaryColor?: string;
+  footerText?: string;
+  sections: ReportSectionKey[];
 }
 
 /** EPIC-9 M1 — 套餐与额度 (FR-804) */

@@ -22,6 +22,8 @@ import org.dromara.diagnostic.service.IDiagnosticRunService;
 import org.dromara.diagnostic.support.BusinessTenantHelper;
 import org.dromara.project.domain.CustomerProject;
 import org.dromara.project.mapper.CustomerProjectMapper;
+import org.dromara.project.report.ReportBranding;
+import org.dromara.project.service.IReportTemplateService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +52,7 @@ public class DiagnosticReportExportServiceImpl implements IDiagnosticReportExpor
     private final CustomerProjectMapper customerProjectMapper;
     private final ReportMapper reportMapper;
     private final GotenbergClient gotenbergClient;
+    private final IReportTemplateService reportTemplateService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -67,7 +70,9 @@ public class DiagnosticReportExportServiceImpl implements IDiagnosticReportExpor
         List<DiagnosticResultVo> results = diagnosticRunService.queryResults(runId);
         List<ProbeTaskVo> tasks = diagnosticRunService.queryProbeTasks(runId);
         CustomerProject project = customerProjectMapper.selectById(run.getProjectId());
-        DiagnosticReportContext ctx = buildContext(run, results, tasks, project);
+        Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        ReportBranding branding = reportTemplateService.resolveBranding(tenantId, null);
+        DiagnosticReportContext ctx = buildContext(run, results, tasks, project, branding);
 
         Long reportId = insertReportRecord(run, ctx, fmt);
         log.info("FR-106 report export runId={} reportId={} format={}", runId, reportId, fmt);
@@ -118,10 +123,12 @@ public class DiagnosticReportExportServiceImpl implements IDiagnosticReportExpor
 
         Report report = new Report();
         report.setTenantId(BusinessTenantHelper.getBusinessTenantId());
+        Long tenantId = report.getTenantId();
         report.setProjectId(run.getProjectId());
         report.setType("DIAGNOSTIC");
         report.setPeriod(String.valueOf(run.getId()));
         report.setSummary(JsonUtils.toJsonString(summary));
+        report.setTemplateId(reportTemplateService.getReportTemplate(tenantId).getTemplateId());
         report.setCreatedAt(OffsetDateTime.now());
         report.setUpdatedAt(OffsetDateTime.now());
         report.setCreatedBy(LoginHelper.getUserId());
@@ -133,7 +140,8 @@ public class DiagnosticReportExportServiceImpl implements IDiagnosticReportExpor
         DiagnosticRunVo run,
         List<DiagnosticResultVo> results,
         List<ProbeTaskVo> tasks,
-        CustomerProject project
+        CustomerProject project,
+        ReportBranding branding
     ) {
         Set<String> platforms = new LinkedHashSet<>();
         tasks.forEach(t -> {
@@ -169,6 +177,7 @@ public class DiagnosticReportExportServiceImpl implements IDiagnosticReportExpor
             .platforms(String.join(", ", platforms))
             .sampledAt(sampledAt)
             .probeModesLabel(probeModes)
+            .branding(branding)
             .build();
     }
 

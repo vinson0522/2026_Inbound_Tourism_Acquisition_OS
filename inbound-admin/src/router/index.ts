@@ -264,6 +264,12 @@ export const constantRoutes: RouteRecordRaw[] = [
         meta: { title: '套餐与额度', icon: 'money' }
       },
       {
+        path: 'report-template',
+        component: () => import('@/views/tourgeo/settings/report-template/index.vue'),
+        name: 'ReportTemplateSettings',
+        meta: { title: '报告模板', icon: 'documentation' }
+      },
+      {
         path: 'probe-nodes',
         component: () => import('@/views/tourgeo/settings/probe-nodes/index.vue'),
         name: 'ProbeNodesSettings',

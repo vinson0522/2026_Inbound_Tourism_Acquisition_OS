@@ -222,6 +222,17 @@
   - 负责人 M2：指派当前登录用户或手动 assigneeId（无完整成员管理 UI）
 - **影响**：[EPIC-7 M2 Sprint](HANDOFFS/2026-07-07-tech-director-epic7-m2-crm-sprint.md)
 
+### ADR-20260708-21 | EPIC-8 M2 仅 FR-703/704 月报 + 报告白标模板
+- **状态**：已采纳
+- **决策者**：技术总监（完整版路线图 #2）
+- **背景**：M1 周报+列表已完成；客户续费/服务商交付需月度复盘与白标导出；`template.type=REPORT` · `report_type MONTHLY` DDL 已就绪；EPIC-7 M2 CRM 可纳入月报
+- **决策**：
+  - **M2 做**：`POST .../reports/monthly` 自然月聚合+MoM · `GET/PUT /api/v1/settings/report-template` · 导出 DOCX/PDF 套 Logo/封面/页脚
+  - **M2 模板**：租户级单模板 upsert；`config_json` 存 logoUrl/coverTitle/companyName/primaryColor/footerText/sections
+  - **M2 不做**：FR-705 推送 · XXL-Job 定时 · MinIO file_url · LLM 月报摘要 · FR-706 自定义报告
+  - 月报扣额：复用 `reports_per_month`
+- **影响**：[EPIC-8 M2 Sprint](HANDOFFS/2026-07-08-tech-director-epic8-m2-reports-sprint.md)
+
 ---
 
 ## 待讨论

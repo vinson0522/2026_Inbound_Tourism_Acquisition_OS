@@ -2,6 +2,7 @@ package org.dromara.diagnostic.service;
 
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.diagnostic.domain.bo.MonthlyReportBo;
 import org.dromara.diagnostic.domain.bo.ReportQueryBo;
 import org.dromara.diagnostic.domain.bo.WeeklyReportBo;
 import org.dromara.diagnostic.domain.vo.ReportDetailVo;
@@ -18,6 +19,8 @@ public interface IReportService {
     ReportDetailVo queryById(Long projectId, Long reportId);
 
     Long createWeeklyReport(Long projectId, WeeklyReportBo bo);
+
+    Long createMonthlyReport(Long projectId, MonthlyReportBo bo);
 
     DiagnosticReportFile exportReport(Long projectId, Long reportId, String format);
 }

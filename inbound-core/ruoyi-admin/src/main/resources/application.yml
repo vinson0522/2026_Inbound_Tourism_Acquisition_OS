@@ -153,6 +153,7 @@ tenant:
     - probe_task
     - question_bank
     - report
+    - template
     - subscription
     - probe_node
     - platform_adapter
