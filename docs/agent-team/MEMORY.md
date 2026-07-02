@@ -7,7 +7,7 @@
 |------|-----|
 | **最后更新** | 2026-07-09 |
 | **更新角色** | 技术总监 |
-| **Git 远程** | ✅ `origin/main` · C19 `846847f` |
+| **Git 远程** | ✅ `origin/main` · C19 `cf42562` |
 | **当前 EPIC 焦点** | **EPIC-9 M2** 套餐 CRUD + 周期重置 · C20 |
 
 ---
@@ -198,7 +198,7 @@
 |:--:|--------|---------|------|:----:|
 | 1 | **M2 CRM** | EPIC-7 · FR-605 | 线索状态+跟进闭环 | ✅ C17 `ecb0d46` |
 | 2 | **M2 报告** | EPIC-8 · FR-703/704 | 月报 + 白标模板 | ✅ C18 `19e1f36` |
-| 3 | **M2 探针** | EPIC-11 · FR-115/116 | adapter + 校准 + ChatGPT | ✅ C19 `846847f` |
+| 3 | **M2 探针** | EPIC-11 · FR-115/116 | adapter + 校准 + ChatGPT | ✅ C19 `cf42562` |
 | 4 | M2 计费 | EPIC-9 · FR-804 扩展 | 套餐 CRUD + 周期重置 | ⏳ **当前** |
 | 5 | M1 素材 | EPIC-5 · FR-401~403 | 爆款拆解 MVP |
 | 6 | M3 线索 | EPIC-7 · FR-602/603 | WhatsApp 追踪 + AI 跟进话术 |
@@ -243,7 +243,7 @@
 
 **ADR-22**：Admin adapter CRUD · calibration GET · chatgpt 第二平台
 
-**技术总监签核**：✅ **EPIC-11 M2 正式关闭** — C19 `846847f` · `test_probe_calibration` runId=7 pairedCount=1 · 路线图 #3 ✅
+**技术总监签核**：✅ **EPIC-11 M2 正式关闭** — C19 `cf42562` · `test_probe_calibration` runId=7 pairedCount=1 · 路线图 #3 ✅
 
 ### EPIC-9 M2 Sprint — FR-804 套餐 CRUD + 周期重置（2026-07-09 排期）
 
@@ -304,7 +304,7 @@
 | **C16** | EPIC-3 M2 关键词评分 | `feat(ai,core,admin): EPIC-3 M2 keyword opportunity scoring FR-203` | ✅ `20b7a87` |
 | **C17** | EPIC-7 M2 CRM | `feat(core,admin): EPIC-7 M2 light CRM lead status and followups` | ✅ `ecb0d46` |
 | **C18** | EPIC-8 M2 月报白标 | `feat(core,admin): EPIC-8 M2 monthly report and white-label template` | ✅ `19e1f36` |
-| **C19** | EPIC-11 M2 探针 | `feat(core,admin,extension): EPIC-11 M2 probe adapters and calibration` | ✅ `846847f` |
+| **C19** | EPIC-11 M2 探针 | `feat(core,admin,extension): EPIC-11 M2 probe adapters and calibration` | ✅ `cf42562` |
 | **C20** | EPIC-9 M2 计费 | `feat(core,admin): EPIC-9 M2 subscription CRUD and period reset` | `test_billing_period_reset` |
 
 **执行**：C1–C19 ✅ · push ✅ · **C20 ⏳** EPIC-9 M2
@@ -490,7 +490,7 @@
 | B-13 | ~~EPIC-3 M2 C16 未 commit/push~~ | 开发 | ✅ **已关闭** C16 `20b7a87` · pytest 8 + smoke ✅ |
 | B-14 | ~~EPIC-7 M2 C17 未 commit/push~~ | 开发 | ✅ **已关闭** C17 `ecb0d46` · smoke ✅ |
 | B-15 | ~~EPIC-8 M2 C18 未 commit/push~~ | 开发 | ✅ **已关闭** C18 `19e1f36` · smoke ✅ |
-| B-16 | ~~EPIC-11 M2 C19 未 commit/push~~ | 开发 | ✅ **已关闭** C19 `846847f` · smoke runId=7 |
+| B-16 | ~~EPIC-11 M2 C19 未 commit/push~~ | 开发 | ✅ **已关闭** C19 `cf42562` · smoke runId=7 |
 
 ---
 
@@ -508,7 +508,7 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-07-09 | 开发 | C19 `846847f` EPIC-11 M2 adapter+校准+ChatGPT 全栈 commit+push · **EPIC-11 M2 正式关闭** · 路线图 #3 ✅ |
+| 2026-07-09 | 开发 | C19 `cf42562` EPIC-11 M2 adapter+校准+ChatGPT 全栈 commit+push · **EPIC-11 M2 正式关闭** · 路线图 #3 ✅ |
 | 2026-07-09 | UI 设计 | EPIC-9 M2 `billing-settings` §M2 套餐编辑 drawer + 周期重置 footnote · UI→开发 HANDOFF ✅ |
 | 2026-07-09 | 技术总监 | EPIC-11 M2 三端+扩展复核 ✅ · smoke runId=6 · 派发 C19 · 派发 **EPIC-9 M2** 计费 · B-16 打开 |
 | 2026-07-09 | UI 设计 | EPIC-11 M2 `probe-adapters` FR-116 + `diagnostic-detail` 校准 Tab FR-115 · UI→开发 HANDOFF ✅ |
