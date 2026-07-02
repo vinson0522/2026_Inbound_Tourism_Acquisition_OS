@@ -7,8 +7,8 @@
 |------|-----|
 | **最后更新** | 2026-07-05 |
 | **更新角色** | 开发 |
-| **Git 远程** | ✅ `origin/main` · C13 `71c374d` · **C14 `3862a72`** |
-| **当前 EPIC 焦点** | **EPIC-11 M1** 浏览器探针（FR-112~114）· C14 → UI → Java ∥ Extension → Admin |
+| **Git 远程** | ✅ `origin/main` · C13 `71c374d` · **C14 `f23e539`** |
+| **当前 EPIC 焦点** | **EPIC-11 M1** 浏览器探针（FR-112~114）· Java ∥ Extension → Admin |
 
 ---
 
@@ -159,7 +159,7 @@
 
 **ADR-17**：M1 额度查询 + 6 拦截点；支付/套餐 CRUD → M2
 
-**技术总监签核**：✅ **EPIC-9 M1 正式关闭** — C14 `3862a72` · `test_billing_quota` ✅
+**技术总监签核**：✅ **EPIC-9 M1 正式关闭** — C14 `f23e539` · `test_billing_quota` ✅
 
 ### EPIC-11 M1 Sprint — FR-112~114 浏览器探针（2026-07-05 排期）
 
@@ -217,7 +217,7 @@
 | **C11** | EPIC-7 M1 全栈 leads | `feat(core,admin): EPIC-7 M1 public leads and Admin list` | ✅ `76da501` |
 | **C12** | EPIC-8 M1 报告中心 | `feat(core,admin): EPIC-8 M1 report center and weekly report` | ✅ `e127485` |
 | **C13** | EPIC-6 M2 Astro 发布 | `feat(landing,core,admin,deploy): EPIC-6 M2…` | ✅ `71c374d` |
-| **C14** | EPIC-9 M1 计费 | `feat(core,admin): EPIC-9 M1 subscription quota and overage guard` | ✅ `3862a72` |
+| **C14** | EPIC-9 M1 计费 | `feat(core,admin): EPIC-9 M1 subscription quota and overage guard` | ✅ `f23e539` |
 | **C15** | EPIC-11 M1 探针 | `feat(core,admin,extension): EPIC-11 M1 browser probe poll and node registry` | `test_probe_extension_e2e` |
 
 **执行**：C1–C14 ✅ · push ✅ · **C15 ⏳** EPIC-11
@@ -405,7 +405,7 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-07-05 | 开发 | C14 `3862a72` EPIC-9 M1 计费 commit+push · `test_billing_quota` ✅ |
+| 2026-07-05 | 开发 | C14 `f23e539` EPIC-9 M1 计费 commit+push · `test_billing_quota` ✅ |
 | 2026-07-05 | UI 设计 | EPIC-11 M1 probe-nodes 线框 FR-113 · 在线/离线 · 空态安装引导 · HANDOFF |
 | 2026-07-05 | 技术总监 | 定案 **EPIC-11 M1** 浏览器探针 · ADR-18 · 6 条 HANDOFF（含 C14 前置） |
 | 2026-07-02 | 开发 Admin | EPIC-9 M1 `/settings/billing` + Axios 402 全局提示 · `build:prod` ✅ |

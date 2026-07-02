@@ -28,5 +28,5 @@ EPIC-9 M1 三条开发线（Java / Admin / UI）已完成，`test_billing_quota.
 ## Done（由 To 角色填写）
 
 - **完成时间**：2026-07-05
-- **结果摘要**：C14 `3862a72` · smoke `test_billing_quota` ✅ · push `origin/main`
+- **结果摘要**：C14 `f23e539` · smoke `test_billing_quota` ✅ · push `origin/main`
 - **遗留**：EPIC-11 Java Probe API
