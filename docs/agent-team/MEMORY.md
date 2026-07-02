@@ -364,7 +364,7 @@
 | **C21** | EPIC-5 M1 爆款 | `feat(core,ai,admin): EPIC-5 M1 viral video breakdown MVP` | ✅ `fb28a96` |
 | **C22** | EPIC-7 M3 线索 | `feat(core,ai,admin,landing): EPIC-7 M3 WhatsApp tracking and AI followup` | ✅ `18b17c0` |
 | **C23** | EPIC-2 M3 定时诊断 | `feat(core,admin): EPIC-2 M3 scheduled diagnostic runs FR-109` | ✅ `cfda3a7` |
-| **C24** | 维护轨 smoke 9/9 | `fix(ai,deploy,extension): restore smoke 9/9 regression defaults` | ✅ `27361b6` |
+| **C24** | 维护轨 smoke 9/9 | `fix(ai,deploy,extension): restore smoke 9/9 regression defaults` | ✅ `6f4738a` |
 
 **执行**：C1–C24 ✅ · push ✅ · **完整版路线图 #1–#7 全部关闭** · 维护轨 smoke 9/9 ✅
 
@@ -569,7 +569,7 @@
 | B-19 | ~~EPIC-7 M3 C22 未 commit/push~~ | 开发 | ✅ **已关闭** C22 `18b17c0` · smoke leadId=44 |
 | B-20 | ~~EPIC-2 M3 C23 未 commit/push~~ | 开发 | ✅ **已关闭** C23 `cfda3a7` · smoke runId=11 |
 | B-21 | ~~smoke 9/9 回归：embed/RAG 500 · report export runId=2~~ | 开发 | ✅ **已关闭** 2026-07-10 · `run_smoke_regression.ps1` 9/9 |
-| B-22 | ~~维护轨 C24 未 commit/push（smoke/config/seed/adapter/docs）~~ | 开发 | ✅ **已关闭** C24 `27361b6` · `run_smoke_regression.ps1` 9/9 |
+| B-22 | ~~维护轨 C24 未 commit/push（smoke/config/seed/adapter/docs）~~ | 开发 | ✅ **已关闭** C24 `6f4738a` · `run_smoke_regression.ps1` 9/9 |
 
 ---
 
