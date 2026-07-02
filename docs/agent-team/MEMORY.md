@@ -391,9 +391,9 @@
 | **C22** | EPIC-7 M3 线索 | `feat(core,ai,admin,landing): EPIC-7 M3 WhatsApp tracking and AI followup` | ✅ `18b17c0` |
 | **C23** | EPIC-2 M3 定时诊断 | `feat(core,admin): EPIC-2 M3 scheduled diagnostic runs FR-109` | ✅ `cfda3a7` |
 | **C24** | 维护轨 smoke 9/9 | `fix(ai,deploy,extension): restore smoke 9/9 regression defaults` | ✅ `6f4738a` |
-| **C25** | FR-807 租户隔离 | `feat(core): FR-807 business tenant mapping and cross-tenant isolation` | ✅ pending push |
+| **C25** | FR-807 租户隔离 | `feat(core): FR-807 business tenant mapping and cross-tenant isolation` | ✅ `c78a157` |
 
-**执行**：C1–C25 ✅ · push pending · Sprint #3 并行
+**执行**：C1–C25 ✅ · push ✅ · Sprint #3 并行
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -599,7 +599,7 @@
 | B-20 | ~~EPIC-2 M3 C23 未 commit/push~~ | 开发 | ✅ **已关闭** C23 `cfda3a7` · smoke runId=11 |
 | B-21 | ~~smoke 9/9 回归：embed/RAG 500 · report export runId=2~~ | 开发 | ✅ **已关闭** 2026-07-10 · `run_smoke_regression.ps1` 9/9 |
 | B-22 | ~~维护轨 C24 未 commit/push~~ | 开发 | ✅ **已关闭** C24 `6f4738a` |
-| B-24 | ~~FR-807 **C25 未 commit/push**~~ | 开发 Java | ✅ **已关闭** C25 · smoke 9/9 + `test_tenant_isolation` |
+| B-24 | ~~FR-807 **C25 未 commit/push**~~ | 开发 Java | ✅ **已关闭** C25 `c78a157` · smoke 9/9 + `test_tenant_isolation` |
 
 ---
 

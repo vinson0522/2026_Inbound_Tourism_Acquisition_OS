@@ -24,6 +24,6 @@ FR-807 **已实现未 commit**（工作区）：
 ## Done（由 To 角色填写）
 
 - **完成时间**：2026-07-11
-- **commit hash**：pending
+- **commit hash**：`c78a157`
 - **验收**：smoke 9/9 · `test_tenant_isolation.py` projectId=8 api.code=403 · `mvn test *Tenant*` 8 passed
 - **遗留**：无
