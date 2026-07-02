@@ -25,7 +25,7 @@ import org.dromara.diagnostic.mapper.ProbeTaskMapper;
 import org.dromara.diagnostic.mapper.QuestionBankMapper;
 import org.dromara.diagnostic.service.IDiagnosticRunService;
 import org.dromara.diagnostic.service.IProbeService;
-import org.dromara.diagnostic.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

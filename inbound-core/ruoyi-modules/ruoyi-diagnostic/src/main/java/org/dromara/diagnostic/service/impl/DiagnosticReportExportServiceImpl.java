@@ -19,7 +19,7 @@ import org.dromara.diagnostic.report.DiagnosticReportFile;
 import org.dromara.diagnostic.report.GotenbergClient;
 import org.dromara.diagnostic.service.IDiagnosticReportExportService;
 import org.dromara.diagnostic.service.IDiagnosticRunService;
-import org.dromara.diagnostic.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.dromara.project.domain.CustomerProject;
 import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.report.ReportBranding;

@@ -30,7 +30,7 @@ import org.dromara.diagnostic.report.WeeklyHtmlReportRenderer;
 import org.dromara.diagnostic.report.WeeklyReportContext;
 import org.dromara.diagnostic.service.IDiagnosticReportExportService;
 import org.dromara.diagnostic.service.IReportService;
-import org.dromara.diagnostic.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.dromara.project.billing.QuotaType;
 import org.dromara.project.domain.ContentTask;
 import org.dromara.project.domain.CustomerProject;

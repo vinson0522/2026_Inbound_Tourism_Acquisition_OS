@@ -78,6 +78,7 @@ CREATE TABLE tenant (
     id                  BIGSERIAL PRIMARY KEY,
     name                VARCHAR(200) NOT NULL,
     plan_code           VARCHAR(64)  NOT NULL DEFAULT 'trial',
+    ruoyi_tenant_id     VARCHAR(20),
     status              entity_status NOT NULL DEFAULT 'ACTIVE',
     white_label_config  JSONB NOT NULL DEFAULT '{}',
     created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -88,6 +89,8 @@ CREATE TABLE tenant (
 
 CREATE TRIGGER trg_tenant_updated_at
     BEFORE UPDATE ON tenant FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+CREATE UNIQUE INDEX uq_tenant_ruoyi_tenant_id ON tenant(ruoyi_tenant_id) WHERE deleted_at IS NULL AND ruoyi_tenant_id IS NOT NULL;
 
 CREATE TABLE user_account (
     id              BIGSERIAL PRIMARY KEY,

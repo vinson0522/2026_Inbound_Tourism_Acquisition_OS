@@ -5,10 +5,10 @@
 
 | 字段 | 值 |
 |------|-----|
-| **最后更新** | 2026-07-10 |
+| **最后更新** | 2026-07-11 |
 | **更新角色** | 技术总监 |
-| **Git 远程** | ✅ `origin/main` · C23 `cfda3a7` |
-| **当前 EPIC 焦点** | **维护轨** · 完整版路线图 #1–#7 全部关闭 |
+| **Git 远程** | ✅ `origin/main` · C24 `6f4738a` |
+| **当前 EPIC 焦点** | **Sprint #3 产品化并行** · C25 FR-807 · 门户 · FR-108 P2 |
 
 ---
 
@@ -52,7 +52,7 @@
 | 范围 | 状态 | 说明 |
 |------|:----:|------|
 | 登录 → 建项目 → 列表 | ✅ | smoke test + Admin 联调 |
-| 租户隔离 FR-807 | ⚠️ 部分 | `BusinessTenantHelper` 固定 `tenant_id=1` |
+| 租户隔离 FR-807 | ✅ | `tenant.ruoyi_tenant_id` · `BusinessTenantHelper` + lookup · 跨 tenant 403 |
 | 知识库上传 FR-004/005 | ✅ MVP | embed 管道 + Admin 知识库 Tab 上传/状态 |
 | 竞品/路线 FR-002/003 | ✅ | Story 3 详情页 + Java CRUD API |
 | 工作台真实数据 FR-006 | ✅ MVP | `getDashboard` 前端聚合 `listDiagnosticRuns`（KPI + 最近 5 条） |
@@ -313,6 +313,32 @@
 
 **smoke 复核（2026-07-10）**：`run_smoke_regression.ps1` **9/9** · diagnostic_e2e runId=6 geo=85 · Perplexity hook fixture ✅ · `test_probe_extension_e2e` runId=16 ✅
 
+### 维护轨 Sprint #2 — FR-807 优先（2026-07-11 · **重排**）
+
+> **决策**：[暂不等三方](HANDOFFS/2026-07-11-tech-director-sprint2-reprioritize-no-third-party.md) · Perplexity live / Gemini 真 E2E → **挂起 B-23**
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| **1** | **开发 Java** | **FR-807 租户隔离** | [→P0 Java](HANDOFFS/2026-07-11-tech-director-to-dev-java-fr807-tenant-P0.md) | ✅ |
+| 2 | 开发 Extension | Perplexity live（挂起） | [→live](HANDOFFS/2026-07-11-tech-director-to-dev-extension-perplexity-live.md) | ⏸ B-23 |
+| 3 | 开发 Python | Gemini 真 E2E（挂起） | [→AI](HANDOFFS/2026-07-11-tech-director-to-dev-ai-gemini-grounded-e2e.md) | ⏸ B-23 |
+| — | 总览 | Sprint 索引 | [维护轨 #2](HANDOFFS/2026-07-11-tech-director-post-maintenance-b03b-sprint.md) | — |
+
+**签核（2026-07-11）**：FR-807 ✅ · C25 push · smoke 9/9 + `test_tenant_isolation.py` projectId=8 code=403
+
+### 产品化 Sprint #3 — 并行 backlog（2026-07-11 · 无三方）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | 开发 Java | **C25** FR-807 commit | [→C25](HANDOFFS/2026-07-11-tech-director-to-dev-c25-fr807-commit.md) | ✅ |
+| 2 | 开发 Admin | FR-108 趋势时间筛选 | [→Admin](HANDOFFS/2026-07-11-tech-director-to-dev-admin-fr108-trends-filter.md) | ⏳ |
+| 3 | UI 设计 | 营销门户线框 | [→UI](HANDOFFS/2026-07-11-tech-director-to-ui-marketing-portal.md) | ✅ |
+| 4 | 开发 Landing | 门户首页 MVP | [→Landing](HANDOFFS/2026-07-11-tech-director-to-dev-landing-portal-home.md) | ⏳ |
+| 5 | 开发 Java | 租户 smoke 扩展 | [→smoke](HANDOFFS/2026-07-11-tech-director-to-dev-java-tenant-smoke-expand.md) | ⏳ |
+| 6 | 运维 | LOCAL_DOCKER 文档 | [→运维](HANDOFFS/2026-07-11-tech-director-to-devops-local-docker-smoke-docs.md) | ⏳ |
+| — | 总览 | Sprint 索引 | [Sprint #3](HANDOFFS/2026-07-11-tech-director-sprint3-productization-parallel.md) | — |
+
+
 | # | 角色 | 任务 | HANDOFF | 状态 |
 |---|------|------|---------|:----:|
 | 1 | UI | 线索列表线框 | [→UI](HANDOFFS/2026-07-01-tech-director-to-ui-epic7-leads-list.md) | ✅ |
@@ -365,8 +391,9 @@
 | **C22** | EPIC-7 M3 线索 | `feat(core,ai,admin,landing): EPIC-7 M3 WhatsApp tracking and AI followup` | ✅ `18b17c0` |
 | **C23** | EPIC-2 M3 定时诊断 | `feat(core,admin): EPIC-2 M3 scheduled diagnostic runs FR-109` | ✅ `cfda3a7` |
 | **C24** | 维护轨 smoke 9/9 | `fix(ai,deploy,extension): restore smoke 9/9 regression defaults` | ✅ `6f4738a` |
+| **C25** | FR-807 租户隔离 | `feat(core): FR-807 business tenant mapping and cross-tenant isolation` | ✅ pending push |
 
-**执行**：C1–C24 ✅ · push ✅ · **完整版路线图 #1–#7 全部关闭** · 维护轨 smoke 9/9 ✅
+**执行**：C1–C25 ✅ · push pending · Sprint #3 并行
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -417,6 +444,7 @@
 ## 开发
 
 - **负责目录**：`inbound-core/`、`inbound-ai/`、`database/`、`inbound-probe-extension/`
+- **维护轨 FR-807 租户隔离 Java（2026-07-11）** ✅ 统一 `BusinessTenantHelper` → `ruoyi-common-tenant` · `BusinessTenantLookupImpl` · `tenant.ruoyi_tenant_id` · seed tenant B + `tenantb` · `BusinessTenantLookupImplTest` + `CustomerProjectTenantIsolationTest` · `test_tenant_isolation.py` projectId=8 code=403 · smoke 9/9 ✅
 - **6/29 增量二（2026-06-29）** ✅ **已提交** `a87b780` Story3 · `91c215b` Phase2.1 · `06c4660` docs wireframes
 - **Sprint HANDOFF 归档（2026-06-29）** ✅ **已提交** `3ac6853` — 2026-06-25~27 HANDOFF + INFRA/DECISIONS
 - **Push 状态** ✅ **2026-07-01** 运维 SSH push 完成（25 commits → `origin/main`）
@@ -537,9 +565,9 @@
 
 ## UI 设计
 
-- **已完成**：… leads-list §M3 (EPIC-7 M3) ✅ · **diagnostics-list §M3 (EPIC-2 M3)** ✅
-- **HANDOFF**：[UI→开发 diagnostic schedule M3](HANDOFFS/2026-07-10-ui-to-developer-diagnostic-schedule-m3.md) ✅
-- **待办**：—（M3 开发由 Java / Admin 窗口接手）
+- **已完成**：… diagnostics-list §M3 (EPIC-2 M3) ✅ · **marketing-portal-home (Sprint #3)** ✅
+- **HANDOFF**：[UI→Landing 营销门户](HANDOFFS/2026-07-11-ui-to-developer-marketing-portal.md) ✅
+- **待办**：—（门户实现由 Landing 窗口接手）
 
 ---
 
@@ -550,7 +578,8 @@
 | B-01 | ~~本机不装 Docker，隧道联调~~ | 用户 | **已关闭** → ADR-09 本机 Docker |
 | B-02 | ~~本机若依表未 import~~ | 运维 | **已关闭** 2026-06-27 |
 | B-03a | 本地 GEO E2E **mock LLM**（`DIAGNOSE_MOCK_LLM=true`） | 开发 | ✅ 2026-06-29 runId=2/3 · geo_score=85 |
-| B-03b | 本地 GEO E2E **真 Gemini**（grounded-api） | 开发 | ⏳ 配额用尽；`DIAGNOSE_MOCK_LLM=false` 时 FAILED |
+| B-03b | 本地 GEO E2E **真 Gemini**（grounded-api） | 开发 | ⏸ **挂起 B-23** · mock smoke 9/9 已绿 |
+| B-23 | Perplexity **live** Chrome + Gemini 真 E2E（依赖三方） | 开发 | ⏸ **挂起** · 有账号/配额再开 · fixture ✅ |
 | B-04 | ~~工作区未 commit（C1–C6）~~ | 开发 | **已关闭** 2026-07-01 · `2ffa3d7` Admin 关键词页 |
 | B-05 | ~~EPIC-3 M1 仓库签核~~ | 技术总监 | **已关闭** 2026-07-01 · `75e96cb` |
 | B-06 | ~~EPIC-4 M1 C8 未 commit~~ | 开发 | **已关闭** · `23a46f6` |
@@ -569,16 +598,21 @@
 | B-19 | ~~EPIC-7 M3 C22 未 commit/push~~ | 开发 | ✅ **已关闭** C22 `18b17c0` · smoke leadId=44 |
 | B-20 | ~~EPIC-2 M3 C23 未 commit/push~~ | 开发 | ✅ **已关闭** C23 `cfda3a7` · smoke runId=11 |
 | B-21 | ~~smoke 9/9 回归：embed/RAG 500 · report export runId=2~~ | 开发 | ✅ **已关闭** 2026-07-10 · `run_smoke_regression.ps1` 9/9 |
-| B-22 | ~~维护轨 C24 未 commit/push（smoke/config/seed/adapter/docs）~~ | 开发 | ✅ **已关闭** C24 `6f4738a` · `run_smoke_regression.ps1` 9/9 |
+| B-22 | ~~维护轨 C24 未 commit/push~~ | 开发 | ✅ **已关闭** C24 `6f4738a` |
+| B-24 | ~~FR-807 **C25 未 commit/push**~~ | 开发 Java | ✅ **已关闭** C25 · smoke 9/9 + `test_tenant_isolation` |
 
 ---
 
-## 下一步（跨角色 · 2026-07-10）
+## 下一步（跨角色 · Sprint #3 · 2026-07-11）
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P1** | **开发 Extension** | Perplexity **live** 页面手工验证（Chrome + 登录） | B-03b |
-| **P2** | **开发** | 真 Gemini E2E（配额恢复后 `DIAGNOSE_MOCK_LLM=false`） | B-03b |
+| **P1** | **开发 Admin** | [FR-108 趋势筛选](HANDOFFS/2026-07-11-tech-director-to-dev-admin-fr108-trends-filter.md) |
+| **P1** | **开发 Landing** | [门户首页](HANDOFFS/2026-07-11-tech-director-to-dev-landing-portal-home.md) | 对齐线框 §MVP |
+| **P2** | **开发 Java** | [租户 smoke 扩展](HANDOFFS/2026-07-11-tech-director-to-dev-java-tenant-smoke-expand.md) · C25 后 |
+| **P2** | **运维** | [LOCAL_DOCKER 文档](HANDOFFS/2026-07-11-tech-director-to-devops-local-docker-smoke-docs.md) |
+| ⏸ | — | B-23 三方 · 勿开窗口 |
+| — | 总览 | [Sprint #3 索引](HANDOFFS/2026-07-11-tech-director-sprint3-productization-parallel.md) |
 
 ---
 
@@ -586,7 +620,13 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-07-10 | 开发 | C24 `27361b6` 维护轨 smoke 9/9 defaults · `run_smoke_regression.ps1` · B-22 关闭 |
+| 2026-07-11 | UI 设计 | Sprint #3 `marketing-portal-home` Hero/价值/能力/CTA/页脚 · 替换 index 占位 · UI→Landing HANDOFF ✅ |
+| 2026-07-11 | 开发 Java | C25 FR-807 tenant mapping commit+push · B-24 关闭 |
+| 2026-07-11 | 技术总监 | 派发 **Sprint #3** 六路并行（C25/门户/趋势/文档/tenant smoke）· 无三方依赖 · B-24 打开 |
+| 2026-07-11 | 开发 Java | FR-807 租户映射 + 跨 tenant 403 · `*Tenant*` tests · `test_tenant_isolation.py` · smoke 9/9 |
+| 2026-07-11 | 技术总监 | **维护轨 #2 重排** · Perplexity live/Gemini 挂起 B-23 · **FR-807 P0** · 开发窗口勿卡 live |
+| 2026-07-11 | 技术总监 | C24 已关闭 · 派发维护轨 #2 · 3 条 HANDOFF |
+| 2026-07-10 | 开发 | C24 `6f4738a` 维护轨 smoke 9/9 defaults · `run_smoke_regression.ps1` · B-22 关闭 |
 | 2026-07-10 | 技术总监 | **维护轨 smoke 9/9 签核关闭** · `run_smoke_regression.ps1` · docker ai-api `DIAGNOSE_MOCK_LLM=true` · B-21 关闭 · B-22 打开 |
 | 2026-07-10 | 技术总监 | **EPIC-2 M3 签核关闭** C23 `cfda3a7` · smoke runId=13 · **路线图 #1–#7 全部关闭** · 派发维护轨 |
 | 2026-07-02 | 开发 | C23 `cfda3a7` EPIC-2 M3 定时诊断全栈 commit+push · smoke runId=11 · **路线图 #7 ✅ 全部关闭** · B-20 关闭 |

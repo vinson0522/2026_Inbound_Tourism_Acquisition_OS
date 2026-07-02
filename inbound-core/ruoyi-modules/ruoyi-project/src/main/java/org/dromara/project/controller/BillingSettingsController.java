@@ -8,7 +8,7 @@ import org.dromara.common.web.core.BaseController;
 import org.dromara.project.domain.bo.SubscriptionUpdateBo;
 import org.dromara.project.domain.vo.SubscriptionVo;
 import org.dromara.project.service.ISubscriptionService;
-import org.dromara.project.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

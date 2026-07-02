@@ -18,7 +18,7 @@ import org.dromara.project.domain.vo.CustomerProjectVo;
 import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.service.ICustomerProjectService;
 import org.dromara.project.service.IQuotaService;
-import org.dromara.project.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

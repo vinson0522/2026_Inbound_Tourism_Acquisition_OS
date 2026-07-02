@@ -35,7 +35,7 @@ import org.dromara.project.mapper.LeadChannelEventMapper;
 import org.dromara.project.mapper.LeadFollowupMapper;
 import org.dromara.project.mapper.LeadMapper;
 import org.dromara.project.service.ILeadService;
-import org.dromara.project.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.dromara.project.support.LeadStatusTransition;
 import org.dromara.project.support.TurnstileValidator;
 import org.dromara.aiclient.client.AiServiceClient;

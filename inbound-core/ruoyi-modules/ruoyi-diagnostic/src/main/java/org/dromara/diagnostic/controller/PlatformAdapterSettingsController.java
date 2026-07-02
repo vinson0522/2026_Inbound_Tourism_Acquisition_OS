@@ -9,7 +9,7 @@ import org.dromara.common.web.core.BaseController;
 import org.dromara.diagnostic.domain.bo.PlatformAdapterSaveBo;
 import org.dromara.diagnostic.domain.vo.PlatformAdapterAdminVo;
 import org.dromara.diagnostic.service.IPlatformAdapterSettingsService;
-import org.dromara.diagnostic.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;

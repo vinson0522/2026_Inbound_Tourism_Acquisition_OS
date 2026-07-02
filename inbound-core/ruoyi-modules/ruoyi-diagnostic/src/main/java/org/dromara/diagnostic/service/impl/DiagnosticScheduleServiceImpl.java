@@ -16,7 +16,7 @@ import org.dromara.diagnostic.mapper.DiagnosticRunMapper;
 import org.dromara.diagnostic.mapper.DiagnosticScheduleMapper;
 import org.dromara.diagnostic.service.IDiagnosticRunService;
 import org.dromara.diagnostic.service.IDiagnosticScheduleService;
-import org.dromara.diagnostic.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.dromara.project.billing.QuotaType;
 import org.dromara.project.domain.CustomerProject;
 import org.dromara.project.mapper.CustomerProjectMapper;

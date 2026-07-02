@@ -32,7 +32,7 @@ import org.dromara.project.mapper.GeneratedContentMapper;
 import org.dromara.project.mapper.KeywordOpportunityMapper;
 import org.dromara.project.service.IContentTaskService;
 import org.dromara.project.service.IQuotaService;
-import org.dromara.project.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -25,7 +25,7 @@ import org.dromara.project.mapper.VideoBreakdownMapper;
 import org.dromara.project.mq.AiBreakdownPublisher;
 import org.dromara.project.service.IMaterialAssetService;
 import org.dromara.project.service.MaterialStorageService;
-import org.dromara.project.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.dromara.project.support.MaterialBreakdownSupport;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;

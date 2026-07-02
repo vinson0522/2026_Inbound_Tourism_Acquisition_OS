@@ -9,7 +9,7 @@ import org.dromara.common.web.core.BaseController;
 import org.dromara.project.domain.bo.ReportTemplateSaveBo;
 import org.dromara.project.domain.vo.ReportTemplateVo;
 import org.dromara.project.service.IReportTemplateService;
-import org.dromara.project.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;

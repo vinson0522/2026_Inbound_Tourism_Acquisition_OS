@@ -13,7 +13,7 @@ import org.dromara.project.domain.vo.TravelProductVo;
 import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.mapper.TravelProductMapper;
 import org.dromara.project.service.ITravelProductService;
-import org.dromara.project.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;

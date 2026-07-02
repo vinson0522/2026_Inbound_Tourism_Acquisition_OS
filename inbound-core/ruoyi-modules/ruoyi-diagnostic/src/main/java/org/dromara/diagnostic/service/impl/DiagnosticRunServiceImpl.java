@@ -41,7 +41,7 @@ import org.dromara.diagnostic.mapper.ProbeTaskMapper;
 import org.dromara.diagnostic.mapper.QuestionBankMapper;
 import org.dromara.diagnostic.mq.DiagGroundedApiPublisher;
 import org.dromara.diagnostic.service.IDiagnosticRunService;
-import org.dromara.diagnostic.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.dromara.diagnostic.support.DiagnosticCalibrationSupport;
 import org.dromara.diagnostic.support.DiagnosticMetricsAggregator;
 import org.dromara.diagnostic.support.PlatformModelResolver;

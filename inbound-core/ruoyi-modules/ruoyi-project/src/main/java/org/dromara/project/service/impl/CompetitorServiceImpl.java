@@ -13,7 +13,7 @@ import org.dromara.project.domain.vo.CompetitorVo;
 import org.dromara.project.mapper.CompetitorMapper;
 import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.service.ICompetitorService;
-import org.dromara.project.support.BusinessTenantHelper;
+import org.dromara.common.tenant.helper.BusinessTenantHelper;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;

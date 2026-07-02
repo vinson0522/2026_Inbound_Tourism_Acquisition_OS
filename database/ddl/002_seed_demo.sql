@@ -5,8 +5,8 @@
 
 BEGIN;
 
-INSERT INTO tenant (name, plan_code, status, white_label_config)
-VALUES ('Demo Travel Agency', 'growth_service', 'ACTIVE', '{"logo_url":"","brand_color":"#1677ff"}');
+INSERT INTO tenant (name, plan_code, ruoyi_tenant_id, status, white_label_config)
+VALUES ('Demo Travel Agency', 'growth_service', '000000', 'ACTIVE', '{"logo_url":"","brand_color":"#1677ff"}');
 
 INSERT INTO user_account (tenant_id, name, email, role, status)
 VALUES (1, 'Demo Admin', 'admin@demo-travel.com', 'TENANT_ADMIN', 'ACTIVE');
@@ -150,5 +150,22 @@ SELECT setval(
     pg_get_serial_sequence('diagnostic_run', 'id'),
     GREATEST((SELECT COALESCE(MAX(id), 1) FROM diagnostic_run), 2)
 );
+
+-- FR-807 tenant B (cross-tenant isolation tests)
+INSERT INTO tenant (id, name, plan_code, ruoyi_tenant_id, status, white_label_config)
+VALUES (2, 'Beta Travel Co', 'trial', '000001', 'ACTIVE', '{}')
+ON CONFLICT (id) DO UPDATE SET ruoyi_tenant_id = EXCLUDED.ruoyi_tenant_id;
+
+INSERT INTO subscription (tenant_id, plan_code, quota_json, used_json, period_start, period_end, status)
+SELECT 2, 'trial',
+    '{"projects":5,"diagnostics_per_month":4,"keywords_per_month":500,"content_per_month":100,"landing_pages_per_month":20,"reports_per_month":8}',
+    '{}', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month', 'ACTIVE'
+WHERE NOT EXISTS (SELECT 1 FROM subscription WHERE tenant_id = 2 AND status = 'ACTIVE');
+
+INSERT INTO customer_project (
+    tenant_id, name, brand_name, website, target_markets_json, languages_json, created_by
+)
+SELECT 2, 'Tenant B Sample Project', 'Beta Journeys', 'https://beta.example.com', '["US"]', '["en"]', 1
+WHERE NOT EXISTS (SELECT 1 FROM customer_project WHERE tenant_id = 2 AND deleted_at IS NULL);
 
 COMMIT;
