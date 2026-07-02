@@ -595,3 +595,15 @@ export interface SubscriptionVo {
   hasWarning?: boolean;
   overageKeys?: string[];
 }
+
+/** EPIC-11 M1 — 探针节点 (FR-113) */
+export interface ProbeNodeVo {
+  id: number;
+  nodeKey: string;
+  region?: string;
+  platforms: string[];
+  extensionVersion?: string;
+  status: string;
+  lastHeartbeatAt?: string;
+  online: boolean;
+}

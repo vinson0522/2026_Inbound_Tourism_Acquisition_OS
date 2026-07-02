@@ -79,6 +79,7 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
     private static final String PROBE_SUCCESS = "SUCCESS";
     private static final String PROBE_FAILED = "FAILED";
     private static final String PROBE_MODE_GROUNDED = "grounded-api";
+    private static final String PROBE_MODE_EXTENSION = "browser-extension";
 
     private final DiagnosticRunMapper diagnosticRunMapper;
     private final DiagnosticResultMapper diagnosticResultMapper;
@@ -133,22 +134,26 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
         List<String> competitorNames = loadCompetitorNames(projectId, tenantId);
         List<ProbeTaskDispatch> dispatches = new ArrayList<>();
 
-        for (QuestionBank question : questions) {
-            for (PlatformModel platformModel : platforms) {
-                for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
-                    ProbeTask task = new ProbeTask();
-                    task.setTenantId(tenantId);
-                    task.setRunId(run.getId());
-                    task.setQuestionId(question.getId());
-                    task.setPlatform(platformModel.platform());
-                    task.setProbeMode(PROBE_MODE_GROUNDED);
-                    task.setStatus(STATUS_PENDING);
-                    task.setRetryCount(0);
-                    task.setCreatedAt(now);
-                    task.setUpdatedAt(now);
-                    task.setCreatedBy(userId);
-                    probeTaskMapper.insert(task);
-                    dispatches.add(new ProbeTaskDispatch(task, question, platformModel, sampleIndex));
+        for (String probeMode : probeModes) {
+            for (QuestionBank question : questions) {
+                for (PlatformModel platformModel : platforms) {
+                    for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
+                        ProbeTask task = new ProbeTask();
+                        task.setTenantId(tenantId);
+                        task.setRunId(run.getId());
+                        task.setQuestionId(question.getId());
+                        task.setPlatform(platformModel.platform());
+                        task.setProbeMode(probeMode);
+                        task.setStatus(STATUS_PENDING);
+                        task.setRetryCount(0);
+                        task.setCreatedAt(now);
+                        task.setUpdatedAt(now);
+                        task.setCreatedBy(userId);
+                        probeTaskMapper.insert(task);
+                        if (PROBE_MODE_GROUNDED.equals(probeMode)) {
+                            dispatches.add(new ProbeTaskDispatch(task, question, platformModel, sampleIndex));
+                        }
+                    }
                 }
             }
         }
@@ -158,23 +163,25 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
         run.setUpdatedAt(now);
         diagnosticRunMapper.updateById(run);
 
-        String traceId = UUID.randomUUID().toString();
-        DispatchBatch batch = new DispatchBatch(
-            traceId,
-            tenantId,
-            projectId,
-            bo.getRegion(),
-            locale,
-            project.getBrandName(),
-            competitorNames,
-            List.copyOf(dispatches)
-        );
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                applicationContext.getBean(DiagnosticRunServiceImpl.class).publishDispatchBatch(batch);
-            }
-        });
+        if (!dispatches.isEmpty()) {
+            String traceId = UUID.randomUUID().toString();
+            DispatchBatch batch = new DispatchBatch(
+                traceId,
+                tenantId,
+                projectId,
+                bo.getRegion(),
+                locale,
+                project.getBrandName(),
+                competitorNames,
+                List.copyOf(dispatches)
+            );
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    applicationContext.getBean(DiagnosticRunServiceImpl.class).publishDispatchBatch(batch);
+                }
+            });
+        }
 
         return run.getId();
     }
@@ -481,6 +488,7 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
         entity.setQuestionId(task.getQuestionId());
         entity.setPlatform(stringVal(result.get("platform"), task.getPlatform()));
         entity.setProbeMode(stringVal(result.get("probe_mode"), task.getProbeMode()));
+        entity.setProbeNodeId(task.getProbeNodeId());
         entity.setModel(stringVal(result.get("model"), null));
         entity.setAnswerText(stringVal(result.get("answer_text"), null));
         entity.setMentionedBrands(stringList(result.get("mentioned_brands")));
@@ -573,10 +581,10 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
     private List<String> normalizeProbeModes(List<String> probeModes) {
         List<String> modes = probeModes == null || probeModes.isEmpty()
             ? List.of(PROBE_MODE_GROUNDED)
-            : probeModes;
+            : probeModes.stream().distinct().toList();
         for (String mode : modes) {
-            if (!PROBE_MODE_GROUNDED.equals(mode)) {
-                throw new ServiceException("M1 仅支持 grounded-api 探针模式", HttpStatus.BAD_REQUEST);
+            if (!PROBE_MODE_GROUNDED.equals(mode) && !PROBE_MODE_EXTENSION.equals(mode)) {
+                throw new ServiceException("不支持的探针模式: " + mode, HttpStatus.BAD_REQUEST);
             }
         }
         return modes;

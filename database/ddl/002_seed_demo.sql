@@ -75,4 +75,17 @@ VALUES (
     'PENDING', 1
 );
 
+INSERT INTO platform_adapter (tenant_id, platform, version, dom_selectors_json, api_patterns_json, parse_rules_json, enabled, created_by)
+VALUES (
+    1,
+    'perplexity',
+    '1.0',
+    '{"input": "textarea", "submit": "button[type=submit]"}',
+    '{"chatApi": "/api/chat"}',
+    '{"citationsPath": "citations"}',
+    TRUE,
+    1
+)
+ON CONFLICT (tenant_id, platform, version) DO NOTHING;
+
 COMMIT;

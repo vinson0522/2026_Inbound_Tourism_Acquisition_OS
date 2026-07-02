@@ -290,3 +290,7 @@ inbound:
     enabled: false
     secret-key: ${CLOUDFLARE_TURNSTILE_SECRET:}
     site-key: ${CLOUDFLARE_TURNSTILE_SITE_KEY:}
+  probe:
+    online-within-seconds: 60
+    allowed-node-keys:
+      - demo-probe-1

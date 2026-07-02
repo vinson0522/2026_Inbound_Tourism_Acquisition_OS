@@ -262,6 +262,12 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/tourgeo/settings/billing/index.vue'),
         name: 'BillingSettings',
         meta: { title: '套餐与额度', icon: 'money' }
+      },
+      {
+        path: 'probe-nodes',
+        component: () => import('@/views/tourgeo/settings/probe-nodes/index.vue'),
+        name: 'ProbeNodesSettings',
+        meta: { title: '探针节点', icon: 'monitor' }
       }
     ]
   },

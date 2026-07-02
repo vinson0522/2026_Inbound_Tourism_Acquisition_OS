@@ -118,6 +118,7 @@ security:
     - /warm-flow-ui/config
     - /api/v1/internal/**
     - /api/v1/public/**
+    - /api/v1/probe/**
 
 # 多租户配置
 tenant:
@@ -152,6 +153,8 @@ tenant:
     - question_bank
     - report
     - subscription
+    - probe_node
+    - platform_adapter
 
 # MyBatisPlus配置
 # https://baomidou.com/config/
