@@ -6,9 +6,9 @@
 | 字段 | 值 |
 |------|-----|
 | **最后更新** | 2026-07-09 |
-| **更新角色** | 技术总监 |
-| **Git 远程** | ✅ `origin/main` · C20 `942eddb` |
-| **当前 EPIC 焦点** | **EPIC-5 M1** 爆款拆解（FR-401~403）· C21 |
+| **更新角色** | 开发 |
+| **Git 远程** | ✅ `origin/main` · C21 `fb28a96` |
+| **当前 EPIC 焦点** | **EPIC-7 M3** WhatsApp/AI 跟进 · 路线图 #6 |
 
 ---
 
@@ -200,8 +200,8 @@
 | 2 | **M2 报告** | EPIC-8 · FR-703/704 | 月报 + 白标模板 | ✅ C18 `19e1f36` |
 | 3 | **M2 探针** | EPIC-11 · FR-115/116 | adapter + 校准 + ChatGPT | ✅ C19 `cf42562` |
 | 4 | M2 计费 | EPIC-9 · FR-804 扩展 | 套餐 CRUD + 周期重置 | ✅ C20 `942eddb` |
-| 5 | M1 素材 | EPIC-5 · FR-401~403 | 爆款拆解 MVP | ⏳ **当前** |
-| 6 | M3 线索 | EPIC-7 · FR-602/603 | WhatsApp 追踪 + AI 跟进话术 |
+| 5 | M1 素材 | EPIC-5 · FR-401~403 | 爆款拆解 MVP | ✅ C21 `fb28a96` |
+| 6 | M3 线索 | EPIC-7 · FR-602/603 | WhatsApp 追踪 + AI 跟进话术 | ⏳ **下一 Sprint** |
 | 7 | M3 诊断 | EPIC-2 · FR-109 | 定时诊断任务 |
 | — | 维护 | — | smoke 9/9 · 扩展真 Perplexity hook | 并行 |
 
@@ -252,23 +252,25 @@
 | 1 | UI | billing M2 线框 | [→UI](HANDOFFS/2026-07-09-tech-director-to-ui-epic9-billing-m2.md) | ✅ |
 | 2 | 开发 Java | subscription PUT + reset | [→Java](HANDOFFS/2026-07-09-tech-director-to-dev-java-epic9-billing-m2.md) | ✅ smoke |
 | 3 | 开发 Admin | billing 编辑 UI | [→Admin](HANDOFFS/2026-07-09-tech-director-to-dev-admin-epic9-billing-m2.md) | ✅ build |
-| — | 总览 | Sprint 索引 | [EPIC-9 M2](HANDOFFS/2026-07-09-tech-director-epic9-m2-billing-sprint.md) | ✅ **待 C20** |
+| — | 总览 | Sprint 索引 | [EPIC-9 M2](HANDOFFS/2026-07-09-tech-director-epic9-m2-billing-sprint.md) | ✅ **关闭** |
 
 **ADR-23**：套餐 PUT · 周期 Job 重置 used_json · 无支付/FR-802 M2
 
-**技术总监签核（2026-07-09）**：✅ **EPIC-9 M2 代码复核通过** — `test_billing_period_reset` ✅ · Admin build ✅ · **C20 待 commit**
+**技术总监签核**：✅ **EPIC-9 M2 正式关闭** — C20 `942eddb` · `test_billing_period_reset` ✅ · 路线图 #4 ✅
 
 ### EPIC-5 M1 Sprint — FR-401~403 爆款拆解（2026-07-09 排期）
 
 | # | 角色 | 任务 | HANDOFF | 状态 |
 |---|------|------|---------|:----:|
 | 1 | UI | viral-breakdown 线框 | [→UI](HANDOFFS/2026-07-09-tech-director-to-ui-epic5-viral-breakdown.md) | ✅ |
-| 2 | 开发 Java | material + breakdown API | [→Java](HANDOFFS/2026-07-09-tech-director-to-dev-java-epic5-viral.md) | ⏳ |
-| 3 | 开发 Python | `/ai/breakdown` | [→AI](HANDOFFS/2026-07-09-tech-director-to-dev-ai-epic5-breakdown.md) | ⏳ |
-| 4 | 开发 Admin | `/materials` 页 | [→Admin](HANDOFFS/2026-07-09-tech-director-to-dev-admin-epic5-viral.md) | ⏳ |
-| — | 总览 | Sprint 索引 | [EPIC-5 M1](HANDOFFS/2026-07-09-tech-director-epic5-m1-viral-sprint.md) | — |
+| 2 | 开发 Java | material + breakdown API | [→Java](HANDOFFS/2026-07-09-tech-director-to-dev-java-epic5-viral.md) | ✅ smoke |
+| 3 | 开发 Python | `/ai/breakdown` | [→AI](HANDOFFS/2026-07-09-tech-director-to-dev-ai-epic5-breakdown.md) | ✅ pytest 4 |
+| 4 | 开发 Admin | `/materials` 页 | [→Admin](HANDOFFS/2026-07-09-tech-director-to-dev-admin-epic5-viral.md) | ✅ build |
+| — | 总览 | Sprint 索引 | [EPIC-5 M1](HANDOFFS/2026-07-09-tech-director-epic5-m1-viral-sprint.md) | ✅ **关闭** |
 
 **ADR-24**：上传+mock 拆帧+七维 JSON · 无 PySceneDetect/标签库 M1
+
+**技术总监签核（2026-07-09）**：✅ **EPIC-5 M1 正式关闭** — C21 `fb28a96` · `test_material_breakdown` materialId=3 · pytest 4 · Admin build ✅ · 路线图 #5 ✅
 
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
@@ -320,9 +322,9 @@
 | **C18** | EPIC-8 M2 月报白标 | `feat(core,admin): EPIC-8 M2 monthly report and white-label template` | ✅ `19e1f36` |
 | **C19** | EPIC-11 M2 探针 | `feat(core,admin,extension): EPIC-11 M2 probe adapters and calibration` | ✅ `cf42562` |
 | **C20** | EPIC-9 M2 计费 | `feat(core,admin): EPIC-9 M2 subscription CRUD and period reset` | ✅ `942eddb` |
-| **C21** | EPIC-5 M1 爆款 | `feat(core,ai,admin): EPIC-5 M1 viral video breakdown MVP` | `test_material_breakdown` |
+| **C21** | EPIC-5 M1 爆款 | `feat(core,ai,admin): EPIC-5 M1 viral video breakdown MVP` | ✅ `fb28a96` |
 
-**执行**：C1–C20 ✅ · push ✅ · **C21 ⏳** EPIC-5 M1
+**执行**：C1–C21 ✅ · push ✅
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -404,6 +406,9 @@
 - **EPIC-8 M1 FR-701/702 Admin 报告中心（2026-07-02）** ✅ `/reports` 侧栏 + 列表/筛选 + 周报 dialog + 预览 drawer + DOCX/PDF 下载 · `pnpm build:prod` ✅
 - **EPIC-8 M2 FR-703/704 monthly+白标 Java（2026-07-08）** ✅ `POST .../reports/monthly` · `GET/PUT /api/v1/settings/report-template` · MoM/CRM/avgScore 聚合 · 导出白标 weekly/monthly/diagnostic · `template` entity · `test_reports_monthly.py` ✅ docx 3122B
 - **EPIC-9 M1 FR-804 billing Java（2026-07-02）** ✅ `GET /api/v1/settings/billing` · `QuotaService.checkAndConsume` · 6 拦截点（项目/诊断/关键词/内容/落地页/周报）· HTTP 402 `code=40201` · `tenant.excludes` 加 `subscription` · `test_billing_quota.py` ✅
+- **EPIC-5 M1 FR-401~403 Admin 爆款拆解（2026-07-09）** ✅ `/content-tasks/materials` 列表+上传 dialog+开始拆解+5s 轮询 · 720px 详情 drawer（七维+frames+版权 footnote）· `api/tourgeo/material.ts` · `pnpm build:prod` ✅
+- **EPIC-5 M1 FR-402/403 breakdown AI（2026-07-09）** ✅ `POST /ai/breakdown/extract-frames`（mock 6 帧）· `POST /ai/breakdown/analyze`（七维 JSON + reusable_structure）· `BREAKDOWN_MOCK_LLM` · MQ worker `ai.breakdown` → Java callback · `tests/test_breakdown.py` 4 passed · 全量 pytest 85 passed
+- **EPIC-5 M1 FR-401~403 material Java（2026-07-09）** ✅ `POST/GET .../materials` multipart MinIO `{tenant}/{project}/materials/` · `POST .../breakdown` 202 + MQ `ai.breakdown` · `GET .../breakdowns/{id}` · internal callback · `tenant.excludes` + `material_asset`/`video_breakdown` · `test_material_breakdown.py` ✅（mock callback · materialId=1 breakdownId=1）
 - **EPIC-9 M2 FR-804 billing Java（2026-07-09）** ✅ `PUT /api/v1/settings/billing/subscription` · `SubscriptionPeriodResetJob`（02:00）· `POST /api/v1/internal/billing/period-reset` · ADR-23 · `test_billing_period_reset.py` ✅
 - **EPIC-11 M1 FR-112~114 probe Java（2026-07-05）** ✅ `ProbeController` register/poll/result/adapters + `GET /nodes` · `createRun` browser-extension 分叉 · `test_probe_extension_e2e.py` ✅
 - **EPIC-11 M2 FR-115/116 probe Java（2026-07-09）** ✅ platform-adapters API · calibration GET · calibration_ratio 分叉 · seed chatgpt · `test_probe_calibration.py` ✅ runId=7
@@ -509,6 +514,7 @@
 | B-15 | ~~EPIC-8 M2 C18 未 commit/push~~ | 开发 | ✅ **已关闭** C18 `19e1f36` · smoke ✅ |
 | B-16 | ~~EPIC-11 M2 C19 未 commit/push~~ | 开发 | ✅ **已关闭** C19 `cf42562` · smoke runId=7 |
 | B-17 | ~~EPIC-9 M2 C20 未 commit/push~~ | 开发 | ✅ **已关闭** C20 `942eddb` · smoke ✅ |
+| B-18 | ~~EPIC-5 M1 C21 未 commit/push~~ | 开发 | ✅ **已关闭** C21 `fb28a96` · smoke materialId=3 |
 
 ---
 
@@ -516,10 +522,8 @@
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P0** | **开发 Java** | [material API](HANDOFFS/2026-07-09-tech-director-to-dev-java-epic5-viral.md) | `test_material_breakdown.py` |
-| **P0** | **开发 Python** | [breakdown AI](HANDOFFS/2026-07-09-tech-director-to-dev-ai-epic5-breakdown.md) | `/ai/breakdown` mock |
-| **P1** | **开发 Admin** | [material UI](HANDOFFS/2026-07-09-tech-director-to-dev-admin-epic5-viral.md) · [UI→开发 HANDOFF](HANDOFFS/2026-07-09-ui-to-developer-viral-breakdown.md) | 依赖 Java+AI |
 | **P2** | **开发** | diagnostic smoke 9/9 | 维护轨 |
+| **P2** | **开发** | EPIC-7 M3 线索 WhatsApp/AI 跟进 | 路线图 #6 |
 
 ---
 
@@ -527,6 +531,8 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-09 | 开发 | C21 `fb28a96` EPIC-5 M1 爆款拆解全栈 commit+push · **EPIC-5 M1 正式关闭** · 路线图 #5 ✅ · B-18 关闭 |
+| 2026-07-09 | 技术总监 | EPIC-5 M1 四端复核 ✅ · smoke materialId=2 · pytest 4 · 派发 C21 · B-18 打开 · 修正 EPIC-9 签核 |
 | 2026-07-09 | UI 设计 | EPIC-5 M1 `viral-breakdown-list` 上传+拆解+七维 drawer+frames · FR-405 footnote · UI→开发 HANDOFF ✅ |
 | 2026-07-09 | 开发 | C20 `942eddb` EPIC-9 M2 套餐 CRUD+周期重置全栈 commit+push · **EPIC-9 M2 正式关闭** · 路线图 #4 ✅ |
 | 2026-07-09 | 技术总监 | EPIC-9 M2 三端复核 ✅ · smoke billing reset · 派发 C20 · 派发 **EPIC-5 M1** 爆款拆解 · B-17 打开 |
