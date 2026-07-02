@@ -33,6 +33,6 @@ EPIC-9 M2 三线（UI / Java / Admin）均已 Done。工作区 **~20 文件未 c
 
 ## Done（由 To 角色填写）
 
-- **完成时间**：
-- **结果摘要**：
-- **遗留**：
+- **完成时间**：2026-07-09
+- **结果摘要**：C20 `942eddb` push ✅ · smoke `test_billing_period_reset` ✅ · mvn install ruoyi-project · 23 files
+- **遗留**：无
