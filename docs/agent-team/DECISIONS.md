@@ -243,6 +243,16 @@
   - 校准指标 M2：品牌 mention 一致率 + answer 文本相似度简化（Jaccard/contains）· 报告只读展示
 - **影响**：[EPIC-11 M2 Sprint](HANDOFFS/2026-07-09-tech-director-epic11-m2-probe-sprint.md)
 
+### ADR-20260709-23 | EPIC-9 M2 仅 FR-804 套餐 CRUD + 周期重置
+- **状态**：已采纳
+- **决策者**：技术总监（完整版路线图 #4）
+- **背景**：M1 只读用量 + 402 拦截已完成；演示/运营需切换 plan、调 quota、周期到期重置 used_json；FR-802 模型 Key、FR-806 审计、支付网关仍后置
+- **决策**：
+  - **M2 做**：`PUT /api/v1/settings/billing/subscription` · `@Scheduled` period reset · Admin 编辑 drawer · smoke `test_billing_period_reset.py`
+  - **M2 不做**：Stripe/发票 · Redis 计数 · 多 ACTIVE 订阅 · FR-802 LLM Key 后台 · FR-806 审计 UI
+  - 重置规则：月度键（diagnostics/keywords/content/landing_pages/reports）归零；`projects` 为租户总量不随周期重置
+- **影响**：[EPIC-9 M2 Sprint](HANDOFFS/2026-07-09-tech-director-epic9-m2-billing-sprint.md)
+
 ---
 
 ## 待讨论

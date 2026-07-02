@@ -63,7 +63,7 @@ public class QuotaServiceImpl implements IQuotaService {
         );
     }
 
-    static int readInt(Object value) {
+    public static int readInt(Object value) {
         if (value == null) {
             return 0;
         }

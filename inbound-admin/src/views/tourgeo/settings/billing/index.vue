@@ -65,7 +65,10 @@
           </el-descriptions-item>
         </el-descriptions>
         <div class="toolbar-actions">
-          <el-tooltip content="在线升级 M2 · 请联系客户成功经理" placement="top">
+          <el-button v-hasPermi="['tourgeo:billing:edit']" type="primary" plain @click="editDrawerVisible = true">
+            编辑套餐
+          </el-button>
+          <el-tooltip content="在线购买 M3+ · 请用编辑套餐调整 quota" placement="top">
             <el-button disabled>升级套餐</el-button>
           </el-tooltip>
           <el-tooltip content="增购额度 M2" placement="top">
@@ -81,7 +84,18 @@
         <template #header>
           <div class="quota-header">
             <span class="card-title">本周期额度使用</span>
-            <el-button icon="Refresh" :loading="loading" @click="loadSubscription">刷新用量</el-button>
+            <div class="quota-header__actions">
+              <el-button icon="Refresh" :loading="loading" @click="loadSubscription">刷新用量</el-button>
+              <el-button
+                v-hasPermi="['tourgeo:billing:reset']"
+                type="danger"
+                link
+                :loading="resetting"
+                @click="openResetDialog"
+              >
+                重置本周期用量
+              </el-button>
+            </div>
           </div>
         </template>
         <p class="quota-hint">
@@ -91,28 +105,71 @@
         <quota-progress-row v-for="item in subscription.quotas" :key="item.key" :item="item" />
       </el-card>
 
-      <el-card shadow="never" class="info-card">
+      <el-card shadow="never" class="info-card mb-3">
+        <template #header>
+          <span class="card-title">说明</span>
+        </template>
         <ul class="info-list">
           <li>超额时创建诊断、AI 生成等操作将返回「额度不足」并拦截。</li>
           <li>升级套餐或增购额度请联系您的客户成功经理。（M1 无在线支付）</li>
         </ul>
       </el-card>
+
+      <el-card shadow="never" class="info-card">
+        <template #header>
+          <span class="card-title">计费周期与重置</span>
+        </template>
+        <ul class="info-list">
+          <li>系统每日 02:00 检查：若 period_end 早于今天，则推进计费周期并将 5 项月度 used_json 归零；projects 累计保留。</li>
+          <li>客户项目数为租户生命周期累计上限，不随账单周期清零。</li>
+          <li>手动「重置本周期用量」等效触发一次周期结算，仅用于演示或运维排障（M2 写应用 log，无审计 UI）。</li>
+          <li>重置后，若 quota 上限未变，402 超额拦截将解除（projects 超额除外）。</li>
+          <li>无 Stripe；套餐变更通过「编辑套餐」写入 subscription 表。</li>
+        </ul>
+      </el-card>
     </template>
+
+    <subscription-edit-drawer
+      ref="editDrawerRef"
+      v-model:visible="editDrawerVisible"
+      :subscription="subscription"
+      @saved="onSubscriptionSaved"
+    />
+
+    <el-dialog v-model="resetDialogVisible" title="确认重置本周期用量" width="440px" destroy-on-close>
+      <el-alert type="warning" show-icon :closable="false" class="mb-3" title="此操作不可撤销，仅用于演示或运维排障。" />
+      <p class="reset-copy">将把以下 <strong>月度</strong> 已用额度归零：</p>
+      <ul class="reset-list">
+        <li>GEO 诊断 · 关键词 · 内容 · 落地页 · 报告生成</li>
+        <li><strong>客户项目数 (projects) 不重置</strong>（租户总量上限）</li>
+        <li>若今日 ≥ period_end，将推进下一计费周期（与自动 Job 一致）</li>
+      </ul>
+      <template #footer>
+        <el-button @click="resetDialogVisible = false">取消</el-button>
+        <el-button type="danger" :loading="resetting" @click="confirmReset">确认重置</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { onBeforeRouteLeave } from 'vue-router';
 import { InfoFilled } from '@element-plus/icons-vue';
-import { getCurrentSubscription } from '@/api/tourgeo/billing';
+import { getCurrentSubscription, resetBillingPeriod } from '@/api/tourgeo/billing';
 import type { SubscriptionVo } from '@/api/tourgeo/types';
 import { isInactiveSubscription, planLabel, subscriptionStatusMeta } from '@/constants/billing';
 import QuotaProgressRow from './QuotaProgressRow.vue';
+import SubscriptionEditDrawer from './SubscriptionEditDrawer.vue';
 
 const loading = ref(false);
+const resetting = ref(false);
 const subscription = ref<SubscriptionVo | null>(null);
 const notFound = ref(false);
 const forbidden = ref(false);
+const editDrawerVisible = ref(false);
+const resetDialogVisible = ref(false);
+const editDrawerRef = ref<InstanceType<typeof SubscriptionEditDrawer>>();
 
 const statusMeta = computed(() => subscriptionStatusMeta(subscription.value?.status));
 
@@ -174,6 +231,47 @@ async function loadSubscription() {
   }
 }
 
+function onSubscriptionSaved(data: SubscriptionVo) {
+  subscription.value = data;
+}
+
+function openResetDialog() {
+  resetDialogVisible.value = true;
+}
+
+async function confirmReset() {
+  resetting.value = true;
+  try {
+    subscription.value = await resetBillingPeriod();
+    ElMessage.success('本周期用量已重置');
+    resetDialogVisible.value = false;
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg && msg !== 'error') {
+      ElMessage.error(msg);
+    }
+  } finally {
+    resetting.value = false;
+  }
+}
+
+onBeforeRouteLeave(async (_to, _from, next) => {
+  if (editDrawerVisible.value && editDrawerRef.value?.isDirty?.()) {
+    try {
+      await ElMessageBox.confirm('有未保存的套餐修改，确定离开？', '提示', {
+        type: 'warning',
+        confirmButtonText: '离开',
+        cancelButtonText: '继续编辑'
+      });
+      next();
+    } catch {
+      next(false);
+    }
+    return;
+  }
+  next();
+});
+
 onMounted(() => {
   loadSubscription();
 });
@@ -225,6 +323,13 @@ onMounted(() => {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+
+    &__actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
   }
 
   .quota-hint {
@@ -246,6 +351,18 @@ onMounted(() => {
     padding-left: 1.2em;
     color: var(--tg-color-text-secondary, #6b7280);
     font-size: var(--tg-font-size-sm, 13px);
+    line-height: 1.8;
+  }
+
+  .reset-copy {
+    margin: 0 0 8px;
+    color: var(--tg-color-text-primary, #1f2937);
+  }
+
+  .reset-list {
+    margin: 0;
+    padding-left: 1.2em;
+    color: var(--tg-color-text-secondary, #6b7280);
     line-height: 1.8;
   }
 }

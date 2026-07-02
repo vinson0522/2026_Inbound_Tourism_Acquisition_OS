@@ -734,6 +734,13 @@ export interface SubscriptionVo {
   overageKeys?: string[];
 }
 
+export interface SubscriptionUpdateDto {
+  planCode: string;
+  quotaJson: Record<string, number>;
+  periodStart: string;
+  periodEnd: string;
+}
+
 /** EPIC-11 M1 — 探针节点 (FR-113) */
 export interface ProbeNodeVo {
   id: number;

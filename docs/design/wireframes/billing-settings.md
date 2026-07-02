@@ -318,3 +318,215 @@ el-alert type="error" :closable="false" show-icon
 | 日期 | 作者 | 说明 |
 |------|------|------|
 | 2026-07-04 | UI 设计 | EPIC-9 M1 初版 · FR-804 · ADR-20260704-17 |
+| 2026-07-09 | UI 设计 | **§M2** 套餐编辑 drawer · 周期重置说明 · ADR-20260709-23 |
+
+---
+
+## M2 增量 · 套餐编辑 + 周期重置（FR-804 扩展）
+
+> **PRD**：§13.3 套餐与额度 · **ADR-20260709-23**  
+> **前置**：M1 只读用量 + 402 拦截 ✅ · `SubscriptionVo` GET 已有  
+> **Vo 参考**：`inbound-core/.../vo/SubscriptionVo.java` · `QuotaItemVo`
+
+**M2 范围（本页）**：
+- ✅ 套餐概览启用 **「编辑套餐」** drawer（plan · 6 quota · period 日期）
+- ✅ 运营/演示 **「重置本周期用量」** confirm dialog（管理员可见）
+- ✅ footnote **周期自动重置规则**（Job + 哪些键归零）
+- ❌ Stripe/发票 · Redis 计数 · FR-802 模型 Key · FR-806 审计 UI
+
+**权限**：
+- 查看：`tourgeo:billing:view`（M1 不变）
+- 编辑套餐：`tourgeo:billing:edit`（租户管理员 / 平台运营）
+- 手动重置：`tourgeo:billing:reset` 或 `super_admin`（M2 演示用；生产慎用）
+
+---
+
+### M2 工具栏 / 概览卡变更
+
+| 按钮 | M1 | M2 | 行为 |
+|------|----|----|------|
+| **编辑套餐** | — | ✅ `type="primary" plain` | 打开编辑 drawer · 需 `billing:edit` |
+| 升级套餐 | disabled | disabled | tooltip「在线购买 M3+ · 请用编辑套餐调整 quota」 |
+| 购买加量 | disabled | disabled | 不变 |
+| 下载发票 | disabled | disabled | 不变 |
+| **重置本周期用量** | — | ✅ 额度卡底部 `type="danger" link` | 仅 `billing:reset` · confirm dialog |
+
+**只读角色**：隐藏「编辑套餐」「重置本周期用量」。
+
+---
+
+### M2 布局增量（ASCII）
+
+```
+套餐概览 (M2):
+│ 当前套餐 … 计费周期 …                                              │
+│ [编辑套餐] primary plain   [升级套餐] disabled  [购买加量] disabled … │
+
+额度用量卡底部 (M2):
+│ [刷新用量]   [重置本周期用量] danger link  (仅 billing:reset)       │
+
+编辑套餐 (el-drawer 520px):
+┌─ 编辑套餐与额度 ────────────────────────────────────────── [×] │
+│ ℹ 用于演示/运营调整，非客户自助购买。保存后立即生效。              │
+│ 套餐模板*     [增长服务版 ▼]  planCode                           │
+│               切换模板可「套用默认额度」（见下）                   │
+│ ── 额度上限 (quota_json) ──                                      │
+│ 客户项目数              [  5 ]  el-input-number min=0             │
+│ GEO 诊断（月）          [  4 ]                                    │
+│ 关键词 AI 生成（月）    [500 ]                                    │
+│ 内容 AI 生成（月）      [100 ]                                    │
+│ 落地页 AI 生成（月）    [ 20 ]                                    │
+│ 报告生成（月）          [  8 ]                                    │
+│ ── 计费周期 ──                                                   │
+│ 周期开始*     [2026-07-04]  el-date-picker                       │
+│ 周期结束*     [2026-08-04]  须 > periodStart                     │
+│ ⚠ 修改周期不会自动清零 used_json；到期由系统 Job 重置。           │
+│ [套用模板默认额度]  [取消]  [保存] primary                        │
+└──────────────────────────────────────────────────────────────────┘
+
+重置本周期用量 (el-dialog 440px):
+┌─ 确认重置本周期用量 ────────────────────────────────────── [×] │
+│ ⚠ 将把以下 **月度** 已用额度归零：                               │
+│ · GEO 诊断 · 关键词 · 内容 · 落地页 · 报告生成                  │
+│ · **客户项目数 (projects) 不重置**（租户总量上限）               │
+│ · 若今日 ≥ period_end，将推进下一计费周期（与自动 Job 一致）     │
+│ 此操作不可撤销，仅用于演示或运维排障。                           │
+│                              [取消]  [确认重置] danger            │
+└──────────────────────────────────────────────────────────────────┘
+
+周期规则 footnote (el-card shadow="never" · 追加到说明卡):
+┌─ 计费周期与重置 ─────────────────────────────────────────────────┐
+│ · 系统每日 02:00 检查：若 period_end < 今天，则推进 period 并重置 │
+│   5 项月度 used_json 为 0；projects 累计保留。                     │
+│ · 手动「重置本周期用量」等效触发一次周期结算（供 dev/staging）。    │
+│ · 无 Stripe；套餐变更通过「编辑套餐」写入 subscription 表。        │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 编辑 Drawer 字段 ↔ API
+
+| UI 标签 | 组件 | API 字段 | 必填 | 校验 |
+|---------|------|----------|:----:|------|
+| 套餐模板 | `el-select` | `planCode` | ✅ | 白名单见下表 |
+| 6×额度上限 | `el-input-number` min=0 | `quotaJson.{key}` | ✅ | 整数 ≥0 |
+| 周期开始 | `el-date-picker` | `periodStart` | ✅ | `YYYY-MM-DD` |
+| 周期结束 | `el-date-picker` | `periodEnd` | ✅ | `> periodStart` |
+
+**保存**：`PUT /api/v1/settings/billing/subscription`
+
+**请求体**（camelCase · 与 Java M2 HANDOFF 对齐）：
+
+```json
+{
+  "planCode": "growth_service",
+  "quotaJson": {
+    "projects": 5,
+    "diagnostics_per_month": 4,
+    "keywords_per_month": 500,
+    "content_per_month": 100,
+    "landing_pages_per_month": 20,
+    "reports_per_month": 8
+  },
+  "periodStart": "2026-07-04",
+  "periodEnd": "2026-08-04"
+}
+```
+
+**成功**：toast「套餐已更新」· 关闭 drawer · 刷新 GET billing · 进度条重算。
+
+**失败**：400 plan 非法 · period 无效 · drawer 内 field error。
+
+**dirty 离开**：关闭 drawer / 路由离开 → `ElMessageBox.confirm`。
+
+---
+
+### 套餐模板下拉 + 默认额度
+
+与 M1 `plan_code` 映射 · `SubscriptionServiceImpl.PLAN_LABELS` · PRD §13.3 **一致**：
+
+| `planCode` | 中文 | M2 套用默认 quota（点击「套用模板默认额度」） |
+|------------|------|-----------------------------------------------|
+| `diagnostic_report` | 诊断报告版 | projects:1 · diag:1 · kw:50 · content:0 · landing:0 · reports:2 |
+| `basic_saas` | 基础 SaaS 版 | projects:3 · diag:2 · kw:200 · content:30 · landing:10 · reports:4 |
+| `growth_service` | 增长服务版 | **seed 默认**（见 M1 quotaJson 示例） |
+| `trial` | 试用版 | projects:1 · diag:1 · kw:20 · content:5 · landing:2 · reports:1 |
+| `oem_private` | OEM/私有化版 | projects:50 · diag:100 · kw:5000 · content:500 · landing:100 · reports:50 |
+| `starter` | 入门版 | Java fallback · 同 basic_saas |
+| `enterprise` | 企业版 | Java fallback · 同 oem_private 略降 |
+
+**交互**：
+- 切换 `planCode` **不自动覆盖** quota（防误触）；点「套用模板默认额度」才填充。
+- 保存时 `planCode` 与 `quotaJson` 一并提交；后端写 `subscription.plan_code` + `quota_json`。
+
+---
+
+### 重置本周期用量 Dialog
+
+| 项 | 规范 |
+|----|------|
+| 触发 | 额度卡「重置本周期用量」 |
+| 权限 | `tourgeo:billing:reset` 或 super_admin |
+| API | `POST /api/v1/settings/billing/period-reset` **或** internal `POST /api/v1/internal/billing/period-reset`（与 Java 对齐；Admin 用租户 JWT 的 admin-only 包装 endpoint 优先） |
+| 成功 | toast「本周期用量已重置」· 刷新 GET · 月度 progress 归零 |
+| 失败 | 403 非授权 · 500 保留 used |
+
+**重置范围**（ADR-23 · 与 Job 一致）：
+
+| 键 | 重置 |
+|----|:----:|
+| `diagnostics_per_month` | ✅ → 0 |
+| `keywords_per_month` | ✅ |
+| `content_per_month` | ✅ |
+| `landing_pages_per_month` | ✅ |
+| `reports_per_month` | ✅ |
+| `projects` | ❌ 保留（租户总量） |
+
+**周期推进**：若 `LocalDate.now() >= periodEnd`，Job/手动重置将 `periodStart`/`periodEnd` 推进下一自然月（或 +1 month 滚动窗口，与 Java 实现一致）。
+
+---
+
+### 周期自动重置 Footnote（必须展示）
+
+追加到页底「说明」`el-card` 或独立 info 小节，**不可折叠隐藏**：
+
+1. **自动 Job**：每日 02:00 · `period_end < today` → 推进周期 · 月度 `used_json` 五键归零。
+2. **projects 例外**：客户项目数为租户生命周期累计上限，不随账单周期清零。
+3. **手动重置**：仅运维/演示；生产需审计（M2 写应用 log，无 FR-806 UI）。
+4. **402 关系**：重置后超额拦截解除（若 quota 上限未变）。
+
+---
+
+### M2 API 依赖（追加）
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| PUT | `/api/v1/settings/billing/subscription` | 更新 plan · quota · period |
+| POST | `/api/v1/settings/billing/period-reset` | 租户管理员手动重置（若 Java 暴露） |
+
+GET 路径不变 · 响应仍为 `SubscriptionVo`（见 M1）。
+
+---
+
+### M2 空 / 错误增量
+
+| 场景 | UI |
+|------|-----|
+| 无 `billing:edit` | 隐藏编辑按钮 |
+| PUT 后 used > new limit | 允许保存 · 页顶超额 alert 立即出现 |
+| 重置后仍有超额 | 仅当 used.projects > quota.projects（项目数不重置导致） |
+| 订阅 EXPIRED | 编辑 drawer 可开但保存 warning「当前订阅已失效」 |
+
+---
+
+### M2 组件提示
+
+| 项 | 建议 |
+|----|------|
+| Drawer | 复用 probe-adapters 编辑模式 · `el-form` `:rules` |
+| 常量 | `src/constants/billing.ts` — `PLAN_OPTIONS` · `PLAN_QUOTA_PRESETS` |
+| API | `billing.ts` — `updateSubscription` · `resetBillingPeriod` |
+| 权限 | `v-hasPermi="['tourgeo:billing:edit']"` |
+
+**交叉引用**：Java HANDOFF `2026-07-09-tech-director-to-dev-java-epic9-billing-m2.md` · smoke `test_billing_period_reset.py`
