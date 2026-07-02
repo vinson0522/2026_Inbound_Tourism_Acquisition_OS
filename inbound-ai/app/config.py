@@ -90,6 +90,17 @@ class Settings(BaseSettings):
         "Set needs_human_review true; cite chunk_ids when using RAG."
     )
 
+    breakdown_mock_llm: bool = False
+    breakdown_model: str = "openai/gpt-4o-mini"
+    breakdown_template_name: str = "video_breakdown_v1"
+    breakdown_prompt_fallback: str = (
+        "You analyze inbound tourism viral short videos as JSON only. "
+        "Return seven dimensions (theme, hook, shot, subtitle, emotion, psychology, reusable) "
+        "plus reusable_structure summarizing the narrative arc. "
+        "Provide inspiration for marketers — never encourage direct copying."
+    )
+    breakdown_worker_enabled: bool = False
+
     @property
     def has_embedding_key(self) -> bool:
         return bool(self.openai_api_key)

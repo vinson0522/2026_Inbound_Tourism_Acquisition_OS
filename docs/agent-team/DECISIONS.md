@@ -253,6 +253,16 @@
   - 重置规则：月度键（diagnostics/keywords/content/landing_pages/reports）归零；`projects` 为租户总量不随周期重置
 - **影响**：[EPIC-9 M2 Sprint](HANDOFFS/2026-07-09-tech-director-epic9-m2-billing-sprint.md)
 
+### ADR-20260709-24 | EPIC-5 M1 仅 FR-401~403 爆款拆解 MVP
+- **状态**：已采纳
+- **决策者**：技术总监（完整版路线图 #5）
+- **背景**：EPIC-4 内容 Agent 已闭环；PRD §8.6 需素材上传+拆帧+七维拆解；DDL `material_asset`/`video_breakdown` 已就绪；PySceneDetect/VLM 生产链路后置
+- **决策**：
+  - **M1 做**：MinIO 上传 · Java MQ `ai.breakdown` · Python extract-frames（mock/ffmpeg 间隔）+ analyze 七维 JSON · Admin `/materials` 列表+详情
+  - **M1 不做**：FR-404 标签库 · FR-406 智能推荐 · PySceneDetect · 外链抓取 · 导出版权拦截（仅 UI 提示）
+  - Mock：`BREAKDOWN_MOCK_LLM=true` 默认本地可测
+- **影响**：[EPIC-5 M1 Sprint](HANDOFFS/2026-07-09-tech-director-epic5-m1-viral-sprint.md)
+
 ---
 
 ## 待讨论

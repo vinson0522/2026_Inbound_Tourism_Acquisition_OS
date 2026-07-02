@@ -17,6 +17,7 @@
 | [wireframes/diagnostic-trends.md](./wireframes/diagnostic-trends.md) | GEO 诊断 · 趋势对比 FR-108 |
 | [wireframes/keywords-list.md](./wireframes/keywords-list.md) | 关键词洞察 · 机会词列表 FR-201/202 |
 | [wireframes/content-task-list.md](./wireframes/content-task-list.md) | 内容 Agent · 内容任务列表 EPIC-4 M1（预研） |
+| [wireframes/viral-breakdown-list.md](./wireframes/viral-breakdown-list.md) | 内容 Agent · 爆款拆解 EPIC-5 M1 FR-401~403 |
 | [wireframes/landing-page-list.md](./wireframes/landing-page-list.md) | 落地页 Agent · 页面列表 EPIC-6 M1 |
 | [wireframes/landing-page-publish.md](./wireframes/landing-page-publish.md) | 落地页 Agent · 发布与公网预览 EPIC-6 M2 |
 | [wireframes/leads-list.md](./wireframes/leads-list.md) | 线索与转化 · 询盘列表 EPIC-7 M1 + **CRM M2** |
@@ -43,6 +44,7 @@
 | [../agent-team/HANDOFFS/2026-07-08-ui-to-developer-report-monthly-whitelabel.md](../agent-team/HANDOFFS/2026-07-08-ui-to-developer-report-monthly-whitelabel.md) | UI → 开发（月报+白标 EPIC-8 M2） |
 | [../agent-team/HANDOFFS/2026-07-09-ui-to-developer-probe-m2.md](../agent-team/HANDOFFS/2026-07-09-ui-to-developer-probe-m2.md) | UI → 开发（探针 Adapter+校准 EPIC-11 M2） |
 | [../agent-team/HANDOFFS/2026-07-09-ui-to-developer-billing-m2.md](../agent-team/HANDOFFS/2026-07-09-ui-to-developer-billing-m2.md) | UI → 开发（计费编辑/重置 EPIC-9 M2） |
+| [../agent-team/HANDOFFS/2026-07-09-ui-to-developer-viral-breakdown.md](../agent-team/HANDOFFS/2026-07-09-ui-to-developer-viral-breakdown.md) | UI → 开发（爆款拆解 EPIC-5 M1） |
 
 ---
 
@@ -54,7 +56,7 @@
 | 客户项目 | `/projects` | ✅ [列表](wireframes/projects-list.md) + [详情 Story 3](wireframes/project-detail.md) |
 | GEO 诊断 | `/diagnostics` | ✅ [列表](wireframes/diagnostics-list.md) + [详情](wireframes/diagnostic-detail.md) + [趋势 FR-108](wireframes/diagnostic-trends.md) |
 | 关键词洞察 | `/projects/:projectId/keywords`（侧栏 `/keywords` 重定向） | ✅ [keywords-list.md](wireframes/keywords-list.md) FR-201/202 M1 |
-| 内容 Agent | `/content` | 🔶 [content-task-list.md](wireframes/content-task-list.md) EPIC-4 M1 预研 |
+| 内容 Agent | `/content` | 🔶 [content-task-list.md](wireframes/content-task-list.md) EPIC-4 M1 · ✅ [viral-breakdown-list.md](wireframes/viral-breakdown-list.md) EPIC-5 M1 FR-401~403 |
 | 落地页 Agent | `/landing` | ✅ [列表 M1](wireframes/landing-page-list.md) · ✅ [发布 M2](wireframes/landing-page-publish.md) |
 | 线索与转化 | `/leads` | ✅ [leads-list.md](wireframes/leads-list.md) FR-601 M1 + **FR-605 M2 CRM** |
 | 报告中心 | `/reports` | ✅ [reports-list.md](wireframes/reports-list.md) M1 + **M2 月报 FR-703** · ✅ [report-template-settings.md](wireframes/report-template-settings.md) FR-704 |
@@ -100,7 +102,7 @@ Token 落地时优先在 `variables.module.scss` 的 `:root` 追加 `--tg-*` 变
 
 | 日期 | 作者 | 说明 |
 |------|------|------|
-| 2026-07-09 | UI 设计 | EPIC-9 M2 billing-settings §M2 套餐编辑+周期重置 FR-804 + HANDOFF |
+| 2026-07-09 | UI 设计 | EPIC-5 M1 viral-breakdown-list 上传+七维拆解 drawer FR-401~403 + HANDOFF |
 | 2026-07-05 | UI 设计 | EPIC-11 M1 探针节点列表线框 FR-113 + HANDOFF |
 | 2026-07-04 | UI 设计 | EPIC-9 M1 套餐与额度设置线框 + 6 quota 进度条 + HANDOFF |
 | 2026-07-03 | UI 设计 | EPIC-6 M2 落地页发布/公网预览/Astro 八模块 + Turnstile 线框 |

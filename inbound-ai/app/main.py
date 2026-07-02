@@ -7,8 +7,10 @@ from fastapi.responses import JSONResponse
 
 from app.config import get_settings
 from app.db import close_pool
-from app.routers import content, diagnose, embed, health, keywords, landing, llm
+from app.routers import breakdown, content, diagnose, embed, health, keywords, landing, llm
 from app.services.llm_gateway import ProbeConfigError, PROBE_CONFIG_ERROR
+from app.workers.breakdown_worker import start_worker as start_breakdown_worker
+from app.workers.breakdown_worker import stop_worker as stop_breakdown_worker
 from app.workers.diagnose_worker import start_worker as start_diagnose_worker
 from app.workers.diagnose_worker import stop_worker as stop_diagnose_worker
 from app.workers.embed_worker import start_worker as start_embed_worker
@@ -26,7 +28,11 @@ async def lifespan(app: FastAPI):
     embed_worker = await start_embed_worker(settings)
     if embed_worker:
         logger.info("Embed MQ worker started")
+    breakdown_worker = await start_breakdown_worker(settings)
+    if breakdown_worker:
+        logger.info("Breakdown MQ worker started")
     yield
+    await stop_breakdown_worker()
     await stop_embed_worker()
     await stop_diagnose_worker()
     await close_pool()
@@ -68,6 +74,7 @@ def create_app() -> FastAPI:
     app.include_router(keywords.router)
     app.include_router(content.router)
     app.include_router(landing.router)
+    app.include_router(breakdown.router)
 
     return app
 

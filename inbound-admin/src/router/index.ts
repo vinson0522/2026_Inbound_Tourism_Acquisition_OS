@@ -137,6 +137,13 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'ProjectReports',
         hidden: true,
         meta: { title: '报告列表', activeMenu: '/reports/index', noCache: true }
+      },
+      {
+        path: ':projectId/materials',
+        component: () => import('@/views/tourgeo/materials/index.vue'),
+        name: 'ProjectMaterials',
+        hidden: true,
+        meta: { title: '爆款拆解', activeMenu: '/content-tasks/materials', noCache: true }
       }
     ]
   },
@@ -169,6 +176,12 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/tourgeo/content/index.vue'),
         name: 'ContentTasksList',
         meta: { title: '内容任务', icon: 'list' }
+      },
+      {
+        path: 'materials',
+        component: () => import('@/views/tourgeo/materials/index.vue'),
+        name: 'MaterialsList',
+        meta: { title: '爆款拆解', icon: 'video-play' }
       }
     ]
   },

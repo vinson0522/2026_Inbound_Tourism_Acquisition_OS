@@ -126,6 +126,46 @@ async def load_landing_generate_prompt(
     return cfg.landing_prompt_fallback.strip()
 
 
+async def load_breakdown_analyze_prompt(
+    tenant_id: int,
+    settings: Settings | None = None,
+) -> str:
+    """Return prompt body for viral video seven-dimension analysis (FR-403)."""
+    cfg = settings or get_settings()
+    if cfg.database_url:
+        try:
+            pool = await get_pool()
+            row = await pool.fetchrow(
+                """
+                SELECT config_json
+                FROM template
+                WHERE tenant_id = $1
+                  AND name = $2
+                  AND type = 'CONTENT'::template_type
+                  AND deleted_at IS NULL
+                ORDER BY is_default DESC, id ASC
+                LIMIT 1
+                """,
+                tenant_id,
+                cfg.breakdown_template_name,
+            )
+            if row:
+                payload = row["config_json"]
+                if isinstance(payload, str):
+                    payload = json.loads(payload)
+                prompt = payload.get("prompt") or payload.get("body")
+                if prompt and str(prompt).strip():
+                    return str(prompt).strip()
+        except Exception as exc:
+            logger.warning(
+                "template load failed tenant_id=%s name=%s: %s",
+                tenant_id,
+                cfg.breakdown_template_name,
+                exc,
+            )
+    return cfg.breakdown_prompt_fallback.strip()
+
+
 class KeywordScoreTemplateConfig:
     __slots__ = ("prompt", "weights", "weights_version")
 

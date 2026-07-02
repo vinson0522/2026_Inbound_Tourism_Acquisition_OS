@@ -157,6 +157,8 @@ tenant:
     - subscription
     - probe_node
     - platform_adapter
+    - material_asset
+    - video_breakdown
 
 # MyBatisPlus配置
 # https://baomidou.com/config/

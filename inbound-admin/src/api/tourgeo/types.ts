@@ -752,3 +752,64 @@ export interface ProbeNodeVo {
   lastHeartbeatAt?: string;
   online: boolean;
 }
+
+/** EPIC-5 M1 — 爆款素材 / 视频拆解 (FR-401~403) */
+export type MaterialAssetType = 'VIDEO' | 'IMAGE' | 'AUDIO' | 'OTHER';
+
+export type MaterialBreakdownStatus = 'NONE' | 'PROCESSING' | 'SUCCESS' | 'FAILED';
+
+export interface MaterialAssetVo {
+  id: number;
+  projectId: number;
+  type: MaterialAssetType | string;
+  url: string;
+  thumbnailUrl?: string;
+  tags?: string[];
+  copyrightStatus?: string;
+  source?: string;
+  fileName?: string;
+  breakdownId?: number;
+  breakdownStatus?: MaterialBreakdownStatus | string;
+  frameCount?: number;
+  needsHumanReview?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MaterialAssetQuery {
+  pageNum: number;
+  pageSize: number;
+  type?: MaterialAssetType | '';
+  copyrightStatus?: string;
+  breakdownStatus?: MaterialBreakdownStatus | '';
+}
+
+export interface MaterialUploadForm {
+  file: File;
+  type?: string;
+  copyrightStatus?: string;
+  source?: string;
+}
+
+export interface MaterialBreakdownTriggerResult {
+  breakdownId: number;
+}
+
+export interface BreakdownFrameVo {
+  timestamp?: number;
+  timestampLabel?: string;
+  thumbnailUrl?: string;
+  caption?: string;
+}
+
+export interface VideoBreakdownVo {
+  breakdownId: number;
+  materialId?: number;
+  sourceUrl?: string;
+  breakdownStatus?: MaterialBreakdownStatus | string;
+  needsHumanReview?: boolean;
+  dimensions?: Record<string, string>;
+  reusableStructure?: string;
+  frames?: BreakdownFrameVo[];
+  breakdownCreatedAt?: string;
+}

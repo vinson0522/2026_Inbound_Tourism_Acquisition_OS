@@ -282,7 +282,9 @@ router.push({
 ```text
 父菜单：内容 Agent (path: /content, icon: edit 或 video-camera)
   └─ 内容任务 (path: /projects/:projectId/content/tasks, component: tourgeo/content/tasks/index)
-  └─ 脚本生成 / 分镜 / 素材库 / 发布计划 — M2+ 占位 disabled
+  └─ 脚本生成 / 分镜 / 发布计划 — M2+ 占位 disabled
+  └─ 爆款拆解 (/projects/:projectId/materials) — ✅ 见 [viral-breakdown-list.md](./viral-breakdown-list.md)
+  └─ 素材标签库 — FR-404 disabled M2+
 ```
 
 **重定向**：`/content/tasks` → 当前 `projectId` 或提示选项目。
