@@ -32,6 +32,6 @@ EPIC-11 M1 五条开发线均已 Done（Java smoke ✅ · Extension build ✅ ·
 
 ## Done（由 To 角色填写）
 
-- **完成时间**：
-- **结果摘要**：
-- **遗留**：
+- **完成时间**：2026-07-06
+- **结果摘要**：C15 `3855266` · 46 files · smoke runId=5 SUCCESS · push origin/main
+- **遗留**：pnpm-lock.yaml gitignored · EPIC-3 docs（ADR-19）待 C16

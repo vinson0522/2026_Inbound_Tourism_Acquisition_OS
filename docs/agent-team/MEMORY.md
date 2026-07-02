@@ -5,10 +5,10 @@
 
 | 字段 | 值 |
 |------|-----|
-| **最后更新** | 2026-07-05 |
+| **最后更新** | 2026-07-06 |
 | **更新角色** | 开发 |
-| **Git 远程** | ✅ `origin/main` · C13 `71c374d` · **C14 `f23e539`** |
-| **当前 EPIC 焦点** | **EPIC-11 M1** 浏览器探针（FR-112~114）· Java ∥ Extension → Admin |
+| **Git 远程** | ✅ `origin/main` · C14 `f23e539` · **C15 `3855266`** |
+| **当前 EPIC 焦点** | **EPIC-3 M2** 关键词机会评分（FR-203） |
 
 ---
 
@@ -22,7 +22,7 @@
 | 基础设施 | 服务器 **全绿** ✅；**本机 Docker Desktop + 4 容器 healthy** ✅（ADR-09） |
 | EPIC-1 最小闭环 | ✅ Story 2 完成（项目 CRUD + Admin `/projects`） |
 | AI 服务 | `inbound-ai` Phase 1 ✅ · **Phase 2 embed MVP** ✅（ai.embed + `/ai/rag/search`） |
-| 落地页/探针/门户 | 目录骨架就绪，待开发 |
+| 落地页/探针/门户 | `inbound-landing` ✅ M2 · **探针扩展 M1 scaffold** ✅ · 门户待开发 |
 
 ## 技术总监
 
@@ -167,12 +167,26 @@
 |---|------|------|---------|:----:|
 | 0 | 开发 | C14 commit+push | [→C14](HANDOFFS/2026-07-05-tech-director-to-dev-c14-commit.md) | ✅ |
 | 1 | UI | 探针节点线框 | [→UI](HANDOFFS/2026-07-05-tech-director-to-ui-epic11-probe-nodes.md) | ✅ |
-| 2 | 开发 Java | Probe API + poll 调度 | [→Java](HANDOFFS/2026-07-05-tech-director-to-dev-java-epic11-probe.md) | ⏳ |
-| 3 | 开发 Extension | Plasmo MV3 scaffold | [→Extension](HANDOFFS/2026-07-05-tech-director-to-dev-extension-epic11-plasmo.md) | ⏳ |
-| 4 | 开发 Admin | `/settings/probe-nodes` | [→Admin](HANDOFFS/2026-07-05-tech-director-to-dev-admin-epic11-probe-nodes.md) | ⏳ |
-| — | 总览 | Sprint 索引 | [EPIC-11 M1](HANDOFFS/2026-07-05-tech-director-epic11-m1-probe-sprint.md) | — |
+| 2 | 开发 Java | Probe API + poll 调度 | [→Java](HANDOFFS/2026-07-05-tech-director-to-dev-java-epic11-probe.md) | ✅ 2026-07-05 |
+| 3 | 开发 Extension | Plasmo MV3 scaffold | [→Extension](HANDOFFS/2026-07-05-tech-director-to-dev-extension-epic11-plasmo.md) | ✅ 2026-07-05 |
+| 4 | 开发 Admin | `/settings/probe-nodes` | [→Admin](HANDOFFS/2026-07-05-tech-director-to-dev-admin-epic11-probe-nodes.md) | ✅ 2026-07-05 |
+| — | 总览 | Sprint 索引 | [EPIC-11 M1](HANDOFFS/2026-07-05-tech-director-epic11-m1-probe-sprint.md) | ✅ **关闭** |
 
 **ADR-18**：M1 poll 闭环 + 1 平台（perplexity）；校准/Headless/adapter CRUD → M2+
+
+**技术总监签核**：✅ **EPIC-11 M1 正式关闭** — C15 `3855266` · `test_probe_extension_e2e` ✅
+
+### EPIC-3 M2 Sprint — FR-203 关键词机会评分（2026-07-06 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 0 | 开发 | C15 commit+push | [→C15](HANDOFFS/2026-07-06-tech-director-to-dev-c15-commit.md) | ✅ `3855266` |
+| 1 | 开发 Python | `/ai/keywords/score` | [→AI](HANDOFFS/2026-07-06-tech-director-to-dev-ai-epic3-keyword-score.md) | ⏳ |
+| 2 | 开发 Java | score API + batch | [→Java](HANDOFFS/2026-07-06-tech-director-to-dev-java-epic3-keyword-score.md) | ⏳ |
+| 3 | 开发 Admin | 列表真实 score | [→Admin](HANDOFFS/2026-07-06-tech-director-to-dev-admin-epic3-keyword-score.md) | ⏳ |
+| — | 总览 | Sprint 索引 | [EPIC-3 M2](HANDOFFS/2026-07-06-tech-director-epic3-m2-keyword-score-sprint.md) | — |
+
+**ADR-19**：五维加权 `keyword_score_v1`；无新 UI 线框
 
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
@@ -218,9 +232,10 @@
 | **C12** | EPIC-8 M1 报告中心 | `feat(core,admin): EPIC-8 M1 report center and weekly report` | ✅ `e127485` |
 | **C13** | EPIC-6 M2 Astro 发布 | `feat(landing,core,admin,deploy): EPIC-6 M2…` | ✅ `71c374d` |
 | **C14** | EPIC-9 M1 计费 | `feat(core,admin): EPIC-9 M1 subscription quota and overage guard` | ✅ `f23e539` |
-| **C15** | EPIC-11 M1 探针 | `feat(core,admin,extension): EPIC-11 M1 browser probe poll and node registry` | `test_probe_extension_e2e` |
+| **C15** | EPIC-11 M1 探针 | `feat(core,admin,extension): EPIC-11 M1 browser probe poll and node registry` | ✅ `3855266` |
+| **C16** | EPIC-3 M2 关键词评分 | `feat(ai,core,admin): EPIC-3 M2 keyword opportunity scoring FR-203` | `test_keywords_score` |
 
-**执行**：C1–C14 ✅ · push ✅ · **C15 ⏳** EPIC-11
+**执行**：C1–C15 ✅ · push ✅ · **C16 ⏳** EPIC-3 M2
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -295,6 +310,9 @@
 - **EPIC-7 M1 FR-601 Admin 线索页（2026-07-01）** ✅ `/leads` 侧栏 + 列表/筛选/脱敏 + 详情 drawer · `maskPii` · `pnpm build:prod` ✅
 - **EPIC-8 M1 FR-701/702 Admin 报告中心（2026-07-02）** ✅ `/reports` 侧栏 + 列表/筛选 + 周报 dialog + 预览 drawer + DOCX/PDF 下载 · `pnpm build:prod` ✅
 - **EPIC-9 M1 FR-804 billing Java（2026-07-02）** ✅ `GET /api/v1/settings/billing` · `QuotaService.checkAndConsume` · 6 拦截点（项目/诊断/关键词/内容/落地页/周报）· HTTP 402 `code=40201` · `tenant.excludes` 加 `subscription` · `test_billing_quota.py` ✅
+- **EPIC-11 M1 FR-112~114 probe Java（2026-07-05）** ✅ `ProbeController` register/poll/result/adapters + `GET /nodes` · `createRun` browser-extension 分叉 · `test_probe_extension_e2e.py` ✅
+- **EPIC-11 M1 FR-112~114 probe Extension（2026-07-05）** ✅ Plasmo MV3 · background poll 30s · perplexity content hook + mock · adapter parse · popup · `pnpm build` ✅
+- **EPIC-11 M1 FR-113 Admin 探针节点（2026-07-05）** ✅ `/settings/probe-nodes` 只读列表 · 在线/离线 · 空态安装引导 · `pnpm build:prod` ✅
 - **EPIC-9 M1 FR-804 Admin 计费页（2026-07-02）** ✅ `/settings/billing` 只读用量 · 6×`el-progress` · 超额/预警 alert · Axios 402 全局提示 · `pnpm build:prod` ✅
 - **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ **已提交** `f40cf8d` — `ai.embed` worker · asset#1 READY
 - **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` / `e22cd43` / `f96ba7e`（已 push）
@@ -386,18 +404,19 @@
 | B-09 | ~~EPIC-8 M1 Java report API 未实现~~ | 开发 Java | ✅ **已关闭** smoke docx 2885B |
 | B-10 | ~~EPIC-8 M1 C12 未 commit/push~~ | 开发 | ✅ **已关闭** C12 `e127485` |
 | B-11 | ~~EPIC-6 M2 C13 未 commit/push~~ | 开发 | ✅ **已关闭** `71c374d` |
+| B-12 | ~~EPIC-11 M1 C15 未 commit/push~~ | 开发 | ✅ **已关闭** `3855266` · smoke ✅ |
 
 ---
 
-## 下一步（跨角色 · 2026-07-05）
+## 下一步（跨角色 · 2026-07-06）
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P0** | **开发 Java** | [Probe API](HANDOFFS/2026-07-05-tech-director-to-dev-java-epic11-probe.md) | poll + browser-extension 分支 |
-| **P1** | **开发 Extension** | [Plasmo scaffold](HANDOFFS/2026-07-05-tech-director-to-dev-extension-epic11-plasmo.md) | 依赖 Java #2 |
-| **P1** | **开发 Admin** | [探针节点页](HANDOFFS/2026-07-05-tech-director-to-dev-admin-epic11-probe-nodes.md) | 依赖 Java API · 线框 ✅ |
-| **P2** | **开发** | EPIC-3 M2 FR-203 关键词评分 | [可选 Sprint](HANDOFFS/2026-06-29-tech-director-epic3-m2-keyword-score-sprint.md) 并行 |
-| **P3** | **开发** | diagnostic smoke 9/9 恢复 | `DIAGNOSE_MOCK_LLM=true` |
+| **P0** | **开发 Python** | [FR-203 score AI](HANDOFFS/2026-07-06-tech-director-to-dev-ai-epic3-keyword-score.md) | EPIC-3 M2 启动 |
+| **P0** | **开发 Java** | [score API](HANDOFFS/2026-07-06-tech-director-to-dev-java-epic3-keyword-score.md) | 依赖 Python |
+| **P1** | **开发 Admin** | [关键词 score UI](HANDOFFS/2026-07-06-tech-director-to-dev-admin-epic3-keyword-score.md) | 依赖 Java |
+| **P2** | **开发** | diagnostic smoke 9/9 恢复 | `DIAGNOSE_MOCK_LLM=true` |
+| **P2** | **开发 Extension** | 真 Perplexity hook 联调 | mock off · 非阻塞 C16 |
 
 ---
 
@@ -405,6 +424,11 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-06 | 开发 | C15 `3855266` EPIC-11 M1 探针全栈 commit+push · `test_probe_extension_e2e` ✅ · **EPIC-11 正式关闭** |
+| 2026-07-06 | 技术总监 | 定案 **EPIC-3 M2** FR-203 关键词评分 · ADR-19 · 4 条 HANDOFF · P0 C15 收尾 |
+| 2026-07-05 | 开发 Admin | EPIC-11 M1 `/settings/probe-nodes` 只读列表 · `build:prod` ✅ |
+| 2026-07-05 | 开发 Extension | EPIC-11 M1 Plasmo poll + perplexity adapter · `pnpm build` ✅ |
+| 2026-07-05 | 开发 Java | EPIC-11 M1 ProbeController + browser-extension 分叉 · `test_probe_extension_e2e` ✅ |
 | 2026-07-05 | 开发 | C14 `f23e539` EPIC-9 M1 计费 commit+push · `test_billing_quota` ✅ |
 | 2026-07-05 | UI 设计 | EPIC-11 M1 probe-nodes 线框 FR-113 · 在线/离线 · 空态安装引导 · HANDOFF |
 | 2026-07-05 | 技术总监 | 定案 **EPIC-11 M1** 浏览器探针 · ADR-18 · 6 条 HANDOFF（含 C14 前置） |
