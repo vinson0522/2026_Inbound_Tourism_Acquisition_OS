@@ -58,5 +58,5 @@
 ## 完成后
 
 - 各 HANDOFF Done + `MEMORY.md` EPIC-8 M1 ✅
-- **技术总监签核（2026-07-02）**：✅ **EPIC-8 正式关闭** C12 `e127485`
-- **下一 Sprint**：EPIC-6 M2 Astro 预览 或 EPIC-9 计费 MVP（技术总监定案）
+- **技术总监签核（2026-07-02）**：✅ **EPIC-8 M1 正式关闭** C12 `e127485`
+- **下一 Sprint**：**EPIC-8 M2** 月报+白标 → [Sprint 索引](2026-07-08-tech-director-epic8-m2-reports-sprint.md)

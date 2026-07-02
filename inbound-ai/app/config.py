@@ -101,6 +101,16 @@ class Settings(BaseSettings):
     )
     breakdown_worker_enabled: bool = False
 
+    followup_mock_llm: bool = True
+    followup_model: str = "openai/gpt-4o-mini"
+    followup_template_name: str = "lead_followup_v1"
+    followup_prompt_fallback: str = (
+        "You generate inbound tourism lead follow-up messages as JSON only. "
+        "Return suggestion_en and suggestion_zh for sales to send after a form or WhatsApp inquiry. "
+        "Set needs_human_review true. "
+        "Never guarantee specific prices, visa approval, or policy outcomes — defer to human confirmation."
+    )
+
     @property
     def has_embedding_key(self) -> bool:
         return bool(self.openai_api_key)

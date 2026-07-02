@@ -1,7 +1,7 @@
-# 线框：线索与转化 · 询盘线索列表（EPIC-7 M1 + M2）
+# 线框：线索与转化 · 询盘线索列表（EPIC-7 M1 + M2 + M3）
 
-> **PRD**：§8.8 线索与转化 · **FR-601** 表单线索 · **FR-605** 轻量 CRM（M2）  
-> **EPIC**：EPIC-7 M1 · ADR-20260701-14 · **M2** · ADR-20260707-20  
+> **PRD**：§8.8 线索与转化 · **FR-601** 表单线索 · **FR-605** 轻量 CRM（M2）· **FR-602/603**（M3）  
+> **EPIC**：EPIC-7 M1 · ADR-20260701-14 · **M2** · ADR-20260707-20 · **M3** · ADR-20260710-25  
 > **路由**：`/projects/:projectId/leads`（侧栏 `/leads` 重定向当前项目）  
 > **数据表**：`lead` · `lead_followup`（join `landing_page`、`keyword_opportunity`）
 
@@ -359,15 +359,6 @@ List 响应 join 字段：`landingPageTitle`, `landingPageSlug`, `keywordText`, 
 
 ---
 
-## 版本
-
-| 日期 | 作者 | 说明 |
-|------|------|------|
-| 2026-07-07 | UI 设计 | EPIC-7 M2 CRM 增量 · FR-605 · 状态/跟进/负责人 |
-| 2026-07-01 | UI 设计 | EPIC-7 M1 初版 · FR-601 · ADR-20260701-14 |
-
----
-
 ## M2 增量：轻量 CRM（FR-605 · EPIC-7 M2）
 
 > **ADR-20260707-20** · 在 M1 只读详情基础上，使销售可 **变更状态、记录跟进、指派负责人**。列表 PII 脱敏规则 **不变**。
@@ -542,7 +533,7 @@ NEW → FOLLOWING → QUOTED → WON
 |------|-----|
 | 关闭 | ✅ |
 | 变更状态 | **移除** — 合并至顶栏 CRM 区 select + 保存 |
-| AI 跟进建议 | disabled · FR-603 M3 |
+| AI 跟进建议 | ✅ **M3 启用** · 见 §M3 弹窗 |
 
 ---
 
@@ -620,4 +611,235 @@ NEW → FOLLOWING → QUOTED → WON
 | 五态状态机 + 锁定终态 | CSV 导出 |
 | followup CRUD（仅 CREATE+LIST） | 删除/编辑跟进 |
 | assignee 指派给我 / 成员下拉 | 公海池/抢单 |
-| el-timeline | FR-603 AI suggestion 展示 |
+| el-timeline | FR-603 AI suggestion 展示 → **M3 弹窗** |
+
+---
+
+## M3 增量 · WhatsApp 归因 + AI 跟进建议（FR-602 / FR-603）
+
+> **PRD**：FR-602 WhatsApp 点击追踪 · FR-603 跟进建议 · **ADR-20260710-25**  
+> **前置**：M2 CRM drawer（Tab CRM 跟进 | 线索信息）✅ · Landing `WhatsAppBar.astro` M3 beacon  
+> **关联**：[landing-page-publish.md](./landing-page-publish.md) §B.5 WhatsApp CTA M3
+
+**M3 范围（本页）**：
+- ✅ **线索信息 Tab** — 归因区增补 WhatsApp 点击次数 / 最近点击时间
+- ✅ **CRM Tab 底栏** — 启用「AI 跟进建议」弹窗（中英 Tab · 复制 · 填入跟进）
+- ✅ footnote — 落地页 WhatsApp CTA beacon 机制说明
+- ❌ FR-606 归因报表 · FR-607 广告 · 自动发 WhatsApp · FR-604 老客提醒 · CSV 导出
+
+**弱关联说明**（ADR-25）：WhatsApp 点击按 **project + landing_page_id** 聚合展示在与该落地页关联的线索详情中，M3 **不强绑** `lead_id`。
+
+---
+
+### M3 布局增量（ASCII）
+
+```
+线索信息 Tab — 来源归因区 (M3 增补):
+│ … 来源渠道 / 落地页 / 关键词 / UTM (M1 不变) …              │
+│ ── WhatsApp 点击 (FR-602) ──                                │
+│ 点击次数      12                                              │
+│ 最近点击      2026-07-10 09:45                                │
+│ ℹ 统计范围：与本线索相同落地页的 CTA 点击（非个人级追踪）。    │
+│ ── Beacon 说明 (el-alert type="info" size="small") ──         │
+│ 公网落地页 WhatsApp 按钮点击时上报 · 见 §M3 footnote          │
+
+CRM Tab 底栏 (M3):
+│ [关闭]  [AI 跟进建议] primary plain  ← 原 M2 disabled 启用     │
+
+AI 跟进建议 (el-dialog 560px · FR-603):
+┌─ AI 跟进建议 ──────────────────────────────────────────── [×] │
+│ [待人工确认 Tag warning]  价格/签证/政策类信息需人工核实      │
+│ [中文] [English]  el-tabs v-model="aiLang"                   │
+│ ┌─ Tab 中文 ──────────────────────────────────────────────┐ │
+│ │ [el-input type=textarea readonly :rows="8" suggestionZh] │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│ ┌─ Tab English ───────────────────────────────────────────┐ │
+│ │ [textarea readonly suggestionEn]                          │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│ ℹ 基于留言、关键词、落地页来源生成；不会自动发送 WhatsApp。     │
+│                              [关闭] [复制] [填入跟进内容] primary│
+└──────────────────────────────────────────────────────────────┘
+
+生成中:
+  按钮 loading「正在生成跟进话术…」
+  dialog 内 v-loading skeleton
+  成功打开弹窗 · 失败 ElMessage.error 保留可重试
+```
+
+---
+
+### WhatsApp 点击归因（FR-602 · 线索信息 Tab）
+
+**位置**：「来源归因」`el-descriptions` 区块 **末尾**新增子节「WhatsApp 点击」。
+
+| UI 标签 | API 字段 | 展示 |
+|---------|----------|------|
+| 点击次数 | `whatsappClickCount` | 整数 · `0` 时走空态 |
+| 最近点击 | `lastWhatsappClickAt` | `YYYY-MM-DD HH:mm` · 空 `—` |
+
+**空态**（`whatsappClickCount === 0`）：
+
+```
+暂无 WhatsApp 点击记录
+可能原因：落地页未配置 WhatsApp CTA，或尚无访客点击。
+```
+
+**有数据时** optional 小字：「较表单提交，WhatsApp 点击反映私域跳转意向（非一一对应）。」
+
+**数据源**（Java M3）：
+- `lead_channel_event` 表 · `event_type = whatsapp_click`
+- 聚合：`WHERE project_id = ? AND landing_page_id = lead.landing_page_id`
+- 详情 `GET .../leads/{leadId}` 返回预聚合字段
+
+**DDL 参考**（Java 增量）：
+
+| 列 | 说明 |
+|----|------|
+| `tenant_id` | 租户 |
+| `project_id` | 项目 |
+| `landing_page_id` | 落地页 |
+| `event_type` | `whatsapp_click` |
+| `utm_json` | UTM 快照 |
+| `device` | UA 摘要 |
+| `ip_hash` | 脱敏 IP |
+| `created_at` | 点击时间 |
+
+---
+
+### 落地页 WhatsApp Beacon Footnote（必须展示）
+
+在线索列表页底 **或** 线索信息 Tab 归因区固定 info alert（`:closable="false"`）：
+
+> **WhatsApp 点击如何统计？**  
+> 公网落地页 [WhatsAppBar.astro](./landing-page-publish.md) 在用户跳转 `wa.me` **之前**，通过 `navigator.sendBeacon`（或 `fetch` + `keepalive`）调用  
+> `POST /api/v1/public/lead-events`，body 示例：
+>
+> ```json
+> {
+>   "eventType": "whatsapp_click",
+>   "projectId": 1,
+>   "landingPageId": 42,
+>   "utm": { "source": "google", "medium": "cpc" },
+>   "device": "Mobile Safari"
+> }
+> ```
+>
+> - 无需登录 · 公网限流 · **上报失败不阻塞** WhatsApp 跳转  
+> - 事件写入 `lead_channel_event` · Admin 按落地页聚合展示  
+> - 完整 CTA 配置见 [landing-page-publish.md](./landing-page-publish.md) §B.5
+
+---
+
+### AI 跟进建议（FR-603 · CRM Tab）
+
+| 项 | 规范 |
+|----|------|
+| 触发 | 底栏「AI 跟进建议」· CRM Tab 内 sticky footer 亦可 |
+| 权限 | `tourgeo:lead:edit` · 只读角色 **隐藏**按钮 |
+| API | `POST /api/v1/projects/{projectId}/leads/{leadId}/ai-suggestion` |
+| 后端 | Java Feign → Python `POST /ai/followup/generate` |
+| Mock | `FOLLOWUP_MOCK_LLM=true`（ADR-25） |
+
+**响应示例**：
+
+```json
+{
+  "suggestionEn": "Hi Sarah, thank you for your interest in our Chongqing tour…",
+  "suggestionZh": "您好 Sarah，感谢您关注我们的 Chongqing 行程…",
+  "needsHumanReview": true
+}
+```
+
+| UI 元素 | 行为 |
+|---------|------|
+| `el-tabs` | **中文** / **English** · 默认中文 |
+| 正文 | `readonly textarea` · 8 行 · 可滚动 |
+| `needsHumanReview` | 弹窗顶 `el-tag warning`「待人工确认」+ 固定合规小字 |
+| **复制** | 复制**当前 Tab** 文案 · toast「已复制」 |
+| **填入跟进内容** | 将当前 Tab 文案写入 CRM 区「添加跟进」`content` textarea · **不自动 POST** · toast「已填入，请确认后提交」 |
+| 渠道（P2） | 填入时可提示是否将 channel 设为 `whatsapp` — M3 不自动改 |
+
+**生成失败**：502/500 · `ElMessage.error` · 可再次点击按钮重试。
+
+**终态线索**（WON/LOST）：按钮仍可用（复盘/归档话术）或 disabled — M3 **允许**生成，与 M2 状态无关。
+
+**合规**（延续 PRD）：
+- 弹窗内固定：「AI 生成话术仅供参考，发送前请核实价格、签证与政策信息。」
+- 不展示 RAG chunk 来源（M3 mock · P2 可加）
+
+---
+
+### M3 API 依赖（追加）
+
+| 方法 | 路径 | 用途 |
+|------|------|------|
+| GET | `/api/v1/projects/{projectId}/leads/{leadId}` | 增补 `whatsappClickCount`, `lastWhatsappClickAt` |
+| POST | `/api/v1/projects/{projectId}/leads/{leadId}/ai-suggestion` | 生成跟进话术 |
+| POST | `/api/v1/public/lead-events` | Landing beacon（Admin 不调用 · 文档 footnote） |
+
+M2 PATCH / followups API **不变**。
+
+---
+
+### M3 列表增量
+
+| 变更 | M3 |
+|------|-----|
+| 表格列 | **无新增列**（归因仅详情 · FR-606 报表 M4+） |
+| 筛选 | 无 WhatsApp 筛选 M3 |
+| 工具栏 | 不变 · 导出仍 disabled |
+
+**P2 可选列**：`whatsappClickCount` 窄列（同落地页聚合无列表级意义，暂不推荐）。
+
+---
+
+### M3 权限
+
+| 权限 | 能力 |
+|------|------|
+| `tourgeo:lead:list` | 查看 WhatsApp 归因数字 |
+| `tourgeo:lead:edit` | AI 跟进建议 · 填入跟进 |
+
+---
+
+### M3 空 / 错误
+
+| 场景 | UI |
+|------|-----|
+| 无 landing_page_id | WhatsApp 区显示「— · 无线索落地页，无法归因」 |
+| AI 额度/AI 不可用 | error「AI 服务暂不可用，请稍后重试」 |
+| 空留言线索 | 仍生成通用模板话术（后端 mock） |
+
+---
+
+### M3 实现参考
+
+| 项 | 建议 |
+|----|------|
+| 组件 | `LeadAiSuggestionDialog.vue` |
+| API | `lead.ts` — `generateLeadAiSuggestion(projectId, leadId)` |
+| 常量 | `AI_SUGGESTION_DISCLAIMER` |
+| Landing | 见 [HANDOFF Java public API](../agent-team/HANDOFFS/2026-07-10-tech-director-to-dev-java-epic7-leads-m3.md) |
+
+**交叉引用**：Landing HANDOFF `2026-07-10-tech-director-to-dev-landing-epic7-whatsapp.md`
+
+---
+
+### M3 范围边界
+
+| 包含 | 不包含 |
+|------|--------|
+| WhatsApp 点击次数/最近时间 | FR-606 渠道报表 |
+| AI 中英话术弹窗 + 填入跟进 | 自动发送 WhatsApp |
+| Beacon footnote 文档 | 短链 / 广告像素 FR-607 |
+| `needs_human_review` 提示 | followup 自动写入库 |
+
+---
+
+## 版本（汇总）
+
+| 日期 | 作者 | 说明 |
+|------|------|------|
+| 2026-07-10 | UI 设计 | **§M3** WhatsApp 归因 FR-602 · AI 跟进弹窗 FR-603 · ADR-20260710-25 |
+| 2026-07-07 | UI 设计 | §M2 CRM 增量 · FR-605 · 状态/跟进/负责人 |
+| 2026-07-01 | UI 设计 | EPIC-7 M1 初版 · FR-601 · ADR-20260701-14 |

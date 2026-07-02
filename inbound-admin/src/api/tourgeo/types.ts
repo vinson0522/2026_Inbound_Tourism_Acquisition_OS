@@ -586,6 +586,15 @@ export interface LeadDetailVo extends LeadVo {
   utm?: Record<string, string>;
   device?: string;
   followups?: LeadFollowupVo[];
+  /** FR-602 WhatsApp clicks on same landing page (weak association) */
+  whatsappClickCount?: number;
+  lastWhatsappClickAt?: string;
+}
+
+export interface LeadAiSuggestionVo {
+  suggestionEn?: string;
+  suggestionZh?: string;
+  needsHumanReview?: boolean;
 }
 
 export interface LeadFollowupVo {

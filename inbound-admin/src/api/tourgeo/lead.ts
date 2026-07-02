@@ -1,5 +1,6 @@
 import request from '@/utils/request';
 import type {
+  LeadAiSuggestionVo,
   LeadDetailVo,
   LeadFollowupCreateForm,
   LeadFollowupVo,
@@ -68,4 +69,14 @@ export async function createFollowup(
     data
   });
   return res.data as LeadFollowupVo;
+}
+
+/** FR-603 AI 跟进话术建议 */
+export async function generateLeadAiSuggestion(projectId: number, leadId: number): Promise<LeadAiSuggestionVo> {
+  const res = await request({
+    url: `${BASE}/projects/${projectId}/leads/${leadId}/ai-suggestion`,
+    method: 'post',
+    data: {}
+  });
+  return res.data as LeadAiSuggestionVo;
 }

@@ -691,6 +691,21 @@ CREATE INDEX idx_lead_followup_lead ON lead_followup(lead_id) WHERE deleted_at I
 CREATE TRIGGER trg_lead_followup_updated_at
     BEFORE UPDATE ON lead_followup FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+-- EPIC-7 M3 FR-602: WhatsApp / channel click beacon (weak link via landing_page_id)
+CREATE TABLE lead_channel_event (
+    id              BIGSERIAL PRIMARY KEY,
+    tenant_id       BIGINT NOT NULL REFERENCES tenant(id),
+    project_id      BIGINT NOT NULL REFERENCES customer_project(id),
+    landing_page_id BIGINT REFERENCES landing_page(id),
+    event_type      VARCHAR(64) NOT NULL,
+    utm_json        JSONB NOT NULL DEFAULT '{}',
+    device          VARCHAR(200),
+    ip_hash         VARCHAR(64),
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_lead_channel_event_page ON lead_channel_event(project_id, landing_page_id, event_type);
+
 -- ---------------------------------------------------------------------------
 -- Domain 6: Reports
 -- ---------------------------------------------------------------------------

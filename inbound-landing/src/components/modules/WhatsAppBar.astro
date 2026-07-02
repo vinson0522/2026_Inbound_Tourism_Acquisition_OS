@@ -4,17 +4,35 @@ import { pickCtaLabel } from '../../lib/content';
 interface Props {
   content: Record<string, unknown>;
   whatsappLink?: string | null;
+  projectId: number;
+  landingPageId: number;
+  apiBase: string;
 }
 
-const { content, whatsappLink } = Astro.props;
+const { content, whatsappLink, projectId, landingPageId, apiBase } = Astro.props;
 const label = pickCtaLabel(content, 'Chat on WhatsApp');
 const url = whatsappLink ?? String(content.url ?? content.whatsapp_link ?? '#');
 ---
 
 {url && url !== '#' && (
   <div class="lp-wa-sticky">
-    <a class="lp-btn lp-btn--whatsapp" href={url} target="_blank" rel="noopener noreferrer">
+    <a
+      class="lp-btn lp-btn--whatsapp"
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-wa-beacon="true"
+      data-project-id={projectId}
+      data-landing-page-id={landingPageId}
+      data-api-base={apiBase}
+    >
       {label}
     </a>
   </div>
 )}
+
+<script>
+  import { initWhatsAppBeacon } from '../../scripts/whatsapp-beacon';
+
+  initWhatsAppBeacon();
+</script>

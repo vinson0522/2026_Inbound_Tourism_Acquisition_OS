@@ -148,6 +148,7 @@ tenant:
     - landing_page
     - lead
     - lead_followup
+    - lead_channel_event
     - diagnostic_run
     - diagnostic_result
     - probe_task

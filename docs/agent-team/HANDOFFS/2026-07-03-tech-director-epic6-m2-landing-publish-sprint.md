@@ -56,6 +56,5 @@ POST /api/v1/projects/{projectId}/landing-pages/{pageId}/publish
 
 ## 完成后
 
-- 各 HANDOFF Done + `MEMORY.md` EPIC-6 M2 ✅
-- **技术总监签核（2026-07-03）**：功能 ✅ · 五棒齐 · **C13 commit ⏳**
-- **闭环验收**：发布 → Astro 预览 → 表单 → Admin `/leads`
+- **技术总监签核（2026-07-03）**：✅ **EPIC-6 M2 正式关闭** C13 `71c374d`
+- **下一 Sprint**：EPIC-9 计费 MVP 或 EPIC-3 M2 关键词评分

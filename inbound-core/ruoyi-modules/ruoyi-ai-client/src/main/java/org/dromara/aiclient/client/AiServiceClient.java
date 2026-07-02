@@ -11,6 +11,8 @@ import org.dromara.aiclient.model.AiApiResponse;
 import org.dromara.aiclient.model.AiHealthData;
 import org.dromara.aiclient.model.ContentGenerateData;
 import org.dromara.aiclient.model.ContentGenerateRequest;
+import org.dromara.aiclient.model.FollowupGenerateData;
+import org.dromara.aiclient.model.FollowupGenerateRequest;
 import org.dromara.aiclient.model.LandingGenerateData;
 import org.dromara.aiclient.model.LandingGenerateRequest;
 import org.dromara.aiclient.model.KeywordGenerateData;
@@ -225,6 +227,39 @@ public class AiServiceClient {
             );
         } catch (JsonProcessingException ex) {
             throw new IllegalStateException("Failed to parse content generate response", ex);
+        }
+    }
+
+    /**
+     * POST /ai/followup/generate — FR-603 lead follow-up suggestion.
+     */
+    public AiApiResponse<FollowupGenerateData> followupGenerate(FollowupGenerateRequest request) {
+        String url = normalizeBaseUrl() + "/ai/followup/generate";
+        String jsonBody;
+        try {
+            jsonBody = objectMapper.writeValueAsString(request);
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Failed to serialize followup generate request", ex);
+        }
+        int timeoutMs = Math.max(Math.toIntExact(properties.getReadTimeoutMs()), 60_000);
+        HttpResponse response = HttpRequest.post(url)
+            .header("Authorization", "Bearer " + properties.getInternalToken())
+            .header("Accept", MediaType.APPLICATION_JSON_VALUE)
+            .body(jsonBody, ContentType.JSON.getValue())
+            .timeout(timeoutMs)
+            .execute();
+        if (!response.isOk()) {
+            throw new IllegalStateException(
+                "Followup generate failed: HTTP " + response.getStatus() + " " + response.body()
+            );
+        }
+        try {
+            return objectMapper.readValue(
+                response.body(),
+                objectMapper.getTypeFactory().constructParametricType(AiApiResponse.class, FollowupGenerateData.class)
+            );
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Failed to parse followup generate response", ex);
         }
     }
 

@@ -263,6 +263,16 @@
   - Mock：`BREAKDOWN_MOCK_LLM=true` 默认本地可测
 - **影响**：[EPIC-5 M1 Sprint](HANDOFFS/2026-07-09-tech-director-epic5-m1-viral-sprint.md)
 
+### ADR-20260710-25 | EPIC-7 M3 仅 FR-602/603 WhatsApp 点击 + AI 跟进话术
+- **状态**：已采纳
+- **决策者**：技术总监（完整版路线图 #6）
+- **背景**：M2 CRM 状态/跟进已闭环；落地页 WhatsApp CTA 无点击归因；销售手动写跟进效率低；PRD FR-602/603
+- **决策**：
+  - **M3 做**：`lead_channel_event` + public beacon · Landing WhatsAppBar 上报 · Admin AI 建议弹窗 · `/ai/followup/generate` mock
+  - **M3 不做**：FR-604 老客提醒 · FR-606 归因报表 · FR-607 广告 · 自动发 WhatsApp · CSV 导出
+  - 点击与表单线索 M3 弱关联：按 landing_page_id 聚合展示，不强绑 lead_id
+- **影响**：[EPIC-7 M3 Sprint](HANDOFFS/2026-07-10-tech-director-epic7-m3-leads-sprint.md)
+
 ---
 
 ## 待讨论

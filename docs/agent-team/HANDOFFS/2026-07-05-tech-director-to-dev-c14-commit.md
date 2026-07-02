@@ -13,10 +13,10 @@ EPIC-9 M1 三条开发线（Java / Admin / UI）已完成，`test_billing_quota.
 提交并 push **C14**，再启动 EPIC-11 开发。
 
 **验收标准**：
-- [ ] `git add` 含 Java billing 包、Admin `/settings/billing`、`deploy/scripts/test_billing_quota.py`、EPIC-9 HANDOFF + ADR-17 + MEMORY 更新
-- [ ] message：`feat(core,admin): EPIC-9 M1 subscription quota and overage guard`
-- [ ] smoke：`python deploy/scripts/test_billing_quota.py` ✅
-- [ ] `git push origin main`
+- [x] `git add` 含 Java billing 包、Admin `/settings/billing`、`deploy/scripts/test_billing_quota.py`、EPIC-9 HANDOFF + ADR-17 + MEMORY 更新
+- [x] message：`feat(core,admin): EPIC-9 M1 subscription quota and overage guard`
+- [x] smoke：`python deploy/scripts/test_billing_quota.py` ✅
+- [x] `git push origin main`
 
 ## Prompt
 

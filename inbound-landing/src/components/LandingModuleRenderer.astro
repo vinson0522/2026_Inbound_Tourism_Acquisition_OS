@@ -56,5 +56,13 @@ const whatsappLink =
   )
 }
 {
-  key === 'whatsapp_cta' && <WhatsAppBar content={content} whatsappLink={whatsappLink} />
+  key === 'whatsapp_cta' && (
+    <WhatsAppBar
+      content={content}
+      whatsappLink={whatsappLink}
+      projectId={page.projectId}
+      landingPageId={page.id}
+      apiBase={apiBase}
+    />
+  )
 }

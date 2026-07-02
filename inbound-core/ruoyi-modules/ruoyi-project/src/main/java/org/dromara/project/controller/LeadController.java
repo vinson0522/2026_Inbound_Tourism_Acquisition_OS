@@ -13,6 +13,7 @@ import org.dromara.common.web.core.BaseController;
 import org.dromara.project.domain.bo.LeadFollowupCreateBo;
 import org.dromara.project.domain.bo.LeadQueryBo;
 import org.dromara.project.domain.bo.LeadUpdateBo;
+import org.dromara.project.domain.vo.LeadAiSuggestionVo;
 import org.dromara.project.domain.vo.LeadDetailVo;
 import org.dromara.project.domain.vo.LeadFollowupVo;
 import org.dromara.project.domain.vo.LeadVo;
@@ -92,5 +93,17 @@ public class LeadController extends BaseController {
         @Validated @RequestBody LeadFollowupCreateBo bo
     ) {
         return R.ok(leadService.createFollowup(projectId, leadId, bo));
+    }
+
+    /** FR-603 AI 跟进话术建议 */
+    @SaCheckLogin
+    @Log(title = "线索 AI 建议", businessType = BusinessType.OTHER)
+    @RepeatSubmit
+    @PostMapping("/{leadId}/ai-suggestion")
+    public R<LeadAiSuggestionVo> aiSuggestion(
+        @NotNull @PathVariable Long projectId,
+        @NotNull @PathVariable Long leadId
+    ) {
+        return R.ok(leadService.generateAiSuggestion(projectId, leadId));
     }
 }

@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import get_settings
 from app.db import close_pool
-from app.routers import breakdown, content, diagnose, embed, health, keywords, landing, llm
+from app.routers import breakdown, content, diagnose, embed, followup, health, keywords, landing, llm
 from app.services.llm_gateway import ProbeConfigError, PROBE_CONFIG_ERROR
 from app.workers.breakdown_worker import start_worker as start_breakdown_worker
 from app.workers.breakdown_worker import stop_worker as stop_breakdown_worker
@@ -75,6 +75,7 @@ def create_app() -> FastAPI:
     app.include_router(content.router)
     app.include_router(landing.router)
     app.include_router(breakdown.router)
+    app.include_router(followup.router)
 
     return app
 

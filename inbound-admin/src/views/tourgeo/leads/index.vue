@@ -325,6 +325,36 @@
                 </el-descriptions-item>
               </el-descriptions>
 
+              <h4 class="section-title">WhatsApp 点击</h4>
+              <template v-if="detail.landingPageId">
+                <el-descriptions v-if="whatsappClickCount > 0" :column="1" border size="small">
+                  <el-descriptions-item label="点击次数">{{ whatsappClickCount }}</el-descriptions-item>
+                  <el-descriptions-item label="最近点击">{{ formatTime(detail.lastWhatsappClickAt) }}</el-descriptions-item>
+                </el-descriptions>
+                <el-empty v-else description="暂无 WhatsApp 点击记录" :image-size="48">
+                  <p class="whatsapp-empty-hint">可能原因：落地页未配置 WhatsApp CTA，或尚无访客点击。</p>
+                </el-empty>
+                <p v-if="whatsappClickCount > 0" class="whatsapp-hint">
+                  统计范围：与本线索相同落地页的 CTA 点击（非个人级追踪）。较表单提交，WhatsApp 点击反映私域跳转意向（非一一对应）。
+                </p>
+              </template>
+              <p v-else class="whatsapp-hint">— 无线索落地页，无法归因</p>
+
+              <el-alert
+                type="info"
+                :closable="false"
+                show-icon
+                class="beacon-alert"
+                title="WhatsApp 点击如何统计？"
+              >
+                <p class="beacon-alert__text">
+                  公网落地页 WhatsApp 按钮在用户跳转 wa.me 之前，通过
+                  <code>navigator.sendBeacon</code>（或 <code>fetch</code> + <code>keepalive</code>）调用
+                  <code>POST /api/v1/public/lead-events</code>。无需登录 · 公网限流 · 上报失败不阻塞跳转。
+                  事件写入 <code>lead_channel_event</code>，Admin 按落地页聚合展示。
+                </p>
+              </el-alert>
+
               <h4 class="section-title">UTM</h4>
               <template v-if="hasUtm">
                 <el-descriptions :column="2" border size="small" class="utm-grid">
@@ -347,17 +377,68 @@
 
       <template #footer>
         <el-button @click="detailVisible = false">关闭</el-button>
-        <el-tooltip content="FR-603 M3" placement="top">
-          <el-button disabled>AI 跟进建议</el-button>
-        </el-tooltip>
+        <el-button
+          v-hasPermi="['tourgeo:lead:edit']"
+          type="primary"
+          plain
+          :loading="aiLoading"
+          @click="openAiSuggestion"
+        >
+          {{ aiLoading ? '正在生成跟进话术…' : 'AI 跟进建议' }}
+        </el-button>
       </template>
     </el-drawer>
+
+    <el-dialog
+      v-model="aiDialogVisible"
+      title="AI 跟进建议"
+      width="560px"
+      destroy-on-close
+      class="ai-suggestion-dialog"
+      @closed="resetAiDialog"
+    >
+      <div v-loading="aiLoading">
+        <template v-if="aiSuggestion">
+          <div class="ai-dialog-head">
+            <el-tag v-if="aiSuggestion.needsHumanReview !== false" type="warning">待人工确认</el-tag>
+            <span class="ai-disclaimer">价格/签证/政策类信息需人工核实</span>
+          </div>
+          <el-tabs v-model="aiLang" class="ai-lang-tabs">
+            <el-tab-pane label="中文" name="zh">
+              <el-input
+                :model-value="aiSuggestion.suggestionZh || ''"
+                type="textarea"
+                :rows="8"
+                readonly
+                placeholder="暂无中文建议"
+              />
+            </el-tab-pane>
+            <el-tab-pane label="English" name="en">
+              <el-input
+                :model-value="aiSuggestion.suggestionEn || ''"
+                type="textarea"
+                :rows="8"
+                readonly
+                placeholder="No English suggestion"
+              />
+            </el-tab-pane>
+          </el-tabs>
+          <p class="ai-footnote">基于留言、关键词、落地页来源生成；不会自动发送 WhatsApp。</p>
+          <p class="ai-compliance">AI 生成话术仅供参考，发送前请核实价格、签证与政策信息。</p>
+        </template>
+      </div>
+      <template #footer>
+        <el-button @click="aiDialogVisible = false">关闭</el-button>
+        <el-button :disabled="!aiSuggestion || aiLoading" @click="copyAiSuggestion">复制</el-button>
+        <el-button type="primary" :disabled="!aiSuggestion || aiLoading" @click="fillFollowupFromAi">填入跟进内容</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="LeadsList" lang="ts">
-import { createFollowup, getLead, listLeads, patchLead } from '@/api/tourgeo/lead';
-import type { LeadDetailVo, LeadStatus, LeadVo } from '@/api/tourgeo/types';
+import { createFollowup, generateLeadAiSuggestion, getLead, listLeads, patchLead } from '@/api/tourgeo/lead';
+import type { LeadAiSuggestionVo, LeadDetailVo, LeadStatus, LeadVo } from '@/api/tourgeo/types';
 import ProjectSelector from '@/components/tourgeo/ProjectSelector.vue';
 import {
   getAllowedNextStatuses,
@@ -396,6 +477,11 @@ const followupForm = reactive({
   content: '',
   channel: ''
 });
+
+const aiLoading = ref(false);
+const aiDialogVisible = ref(false);
+const aiSuggestion = ref<LeadAiSuggestionVo | null>(null);
+const aiLang = ref<'zh' | 'en'>('zh');
 
 const queryParams = reactive({
   pageNum: 1,
@@ -481,6 +567,15 @@ const utmItems = computed(() => {
 });
 
 const hasUtm = computed(() => utmItems.value.length > 0);
+
+const whatsappClickCount = computed(() => detail.value?.whatsappClickCount ?? 0);
+
+const currentAiText = computed(() => {
+  if (!aiSuggestion.value) return '';
+  return aiLang.value === 'zh'
+    ? aiSuggestion.value.suggestionZh ?? ''
+    : aiSuggestion.value.suggestionEn ?? '';
+});
 
 const isTerminal = computed(() => (detail.value ? isTerminalLeadStatus(detail.value.status) : false));
 
@@ -736,6 +831,50 @@ function resetDetail() {
   editStatus.value = 'NEW';
   followupForm.content = '';
   followupForm.channel = '';
+  resetAiDialog();
+}
+
+function resetAiDialog() {
+  aiSuggestion.value = null;
+  aiLang.value = 'zh';
+  aiLoading.value = false;
+}
+
+async function openAiSuggestion() {
+  const pid = projectId.value;
+  const leadId = activeLeadId.value;
+  if (!pid || !leadId) return;
+  aiLoading.value = true;
+  aiSuggestion.value = null;
+  try {
+    aiSuggestion.value = await generateLeadAiSuggestion(pid, leadId);
+    aiDialogVisible.value = true;
+  } catch {
+    ElMessage.error('AI 跟进建议生成失败，请稍后重试');
+  } finally {
+    aiLoading.value = false;
+  }
+}
+
+async function copyAiSuggestion() {
+  const text = currentAiText.value.trim();
+  if (!text) {
+    ElMessage.warning('当前语言暂无内容可复制');
+    return;
+  }
+  await copyText(text, '话术');
+}
+
+function fillFollowupFromAi() {
+  const text = currentAiText.value.trim();
+  if (!text) {
+    ElMessage.warning('当前语言暂无内容可填入');
+    return;
+  }
+  followupForm.content = text;
+  activeTab.value = 'crm';
+  aiDialogVisible.value = false;
+  ElMessage.success('已填入，请确认后提交');
 }
 
 watch(
@@ -960,6 +1099,60 @@ onMounted(async () => {
     -webkit-box-orient: vertical;
     overflow: hidden;
     word-break: break-all;
+  }
+
+  .whatsapp-empty-hint,
+  .whatsapp-hint {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--tg-color-text-secondary, #6b7280);
+    line-height: 1.5;
+  }
+
+  .beacon-alert {
+    margin-top: 12px;
+
+    &__text {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--tg-color-text-regular, #4b5563);
+    }
+
+    code {
+      font-size: 11px;
+    }
+  }
+
+  .ai-dialog-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .ai-disclaimer {
+    font-size: 12px;
+    color: var(--tg-color-text-secondary, #6b7280);
+  }
+
+  .ai-lang-tabs {
+    :deep(.el-tabs__header) {
+      margin-bottom: 8px;
+    }
+  }
+
+  .ai-footnote,
+  .ai-compliance {
+    margin: 12px 0 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--tg-color-text-secondary, #6b7280);
+  }
+
+  .ai-compliance {
+    color: var(--el-color-warning-dark-2, #b88230);
   }
 
   @media (max-width: 1199px) {

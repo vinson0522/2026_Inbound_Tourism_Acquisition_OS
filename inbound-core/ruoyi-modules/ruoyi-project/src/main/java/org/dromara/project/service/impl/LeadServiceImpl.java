@@ -14,26 +14,40 @@ import org.dromara.project.domain.CustomerProject;
 import org.dromara.project.domain.KeywordOpportunity;
 import org.dromara.project.domain.LandingPage;
 import org.dromara.project.domain.Lead;
+import org.dromara.project.domain.LeadChannelEvent;
 import org.dromara.project.domain.LeadFollowup;
 import org.dromara.project.domain.bo.LeadFollowupCreateBo;
 import org.dromara.project.domain.bo.LeadQueryBo;
 import org.dromara.project.domain.bo.LeadUpdateBo;
+import org.dromara.project.domain.bo.PublicLeadEventBo;
 import org.dromara.project.domain.bo.PublicLeadSubmitBo;
+import org.dromara.project.domain.vo.LeadAiSuggestionVo;
 import org.dromara.project.domain.vo.LeadDetailVo;
 import org.dromara.project.domain.vo.LeadFollowupVo;
 import org.dromara.project.domain.vo.LeadVo;
+import org.dromara.project.domain.vo.PublicLeadEventVo;
 import org.dromara.project.domain.vo.PublicLeadSubmitVo;
+import org.dromara.project.domain.vo.WhatsappClickStatsVo;
 import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.mapper.KeywordOpportunityMapper;
 import org.dromara.project.mapper.LandingPageMapper;
+import org.dromara.project.mapper.LeadChannelEventMapper;
 import org.dromara.project.mapper.LeadFollowupMapper;
 import org.dromara.project.mapper.LeadMapper;
 import org.dromara.project.service.ILeadService;
 import org.dromara.project.support.BusinessTenantHelper;
 import org.dromara.project.support.LeadStatusTransition;
 import org.dromara.project.support.TurnstileValidator;
+import org.dromara.aiclient.client.AiServiceClient;
+import org.dromara.aiclient.model.AiApiResponse;
+import org.dromara.aiclient.model.FollowupGenerateData;
+import org.dromara.aiclient.model.FollowupGenerateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import cn.hutool.crypto.digest.DigestUtil;
+import org.dromara.common.core.utils.ServletUtils;
+import org.slf4j.MDC;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -42,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -49,12 +64,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LeadServiceImpl implements ILeadService {
 
+    private static final String EVENT_WHATSAPP_CLICK = "whatsapp_click";
+
     private final LeadMapper leadMapper;
     private final LeadFollowupMapper leadFollowupMapper;
+    private final LeadChannelEventMapper leadChannelEventMapper;
     private final LandingPageMapper landingPageMapper;
     private final KeywordOpportunityMapper keywordOpportunityMapper;
     private final CustomerProjectMapper customerProjectMapper;
     private final TurnstileValidator turnstileValidator;
+    private final AiServiceClient aiServiceClient;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -98,6 +117,103 @@ public class LeadServiceImpl implements ILeadService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public PublicLeadEventVo recordPublicEvent(PublicLeadEventBo bo) {
+        String eventType = StringUtils.trim(bo.getEventType());
+        if (!EVENT_WHATSAPP_CLICK.equalsIgnoreCase(eventType)) {
+            throw new ServiceException("不支持的事件类型: " + eventType);
+        }
+
+        CustomerProject project = customerProjectMapper.selectOne(
+            Wrappers.lambdaQuery(CustomerProject.class)
+                .eq(CustomerProject::getId, bo.getProjectId())
+                .isNull(CustomerProject::getDeletedAt)
+        );
+        if (project == null) {
+            throw new ServiceException("项目不存在", 404);
+        }
+
+        Long landingPageId = bo.getLandingPageId();
+        if (landingPageId != null) {
+            LandingPage page = landingPageMapper.selectOne(
+                Wrappers.lambdaQuery(LandingPage.class)
+                    .eq(LandingPage::getId, landingPageId)
+                    .isNull(LandingPage::getDeletedAt)
+            );
+            if (page == null) {
+                throw new ServiceException("落地页不存在", 404);
+            }
+            if (!Objects.equals(page.getProjectId(), project.getId())) {
+                throw new ServiceException("落地页与项目不匹配");
+            }
+        }
+
+        String clientIp = StringUtils.blankToDefault(ServletUtils.getClientIP(), "unknown");
+        OffsetDateTime now = OffsetDateTime.now();
+        LeadChannelEvent entity = new LeadChannelEvent();
+        entity.setTenantId(project.getTenantId());
+        entity.setProjectId(project.getId());
+        entity.setLandingPageId(landingPageId);
+        entity.setEventType(EVENT_WHATSAPP_CLICK);
+        entity.setUtmJson(bo.getUtm() != null ? bo.getUtm() : new HashMap<>());
+        entity.setDevice(StringUtils.trim(bo.getDevice()));
+        entity.setIpHash(DigestUtil.sha256Hex(clientIp));
+        entity.setCreatedAt(now);
+        leadChannelEventMapper.insert(entity);
+        return new PublicLeadEventVo(entity.getId());
+    }
+
+    @Override
+    public LeadAiSuggestionVo generateAiSuggestion(Long projectId, Long leadId) {
+        Lead lead = getOwnedLeadOrThrow(projectId, leadId);
+        Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+
+        String keywordText = null;
+        if (lead.getKeywordId() != null) {
+            KeywordOpportunity keyword = keywordOpportunityMapper.selectById(lead.getKeywordId());
+            if (keyword != null) {
+                keywordText = StringUtils.blankToDefault(keyword.getKeywordEn(), keyword.getKeyword());
+            }
+        }
+
+        FollowupGenerateRequest aiReq = new FollowupGenerateRequest();
+        aiReq.setTenantId(tenantId);
+        aiReq.setProjectId(projectId);
+        aiReq.setLeadId(leadId);
+        aiReq.setName(lead.getName());
+        aiReq.setMessage(lead.getMessage());
+        aiReq.setBudget(lead.getBudget());
+        aiReq.setTravelDate(lead.getTravelDate());
+        aiReq.setSource(lead.getSource());
+        aiReq.setKeywordText(keywordText);
+        aiReq.setTraceId(StringUtils.blankToDefault(MDC.get("traceId"), UUID.randomUUID().toString()));
+
+        AiApiResponse<FollowupGenerateData> aiResp;
+        try {
+            aiResp = aiServiceClient.followupGenerate(aiReq);
+        } catch (IllegalStateException ex) {
+            throw new ServiceException("AI 跟进建议生成失败: " + ex.getMessage());
+        }
+        if (aiResp == null || aiResp.getCode() == null || aiResp.getCode() != 0 || aiResp.getData() == null) {
+            String msg = aiResp != null ? aiResp.getMessage() : "empty response";
+            throw new ServiceException("AI 跟进建议生成失败: " + msg);
+        }
+
+        FollowupGenerateData data = aiResp.getData();
+        if (StringUtils.isBlank(data.getSuggestionEn()) && StringUtils.isBlank(data.getSuggestionZh())) {
+            throw new ServiceException("AI 返回跟进建议为空");
+        }
+
+        LeadAiSuggestionVo vo = new LeadAiSuggestionVo();
+        vo.setSuggestionEn(data.getSuggestionEn());
+        vo.setSuggestionZh(data.getSuggestionZh());
+        vo.setNeedsHumanReview(
+            Boolean.TRUE.equals(data.getNeedsHumanReview()) || data.getNeedsHumanReview() == null
+        );
+        return vo;
+    }
+
+    @Override
     public TableDataInfo<LeadVo> queryPageList(Long projectId, LeadQueryBo bo, PageQuery pageQuery) {
         assertProjectOwned(projectId);
         LambdaQueryWrapper<Lead> lqw = Wrappers.lambdaQuery(Lead.class)
@@ -130,6 +246,7 @@ public class LeadServiceImpl implements ILeadService {
         detail.setAssigneeId(lead.getAssigneeId());
         enrichAssigneeName(detail);
         enrichDetail(detail, lead);
+        enrichWhatsappStats(detail, lead);
         detail.setFollowups(listFollowups(projectId, leadId));
         return detail;
     }
@@ -221,6 +338,23 @@ public class LeadServiceImpl implements ILeadService {
                 detail.setKeywordMarket(keyword.getMarket());
             }
         }
+    }
+
+    private void enrichWhatsappStats(LeadDetailVo detail, Lead lead) {
+        if (lead.getLandingPageId() == null) {
+            detail.setWhatsappClickCount(0);
+            return;
+        }
+        WhatsappClickStatsVo stats = leadChannelEventMapper.selectWhatsappClickStats(
+            lead.getProjectId(),
+            lead.getLandingPageId()
+        );
+        if (stats == null || stats.getClickCount() == null || stats.getClickCount() <= 0) {
+            detail.setWhatsappClickCount(0);
+            return;
+        }
+        detail.setWhatsappClickCount(Math.toIntExact(stats.getClickCount()));
+        detail.setLastWhatsappClickAt(stats.getLastClickAt());
     }
 
     private void enrichListRows(List<LeadVo> rows) {

@@ -56,4 +56,4 @@ NEW → FOLLOWING → QUOTED → WON
 
 - smoke：`deploy/scripts/test_leads_crm.py`
 - commit **C17**：`feat(core,admin): EPIC-7 M2 light CRM lead status and followups`
-- 下一 Sprint：**EPIC-8 M2** 月报 + 白标（见 MEMORY 完整版路线图）
+- 下一 Sprint：**EPIC-8 M2** 月报+白标 → [Sprint 索引](2026-07-08-tech-director-epic8-m2-reports-sprint.md)

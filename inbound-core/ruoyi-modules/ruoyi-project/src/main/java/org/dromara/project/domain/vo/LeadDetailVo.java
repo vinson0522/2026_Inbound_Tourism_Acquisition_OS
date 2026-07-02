@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -24,4 +25,9 @@ public class LeadDetailVo extends LeadVo {
     private String device;
 
     private List<LeadFollowupVo> followups;
+
+    /** FR-602: WhatsApp clicks on same landing page (weak association) */
+    private Integer whatsappClickCount;
+
+    private OffsetDateTime lastWhatsappClickAt;
 }
