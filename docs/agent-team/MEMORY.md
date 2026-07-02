@@ -621,7 +621,7 @@
 | 日期 | 角色 | 摘要 |
 |------|------|------|
 | 2026-07-11 | UI 设计 | Sprint #3 `marketing-portal-home` Hero/价值/能力/CTA/页脚 · 替换 index 占位 · UI→Landing HANDOFF ✅ |
-| 2026-07-11 | 开发 Java | C25 FR-807 tenant mapping commit+push · B-24 关闭 |
+| 2026-07-11 | 开发 Java | C25 `c78a157` FR-807 commit+push · B-24 关闭 |
 | 2026-07-11 | 技术总监 | 派发 **Sprint #3** 六路并行（C25/门户/趋势/文档/tenant smoke）· 无三方依赖 · B-24 打开 |
 | 2026-07-11 | 开发 Java | FR-807 租户映射 + 跨 tenant 403 · `*Tenant*` tests · `test_tenant_isolation.py` · smoke 9/9 |
 | 2026-07-11 | 技术总监 | **维护轨 #2 重排** · Perplexity live/Gemini 挂起 B-23 · **FR-807 P0** · 开发窗口勿卡 live |
