@@ -20,10 +20,14 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.diagnostic.domain.DiagnosticResult;
 import org.dromara.diagnostic.domain.DiagnosticRun;
+import org.dromara.diagnostic.domain.ProbeNode;
 import org.dromara.diagnostic.domain.ProbeTask;
 import org.dromara.diagnostic.domain.QuestionBank;
 import org.dromara.diagnostic.domain.bo.CreateDiagnosticBo;
 import org.dromara.diagnostic.domain.bo.ProbeCallbackBo;
+import org.dromara.diagnostic.domain.vo.DiagnosticCalibrationPairVo;
+import org.dromara.diagnostic.domain.vo.DiagnosticCalibrationSideVo;
+import org.dromara.diagnostic.domain.vo.DiagnosticCalibrationVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticResultVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticRunVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticTrendMetricsVo;
@@ -32,11 +36,13 @@ import org.dromara.diagnostic.domain.vo.DiagnosticTrendsVo;
 import org.dromara.diagnostic.domain.vo.ProbeTaskVo;
 import org.dromara.diagnostic.mapper.DiagnosticResultMapper;
 import org.dromara.diagnostic.mapper.DiagnosticRunMapper;
+import org.dromara.diagnostic.mapper.ProbeNodeMapper;
 import org.dromara.diagnostic.mapper.ProbeTaskMapper;
 import org.dromara.diagnostic.mapper.QuestionBankMapper;
 import org.dromara.diagnostic.mq.DiagGroundedApiPublisher;
 import org.dromara.diagnostic.service.IDiagnosticRunService;
 import org.dromara.diagnostic.support.BusinessTenantHelper;
+import org.dromara.diagnostic.support.DiagnosticCalibrationSupport;
 import org.dromara.diagnostic.support.DiagnosticMetricsAggregator;
 import org.dromara.diagnostic.support.PlatformModelResolver;
 import org.dromara.diagnostic.support.PlatformModelResolver.PlatformModel;
@@ -58,10 +64,13 @@ import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -84,6 +93,7 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
     private final DiagnosticRunMapper diagnosticRunMapper;
     private final DiagnosticResultMapper diagnosticResultMapper;
     private final ProbeTaskMapper probeTaskMapper;
+    private final ProbeNodeMapper probeNodeMapper;
     private final QuestionBankMapper questionBankMapper;
     private final CompetitorMapper competitorMapper;
     private final CustomerProjectMapper customerProjectMapper;
@@ -113,6 +123,17 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
         OffsetDateTime now = OffsetDateTime.now();
         Long userId = LoginHelper.getUserId();
 
+        BigDecimal calibrationRatio = bo.getCalibrationRatio() == null ? BigDecimal.ZERO : bo.getCalibrationRatio();
+        boolean dualModeCalibration = calibrationRatio.compareTo(BigDecimal.ZERO) > 0
+            && probeModes.contains(PROBE_MODE_GROUNDED)
+            && probeModes.contains(PROBE_MODE_EXTENSION);
+        Set<Long> calibrationQuestionIds = resolveCalibrationQuestionIds(questions, dualModeCalibration, calibrationRatio);
+
+        Map<String, Object> questionScope = buildQuestionScopeMap(bo);
+        if (!calibrationQuestionIds.isEmpty()) {
+            questionScope.put("calibrationQuestionIds", new ArrayList<>(calibrationQuestionIds));
+        }
+
         DiagnosticRun run = new DiagnosticRun();
         run.setTenantId(tenantId);
         run.setProjectId(projectId);
@@ -121,10 +142,10 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
         run.setLocale(locale);
         run.setRegion(bo.getRegion());
         run.setProbeModes(probeModes);
-        run.setCalibrationRatio(bo.getCalibrationRatio() == null ? BigDecimal.ZERO : bo.getCalibrationRatio());
+        run.setCalibrationRatio(calibrationRatio);
         run.setModels(modelNames);
         run.setSampleCount(sampleCount);
-        run.setQuestionScope(buildQuestionScopeMap(bo));
+        run.setQuestionScope(questionScope);
         run.setStatus(STATUS_PENDING);
         run.setCreatedAt(now);
         run.setUpdatedAt(now);
@@ -136,8 +157,17 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
 
         for (String probeMode : probeModes) {
             for (QuestionBank question : questions) {
+                if (dualModeCalibration
+                    && PROBE_MODE_EXTENSION.equals(probeMode)
+                    && !calibrationQuestionIds.contains(question.getId())) {
+                    continue;
+                }
                 for (PlatformModel platformModel : platforms) {
-                    for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
+                    int effectiveSampleCount = sampleCount;
+                    if (dualModeCalibration && calibrationQuestionIds.contains(question.getId())) {
+                        effectiveSampleCount = 1;
+                    }
+                    for (int sampleIndex = 0; sampleIndex < effectiveSampleCount; sampleIndex++) {
                         ProbeTask task = new ProbeTask();
                         task.setTenantId(tenantId);
                         task.setRunId(run.getId());
@@ -357,6 +387,119 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
                 .isNull(ProbeTask::getDeletedAt)
                 .orderByAsc(ProbeTask::getId)
         );
+    }
+
+    @Override
+    public DiagnosticCalibrationVo queryCalibration(Long projectId, Long runId) {
+        Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        CustomerProject project = getOwnedProjectOrThrow(projectId, tenantId);
+        DiagnosticRun run = getOwnedRunOrThrow(runId);
+        if (!projectId.equals(run.getProjectId())) {
+            throw new ServiceException("诊断任务不属于该项目", HttpStatus.NOT_FOUND);
+        }
+
+        DiagnosticCalibrationVo response = new DiagnosticCalibrationVo();
+        BigDecimal ratio = run.getCalibrationRatio() == null ? BigDecimal.ZERO : run.getCalibrationRatio();
+        List<String> modes = run.getProbeModes() != null ? run.getProbeModes() : List.of();
+        boolean dualMode = ratio.compareTo(BigDecimal.ZERO) > 0
+            && modes.contains(PROBE_MODE_GROUNDED)
+            && modes.contains(PROBE_MODE_EXTENSION);
+        if (!dualMode) {
+            return response;
+        }
+
+        Set<Long> calibrationQuestionIds = resolveCalibrationQuestionIdsFromRun(run);
+        if (calibrationQuestionIds.isEmpty()) {
+            return response;
+        }
+
+        List<String> platforms = PlatformModelResolver.resolveModels(
+            run.getModels() != null && !run.getModels().isEmpty() ? run.getModels() : List.of("gemini")
+        ).stream().map(PlatformModel::platform).distinct().toList();
+        response.setSampleCount(calibrationQuestionIds.size() * platforms.size());
+
+        List<DiagnosticResult> results = diagnosticResultMapper.selectList(
+            Wrappers.lambdaQuery(DiagnosticResult.class)
+                .eq(DiagnosticResult::getRunId, runId)
+                .in(DiagnosticResult::getQuestionId, calibrationQuestionIds)
+                .isNull(DiagnosticResult::getDeletedAt)
+        );
+        if (results.isEmpty()) {
+            return response;
+        }
+
+        Map<Long, QuestionBank> questionsById = questionBankMapper.selectList(
+            Wrappers.lambdaQuery(QuestionBank.class)
+                .in(QuestionBank::getId, calibrationQuestionIds)
+                .isNull(QuestionBank::getDeletedAt)
+        ).stream().collect(Collectors.toMap(QuestionBank::getId, q -> q, (a, b) -> a));
+
+        Set<Long> probeNodeIds = results.stream()
+            .map(DiagnosticResult::getProbeNodeId)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+        Map<Long, ProbeNode> nodesById = probeNodeIds.isEmpty()
+            ? Map.of()
+            : probeNodeMapper.selectList(
+                Wrappers.lambdaQuery(ProbeNode.class)
+                    .in(ProbeNode::getId, probeNodeIds)
+                    .isNull(ProbeNode::getDeletedAt)
+            ).stream().collect(Collectors.toMap(ProbeNode::getId, n -> n, (a, b) -> a));
+
+        List<Long> orderedQuestionIds = calibrationQuestionIds.stream().sorted().toList();
+        List<DiagnosticCalibrationPairVo> pairs = new ArrayList<>();
+        String brandName = project.getBrandName();
+
+        for (Long questionId : orderedQuestionIds) {
+            QuestionBank question = questionsById.get(questionId);
+            for (String platform : platforms) {
+                DiagnosticResult apiResult = findCalibrationResult(results, questionId, platform, PROBE_MODE_GROUNDED);
+                DiagnosticResult extResult = findCalibrationResult(results, questionId, platform, PROBE_MODE_EXTENSION);
+                if (apiResult == null || extResult == null) {
+                    continue;
+                }
+
+                BigDecimal similarity = DiagnosticCalibrationSupport.jaccardSimilarity(
+                    apiResult.getAnswerText(), extResult.getAnswerText());
+                BigDecimal deviation = BigDecimal.ONE.subtract(similarity).setScale(4, RoundingMode.HALF_UP);
+                boolean apiBrand = DiagnosticCalibrationSupport.mentionsBrand(apiResult.getMentionedBrands(), brandName);
+                boolean extBrand = DiagnosticCalibrationSupport.mentionsBrand(extResult.getMentionedBrands(), brandName);
+
+                DiagnosticCalibrationPairVo pair = new DiagnosticCalibrationPairVo();
+                pair.setQuestionId(questionId);
+                pair.setQuestion(DiagnosticCalibrationSupport.questionText(question));
+                pair.setStage(DiagnosticCalibrationSupport.questionStage(question));
+                pair.setPlatform(platform);
+                pair.setBrandMatch(apiBrand == extBrand);
+                pair.setSimilarityScore(similarity);
+                pair.setDeviationScore(deviation);
+                pair.setGroundedApi(toCalibrationSide(apiResult, null, brandName));
+                ProbeNode node = extResult.getProbeNodeId() != null ? nodesById.get(extResult.getProbeNodeId()) : null;
+                pair.setBrowserExtension(toCalibrationSide(extResult, node, brandName));
+                pairs.add(pair);
+            }
+        }
+
+        response.setPairs(pairs);
+        response.setPairedCount(pairs.size());
+        if (pairs.isEmpty()) {
+            return response;
+        }
+
+        BigDecimal totalDeviation = BigDecimal.ZERO;
+        int brandMatches = 0;
+        for (DiagnosticCalibrationPairVo pair : pairs) {
+            totalDeviation = totalDeviation.add(pair.getDeviationScore());
+            if (Boolean.TRUE.equals(pair.getBrandMatch())) {
+                brandMatches++;
+            }
+        }
+        BigDecimal pairCount = BigDecimal.valueOf(pairs.size());
+        response.setDeviationRate(totalDeviation.divide(pairCount, 4, RoundingMode.HALF_UP));
+        response.setBrandMentionAgreementRate(
+            BigDecimal.valueOf(brandMatches).divide(pairCount, 4, RoundingMode.HALF_UP)
+        );
+        return response;
     }
 
     private void tryFinalizeRun(Long runId) {
@@ -605,6 +748,67 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
                 .isNull(Competitor::getDeletedAt)
                 .select(Competitor::getName)
         ).stream().map(Competitor::getName).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+    }
+
+    private Set<Long> resolveCalibrationQuestionIds(
+        List<QuestionBank> questions,
+        boolean dualModeCalibration,
+        BigDecimal calibrationRatio
+    ) {
+        if (!dualModeCalibration || questions.isEmpty()) {
+            return Set.of();
+        }
+        int count = Math.max(1, (int) Math.ceil(questions.size() * calibrationRatio.doubleValue()));
+        return questions.stream()
+            .sorted(Comparator.comparing(QuestionBank::getId))
+            .limit(count)
+            .map(QuestionBank::getId)
+            .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    private Set<Long> resolveCalibrationQuestionIdsFromRun(DiagnosticRun run) {
+        Map<String, Object> scope = run.getQuestionScope();
+        if (scope != null && scope.containsKey("calibrationQuestionIds")) {
+            return new HashSet<>(longList(scope.get("calibrationQuestionIds")));
+        }
+        List<ProbeTask> extensionTasks = probeTaskMapper.selectList(
+            Wrappers.lambdaQuery(ProbeTask.class)
+                .eq(ProbeTask::getRunId, run.getId())
+                .eq(ProbeTask::getProbeMode, PROBE_MODE_EXTENSION)
+                .isNull(ProbeTask::getDeletedAt)
+        );
+        return extensionTasks.stream().map(ProbeTask::getQuestionId).collect(Collectors.toSet());
+    }
+
+    private DiagnosticResult findCalibrationResult(
+        List<DiagnosticResult> results,
+        Long questionId,
+        String platform,
+        String probeMode
+    ) {
+        return results.stream()
+            .filter(r -> questionId.equals(r.getQuestionId()))
+            .filter(r -> platform.equals(r.getPlatform()))
+            .filter(r -> probeMode.equals(r.getProbeMode()))
+            .findFirst()
+            .orElse(null);
+    }
+
+    private DiagnosticCalibrationSideVo toCalibrationSide(
+        DiagnosticResult result,
+        ProbeNode node,
+        String brandName
+    ) {
+        DiagnosticCalibrationSideVo side = new DiagnosticCalibrationSideVo();
+        side.setResultId(result.getId());
+        side.setAnswerPreview(DiagnosticCalibrationSupport.preview(result.getAnswerText()));
+        side.setBrandMentioned(DiagnosticCalibrationSupport.mentionsBrand(result.getMentionedBrands(), brandName));
+        side.setRank(result.getRank());
+        side.setCitationCount(DiagnosticCalibrationSupport.citationCount(result));
+        if (node != null) {
+            side.setProbeNodeKey(node.getNodeKey());
+        }
+        return side;
     }
 
     private CustomerProject getOwnedProjectOrThrow(Long projectId, Long tenantId) {

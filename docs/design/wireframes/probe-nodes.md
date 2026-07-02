@@ -321,3 +321,5 @@ M1 仅「刷新」+ 前端 sort（默认 `lastHeartbeatAt` desc）。
 | 日期 | 作者 | 说明 |
 |------|------|------|
 | 2026-07-05 | UI 设计 | EPIC-11 M1 初版 · FR-113 · ADR-20260705-18 |
+
+**M2 交叉引用**：[probe-adapters.md](./probe-adapters.md)（FR-116 平台 Adapter 编辑 · 本页仍只读节点列表）

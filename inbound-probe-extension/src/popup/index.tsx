@@ -56,7 +56,7 @@ function IndexPopup() {
     <div style={styles.root}>
       <header style={styles.header}>
         <strong>TourGEO Probe</strong>
-        <span style={styles.badge}>M1</span>
+        <span style={styles.badge}>M2</span>
       </header>
 
       <dl style={styles.dl}>

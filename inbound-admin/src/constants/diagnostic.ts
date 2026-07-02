@@ -68,3 +68,25 @@ export const METRIC_WEIGHT_LABELS: Record<string, string> = {
   longtailCoverage: '15%',
   assetCompleteness: '10%'
 };
+
+/** FR-115 校准偏差率阈值（ADR-20260709-22） */
+export function calibrationDeviationMeta(rate: number | null | undefined): {
+  label: string;
+  type: 'success' | 'warning' | 'danger' | 'info';
+} {
+  if (rate == null || Number.isNaN(rate)) {
+    return { label: '—', type: 'info' };
+  }
+  if (rate <= 0.15) {
+    return { label: '低偏差', type: 'success' };
+  }
+  if (rate <= 0.3) {
+    return { label: '中偏差', type: 'warning' };
+  }
+  return { label: '高偏差', type: 'danger' };
+}
+
+export function formatCalibrationPct(ratio: number | null | undefined): string {
+  if (ratio == null || Number.isNaN(ratio)) return '0%';
+  return `${(ratio * 100).toFixed(0)}%`;
+}

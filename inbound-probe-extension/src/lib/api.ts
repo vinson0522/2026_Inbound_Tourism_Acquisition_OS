@@ -1,3 +1,4 @@
+import { PROBE_PLATFORMS } from "~lib/platforms"
 import type {
   ApiResponse,
   PlatformAdapterConfig,
@@ -17,7 +18,7 @@ export const probeConfig = {
   clientId: CLIENT_ID,
   extensionVersion: EXTENSION_VERSION,
   pollIntervalMinutes: 0.5,
-  platform: "perplexity" as const,
+  platforms: [...PROBE_PLATFORMS],
   mockMode: process.env.PLASMO_PUBLIC_PROBE_MOCK === "true"
 }
 
@@ -56,7 +57,7 @@ export async function registerNode(region = "us-east"): Promise<number> {
     body: JSON.stringify({
       nodeKey: probeConfig.nodeKey,
       region,
-      platforms: [probeConfig.platform],
+      platforms: probeConfig.platforms,
       extensionVersion: probeConfig.extensionVersion
     })
   })

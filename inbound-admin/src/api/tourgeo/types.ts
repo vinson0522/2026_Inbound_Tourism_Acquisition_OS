@@ -94,12 +94,65 @@ export interface DiagnosticRunVO {
   probeModes: string[];
   models: string[];
   sampleCount: number;
+  /** 0–1 小数，如 0.1 = 10% 校准抽样 */
+  calibrationRatio: number;
   status: DiagnosticRunStatus;
   progress: number | null;
   geoScore: number | null;
   startedAt: string | null;
   createdAt: string;
   finishedAt: string | null;
+}
+
+/** FR-115 校准对比单侧摘要 */
+export interface DiagnosticCalibrationSideVO {
+  resultId?: number;
+  probeNodeKey?: string;
+  answerPreview?: string;
+  brandMentioned?: boolean;
+  rank?: number | null;
+  citationCount?: number;
+}
+
+/** FR-115 校准 question × platform 配对 */
+export interface DiagnosticCalibrationPairVO {
+  questionId: number;
+  question?: string;
+  stage?: string;
+  platform: string;
+  brandMatch?: boolean;
+  similarityScore?: number;
+  deviationScore?: number;
+  groundedApi?: DiagnosticCalibrationSideVO;
+  browserExtension?: DiagnosticCalibrationSideVO;
+}
+
+export interface DiagnosticCalibrationVO {
+  deviationRate?: number | null;
+  brandMentionAgreementRate?: number | null;
+  sampleCount?: number;
+  pairedCount?: number;
+  pairs: DiagnosticCalibrationPairVO[];
+}
+
+/** FR-116 平台 Adapter 配置 */
+export interface PlatformAdapterVo {
+  id: number;
+  platform: string;
+  version: string;
+  enabled: boolean;
+  domSelectorsJson?: Record<string, unknown>;
+  apiPatternsJson?: Record<string, unknown>;
+  parseRulesJson?: Record<string, unknown>;
+  updatedAt?: string;
+}
+
+export interface PlatformAdapterSaveForm {
+  version?: string;
+  enabled?: boolean;
+  domSelectorsJson: Record<string, unknown>;
+  apiPatternsJson: Record<string, unknown>;
+  parseRulesJson: Record<string, unknown>;
 }
 
 export interface DiagnosticCitationVO {

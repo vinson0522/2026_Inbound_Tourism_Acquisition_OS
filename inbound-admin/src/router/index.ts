@@ -274,6 +274,12 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/tourgeo/settings/probe-nodes/index.vue'),
         name: 'ProbeNodesSettings',
         meta: { title: '探针节点', icon: 'monitor' }
+      },
+      {
+        path: 'probe-adapters',
+        component: () => import('@/views/tourgeo/settings/probe-adapters/index.vue'),
+        name: 'ProbeAdaptersSettings',
+        meta: { title: '平台 Adapter', icon: 'component' }
       }
     ]
   },

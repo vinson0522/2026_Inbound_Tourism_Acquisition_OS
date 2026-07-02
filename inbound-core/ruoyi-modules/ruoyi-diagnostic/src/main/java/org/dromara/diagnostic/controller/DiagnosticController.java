@@ -11,6 +11,7 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.diagnostic.domain.bo.CreateDiagnosticBo;
+import org.dromara.diagnostic.domain.vo.DiagnosticCalibrationVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticResultVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticRunVo;
 import org.dromara.diagnostic.domain.vo.DiagnosticTrendsVo;
@@ -93,6 +94,16 @@ public class DiagnosticController extends BaseController {
     @GetMapping("/diagnostics/{runId}/probe-tasks")
     public R<List<ProbeTaskVo>> probeTasks(@NotNull @PathVariable Long runId) {
         return R.ok(diagnosticRunService.queryProbeTasks(runId));
+    }
+
+    /** FR-115 校准对比（grounded-api vs browser-extension） */
+    @SaCheckLogin
+    @GetMapping("/projects/{projectId}/diagnostics/{runId}/calibration")
+    public R<DiagnosticCalibrationVo> calibration(
+        @NotNull @PathVariable Long projectId,
+        @NotNull @PathVariable Long runId
+    ) {
+        return R.ok(diagnosticRunService.queryCalibration(projectId, runId));
     }
 
     /** FR-106 诊断报告导出（DOCX / PDF via Gotenberg） */

@@ -5,10 +5,10 @@
 
 | 字段 | 值 |
 |------|-----|
-| **最后更新** | 2026-07-08 |
-| **更新角色** | 开发 |
-| **Git 远程** | ✅ `origin/main` · C18 `19e1f36` |
-| **当前 EPIC 焦点** | **EPIC-11 M2** 探针 adapter（路线图 #3）· 待技术总监派发 |
+| **最后更新** | 2026-07-09 |
+| **更新角色** | 技术总监 |
+| **Git 远程** | ✅ `origin/main` · C19 `846847f` |
+| **当前 EPIC 焦点** | **EPIC-9 M2** 套餐 CRUD + 周期重置 · C20 |
 
 ---
 
@@ -198,8 +198,8 @@
 |:--:|--------|---------|------|:----:|
 | 1 | **M2 CRM** | EPIC-7 · FR-605 | 线索状态+跟进闭环 | ✅ C17 `ecb0d46` |
 | 2 | **M2 报告** | EPIC-8 · FR-703/704 | 月报 + 白标模板 | ✅ C18 `19e1f36` |
-| 3 | M2 探针 | EPIC-11 · FR-115/116 | adapter 配置 + 校准 + 第二平台 |
-| 4 | M2 计费 | EPIC-9 · FR-802/805 | 套餐 CRUD + 周期重置 |
+| 3 | **M2 探针** | EPIC-11 · FR-115/116 | adapter + 校准 + ChatGPT | ✅ C19 `846847f` |
+| 4 | M2 计费 | EPIC-9 · FR-804 扩展 | 套餐 CRUD + 周期重置 | ⏳ **当前** |
 | 5 | M1 素材 | EPIC-5 · FR-401~403 | 爆款拆解 MVP |
 | 6 | M3 线索 | EPIC-7 · FR-602/603 | WhatsApp 追踪 + AI 跟进话术 |
 | 7 | M3 诊断 | EPIC-2 · FR-109 | 定时诊断任务 |
@@ -230,6 +230,31 @@
 **ADR-21**：自然月月报+MoM · 租户 REPORT 模板 · 无定时/LLM M2
 
 **技术总监签核**：✅ **EPIC-8 M2 正式关闭** — C18 `19e1f36` · `test_reports_monthly` ✅ docx 3122B
+
+### EPIC-11 M2 Sprint — FR-115/116 探针 Adapter+校准（2026-07-09 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | adapter+校准线框 | [→UI](HANDOFFS/2026-07-09-tech-director-to-ui-epic11-probe-m2.md) | ✅ |
+| 2 | 开发 Java | adapter API + calibration | [→Java](HANDOFFS/2026-07-09-tech-director-to-dev-java-epic11-probe-m2.md) | ✅ smoke |
+| 3 | 开发 Extension | ChatGPT 平台 | [→Extension](HANDOFFS/2026-07-09-tech-director-to-dev-extension-epic11-chatgpt.md) | ✅ |
+| 4 | 开发 Admin | adapter+校准 UI | [→Admin](HANDOFFS/2026-07-09-tech-director-to-dev-admin-epic11-probe-m2.md) | ✅ |
+| — | 总览 | Sprint 索引 | [EPIC-11 M2](HANDOFFS/2026-07-09-tech-director-epic11-m2-probe-sprint.md) | ✅ **关闭** |
+
+**ADR-22**：Admin adapter CRUD · calibration GET · chatgpt 第二平台
+
+**技术总监签核**：✅ **EPIC-11 M2 正式关闭** — C19 `846847f` · `test_probe_calibration` runId=7 pairedCount=1 · 路线图 #3 ✅
+
+### EPIC-9 M2 Sprint — FR-804 套餐 CRUD + 周期重置（2026-07-09 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | billing M2 线框 | [→UI](HANDOFFS/2026-07-09-tech-director-to-ui-epic9-billing-m2.md) | ✅ |
+| 2 | 开发 Java | subscription PUT + reset | [→Java](HANDOFFS/2026-07-09-tech-director-to-dev-java-epic9-billing-m2.md) | ⏳ |
+| 3 | 开发 Admin | billing 编辑 UI | [→Admin](HANDOFFS/2026-07-09-tech-director-to-dev-admin-epic9-billing-m2.md) | ⏳ |
+| — | 总览 | Sprint 索引 | [EPIC-9 M2](HANDOFFS/2026-07-09-tech-director-epic9-m2-billing-sprint.md) | — |
+
+**ADR-23**：套餐 PUT · 周期 Job 重置 used_json · 无支付/FR-802 M2
 
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
@@ -279,8 +304,10 @@
 | **C16** | EPIC-3 M2 关键词评分 | `feat(ai,core,admin): EPIC-3 M2 keyword opportunity scoring FR-203` | ✅ `20b7a87` |
 | **C17** | EPIC-7 M2 CRM | `feat(core,admin): EPIC-7 M2 light CRM lead status and followups` | ✅ `ecb0d46` |
 | **C18** | EPIC-8 M2 月报白标 | `feat(core,admin): EPIC-8 M2 monthly report and white-label template` | ✅ `19e1f36` |
+| **C19** | EPIC-11 M2 探针 | `feat(core,admin,extension): EPIC-11 M2 probe adapters and calibration` | ✅ `846847f` |
+| **C20** | EPIC-9 M2 计费 | `feat(core,admin): EPIC-9 M2 subscription CRUD and period reset` | `test_billing_period_reset` |
 
-**执行**：C1–C18 ✅ · push ✅
+**执行**：C1–C19 ✅ · push ✅ · **C20 ⏳** EPIC-9 M2
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -363,8 +390,11 @@
 - **EPIC-8 M2 FR-703/704 monthly+白标 Java（2026-07-08）** ✅ `POST .../reports/monthly` · `GET/PUT /api/v1/settings/report-template` · MoM/CRM/avgScore 聚合 · 导出白标 weekly/monthly/diagnostic · `template` entity · `test_reports_monthly.py` ✅ docx 3122B
 - **EPIC-9 M1 FR-804 billing Java（2026-07-02）** ✅ `GET /api/v1/settings/billing` · `QuotaService.checkAndConsume` · 6 拦截点（项目/诊断/关键词/内容/落地页/周报）· HTTP 402 `code=40201` · `tenant.excludes` 加 `subscription` · `test_billing_quota.py` ✅
 - **EPIC-11 M1 FR-112~114 probe Java（2026-07-05）** ✅ `ProbeController` register/poll/result/adapters + `GET /nodes` · `createRun` browser-extension 分叉 · `test_probe_extension_e2e.py` ✅
+- **EPIC-11 M2 FR-115/116 probe Java（2026-07-09）** ✅ platform-adapters API · calibration GET · calibration_ratio 分叉 · seed chatgpt · `test_probe_calibration.py` ✅ runId=7
 - **EPIC-11 M1 FR-112~114 probe Extension（2026-07-05）** ✅ Plasmo MV3 · background poll 30s · perplexity content hook + mock · adapter parse · popup · `pnpm build` ✅
+- **EPIC-11 M2 FR-112 ChatGPT Extension（2026-07-09）** ✅ `adapters/chatgpt.ts` + `contents/chatgpt.ts` · seed parse_rules 对齐 · background 轮换 poll perplexity/chatgpt · mock 可测 · `pnpm build` + `test:adapter` ✅
 - **EPIC-11 M1 FR-113 Admin 探针节点（2026-07-05）** ✅ `/settings/probe-nodes` 只读列表 · 在线/离线 · 空态安装引导 · `pnpm build:prod` ✅
+- **EPIC-11 M2 FR-115/116 Admin adapter+校准（2026-07-09）** ✅ `/settings/probe-adapters` · 诊断详情校准 Tab · calibration_ratio 接后端 · `pnpm build:prod` ✅
 - **EPIC-9 M1 FR-804 Admin 计费页（2026-07-02）** ✅ `/settings/billing` 只读用量 · 6×`el-progress` · 超额/预警 alert · Axios 402 全局提示 · `pnpm build:prod` ✅
 - **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ **已提交** `f40cf8d` — `ai.embed` worker · asset#1 READY
 - **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` / `e22cd43` / `f96ba7e`（已 push）
@@ -434,9 +464,9 @@
 
 ## UI 设计
 
-- **已完成**：… billing-settings (EPIC-9 M1) ✅ · probe-nodes (EPIC-11 M1) ✅ · leads-list M2 CRM (EPIC-7 M2) ✅ · **reports-list M2 + report-template-settings (EPIC-8 M2)** ✅
-- **HANDOFF**：[月报+白标 → 开发](HANDOFFS/2026-07-08-ui-to-developer-report-monthly-whitelabel.md)
-- **待办**：探针 M2 · 计费 M2
+- **已完成**：… probe-adapters + diagnostic-detail 校准 Tab (EPIC-11 M2) ✅ · **billing-settings §M2 编辑/重置 (EPIC-9 M2)** ✅
+- **HANDOFF**：[billing M2 → 开发](HANDOFFS/2026-07-09-ui-to-developer-billing-m2.md)
+- **待办**：素材 M1
 
 ---
 
@@ -460,16 +490,17 @@
 | B-13 | ~~EPIC-3 M2 C16 未 commit/push~~ | 开发 | ✅ **已关闭** C16 `20b7a87` · pytest 8 + smoke ✅ |
 | B-14 | ~~EPIC-7 M2 C17 未 commit/push~~ | 开发 | ✅ **已关闭** C17 `ecb0d46` · smoke ✅ |
 | B-15 | ~~EPIC-8 M2 C18 未 commit/push~~ | 开发 | ✅ **已关闭** C18 `19e1f36` · smoke ✅ |
+| B-16 | ~~EPIC-11 M2 C19 未 commit/push~~ | 开发 | ✅ **已关闭** C19 `846847f` · smoke runId=7 |
 
 ---
 
-## 下一步（跨角色 · 2026-07-08）
+## 下一步（跨角色 · 2026-07-09）
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P0** | **技术总监** | 派发 **EPIC-11 M2** 探针 adapter | 路线图 #3 |
-| **P1** | **开发** | diagnostic smoke 9/9 | 维护轨 |
-| **P2** | **开发 Extension** | 真 Perplexity hook | 维护轨 |
+| **P0** | **开发 Java** | [billing M2 API](HANDOFFS/2026-07-09-tech-director-to-dev-java-epic9-billing-m2.md) | `test_billing_period_reset.py` |
+| **P1** | **开发 Admin** | [billing M2 UI](HANDOFFS/2026-07-09-tech-director-to-dev-admin-epic9-billing-m2.md) · [UI→开发 HANDOFF](HANDOFFS/2026-07-09-ui-to-developer-billing-m2.md) | 依赖 Java |
+| **P2** | **开发** | diagnostic smoke 9/9 | 维护轨 |
 
 ---
 
@@ -477,6 +508,11 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-09 | 开发 | C19 `846847f` EPIC-11 M2 adapter+校准+ChatGPT 全栈 commit+push · **EPIC-11 M2 正式关闭** · 路线图 #3 ✅ |
+| 2026-07-09 | UI 设计 | EPIC-9 M2 `billing-settings` §M2 套餐编辑 drawer + 周期重置 footnote · UI→开发 HANDOFF ✅ |
+| 2026-07-09 | 技术总监 | EPIC-11 M2 三端+扩展复核 ✅ · smoke runId=6 · 派发 C19 · 派发 **EPIC-9 M2** 计费 · B-16 打开 |
+| 2026-07-09 | UI 设计 | EPIC-11 M2 `probe-adapters` FR-116 + `diagnostic-detail` 校准 Tab FR-115 · UI→开发 HANDOFF ✅ |
+| 2026-07-09 | 技术总监 | 复核 C18 关闭 · 派发 **EPIC-11 M2** adapter+校准 · ADR-22 · 4 条 HANDOFF · 路线图 #3 |
 | 2026-07-08 | 开发 | C18 `19e1f36` EPIC-8 M2 月报+白标全栈 commit+push · **EPIC-8 M2 正式关闭** · 路线图 #2 ✅ |
 | 2026-07-08 | 技术总监 | EPIC-8 M2 三端复核 ✅ · smoke docx 3123B · 派发 C18 · B-15 打开 |
 | 2026-07-08 | 开发 Admin | EPIC-8 M2 月报 dialog + 报告模板设置页 · MONTHLY 预览 · `build:prod` ✅ |

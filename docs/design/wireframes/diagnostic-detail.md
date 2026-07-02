@@ -299,3 +299,223 @@
 |------|:------:|------|
 | **本页（诊断详情）** | P0 EPIC-2 | 承接列表「查看结果」 |
 | 项目详情 Tab（品牌/竞品/知识库） | P1 Story 3 | FR-002/003/004；独立线框 `project-detail.md` 待补 |
+
+---
+
+## M2 增量 · 校准对比 Tab（FR-115）
+
+> **PRD**：FR-115 API 与网页版校准 · **ADR-20260709-22**  
+> **前置**：创建诊断时 `calibration_ratio` > 0（见 [diagnostics-list.md](./diagnostics-list.md) 滑块 0–30%）且探针模式含 **grounded-api** + **browser-extension**  
+> **关联**：[probe-adapters.md](./probe-adapters.md) FR-116
+
+**M2 范围（本页）**：
+- ✅ 新增 Tab **「校准对比」**：偏差率 KPI · 重叠问题对比表 · 双模式答案摘要
+- ✅ 任务头展示 `calibration_ratio`（若有）
+- ❌ FR-117 截图样例 · 报告导出嵌入校准章节（M2 只读 Tab）
+
+---
+
+### Tab 可见性
+
+| 条件 | UI |
+|------|-----|
+| `calibrationRatio === 0` 或未勾选 `browser-extension` | **不渲染** Tab（减少噪音） |
+| `calibrationRatio > 0` 且双模式已选 · run 未完成 | Tab 可见 · `el-empty`「任务完成后展示校准对比」 |
+| SUCCESS / PARTIAL_FAILED · 有 pairs | 完整 KPI + 对比表 |
+| 已完成 · `pairedCount === 0` | `el-empty`「无重叠抽样问题，请提高校准比例或检查探针节点」+ link 探针节点 |
+
+**Tab 顺序**（SUCCESS 态）：
+
+```text
+[概览] [问题明细] [竞品对比] [探针进度] [校准对比]
+```
+
+RUNNING 且含校准：可与「探针进度」并列；默认仍「探针进度」。
+
+---
+
+### M2 任务头增量
+
+| UI 元素 | DDL | 展示 |
+|---------|-----|------|
+| 校准比例 | `calibration_ratio` | 当 `> 0` 时 descriptions 一行：「校准抽样 10% · API vs 扩展重叠对比」 |
+| 探针模式 | `probe_modes_json` | 已有 Tag 组；强调同时含 grounded-api + browser-extension |
+
+---
+
+### M2 布局增量（ASCII）
+
+```
+Tab: 校准对比 (FR-115)
+┌─ 说明 el-alert type="info" ────────────────────────────────────────────────┐
+│ 对同一问题同时采样 grounded-api 与 browser-extension，对比品牌提及与回答差异。│
+│ 偏差率越高表示 API 与网页版结果越不一致，需关注 adapter 或平台变更。          │
+└────────────────────────────────────────────────────────────────────────────┘
+┌─ KPI el-row :gutter="16" ──────────────────────────────────────────────────┐
+│ [综合偏差率 18%]  [品牌一致率 82%]  [重叠样本 12/15]  [平台 Perplexity]     │
+└────────────────────────────────────────────────────────────────────────────┘
+┌─ 重叠问题对比 el-table border ─────────────────────────────────────────────┐
+│ 问题 | 阶段 | 平台 | 品牌一致 | 相似度 | 偏差 | 操作                          │
+│ Best private China tour… | 规划 | Perp | ✗ | 62% | 高 warning | [展开对比] │
+└────────────────────────────────────────────────────────────────────────────┘
+  行展开 (type="expand"):
+┌─ 双栏对比 el-row ────────────────────────────────────────────────────────────┐
+│ ┌─ grounded-api ──────────────┐  ┌─ browser-extension ───────────────────┐ │
+│ │ Tag primary · Perplexity    │  │ Tag warning · 扩展节点 dev-probe-1     │ │
+│ │ 品牌提及 [是 Tag success]   │  │ 品牌提及 [否 Tag info]                 │ │
+│ │ 排名 2  |  引用 5           │  │ 排名 —  |  引用 3                      │ │
+│ │ ── 回答摘要 ──              │  │ ── 回答摘要 ──                         │ │
+│ │ China Highlights offers…    │  │ Several tour operators provide…        │ │
+│ │ (最多 8 行 + 展开全文 P2)   │  │                                        │ │
+│ │ [查看完整结果 → 问题明细]   │  │ [查看完整结果 → 问题明细]              │ │
+│ └─────────────────────────────┘  └────────────────────────────────────────┘ │
+└────────────────────────────────────────────────────────────────────────────┘
+┌─ footnote ─────────────────────────────────────────────────────────────────┐
+│ M2 指标：品牌 mention 一致率 + 回答文本相似度（Jaccard/contains 简化）。      │
+│ 无截图存证（FR-117 M3+）。 [检查平台 Adapter → /settings/probe-adapters]    │
+└────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### KPI 卡片
+
+| KPI | API 字段 | 展示 | 色阶 |
+|-----|----------|------|------|
+| 综合偏差率 | `deviationRate` | `el-statistic` + `%` · tooltip「1 − 平均一致度」 | ≤15% success · 15–30% warning · &gt;30% danger |
+| 品牌一致率 | `brandMentionAgreementRate` | `%` | 反向：越高越好 |
+| 重叠样本 | `pairedCount` / `sampleCount` | `12 / 15` | plain |
+| 涉及平台 | `pairs[].platform` 去重 | Tag 组 | — |
+
+**无数据**：KPI 显示 `—`。
+
+---
+
+### 对比表列
+
+| 列 | 宽度 | 来源 | 展示 |
+|----|------|------|------|
+| 问题 | min 220 | `question` join | 2 行 clamp + tooltip |
+| 阶段 | 90 | `stage` | 八阶段 Tag |
+| 平台 | 100 | `platform` | Tag |
+| 品牌一致 | 90 | `brandMatch` | ✓ success / ✗ danger |
+| 相似度 | 90 | `similarityScore` | `%` · &lt;0.5 warning |
+| 偏差 | 80 | `deviationScore` | Tag：低/中/高 |
+| 操作 | 100 | — | 「展开对比」或依赖 table expand |
+
+**排序**：默认 `deviationScore` **降序**（偏差大的在上）。
+
+**筛选（P2）**：平台 · 仅品牌不一致 · 仅高偏差。
+
+---
+
+### 行展开 · 双模式答案摘要
+
+| 侧 | 数据路径 | 区块 |
+|----|----------|------|
+| **grounded-api** | `pair.groundedApi` | Tag + `brandMentioned` · `rank` · `citationCount` · `answerPreview` |
+| **browser-extension** | `pair.browserExtension` | Tag + 可选 `probeNodeKey` · 同上 |
+
+| 字段 | API camelCase | 展示 |
+|------|---------------|------|
+| 结果 ID | `resultId` | 链接跳转问题明细 Tab 并 scroll 到行（P2） |
+| 回答摘要 | `answerPreview` | 最多 **8 行** · `line-clamp` |
+| 品牌提及 | `brandMentioned` | 是/否 Tag |
+| 排名 | `rank` | 数字或 `—` |
+| 引用数 | `citationCount` | 数字 |
+
+**「查看完整结果」**：切换 Tab「问题明细」并 filter `questionId`（P2）；M2 可仅 tooltip resultId。
+
+---
+
+### API 依赖（M2 追加）
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/v1/projects/{projectId}/diagnostics/{runId}/calibration` | 校准对比数据 |
+
+**响应结构**（与 Java M2 HANDOFF 对齐）：
+
+```json
+{
+  "deviationRate": 0.18,
+  "brandMentionAgreementRate": 0.82,
+  "sampleCount": 15,
+  "pairedCount": 12,
+  "pairs": [
+    {
+      "questionId": 42,
+      "question": "Best private China tour for first-time visitors?",
+      "stage": "planning",
+      "platform": "perplexity",
+      "brandMatch": false,
+      "similarityScore": 0.62,
+      "deviationScore": 0.38,
+      "groundedApi": {
+        "resultId": 1001,
+        "answerPreview": "China Highlights offers curated 10-day itineraries…",
+        "brandMentioned": true,
+        "rank": 2,
+        "citationCount": 5
+      },
+      "browserExtension": {
+        "resultId": 1002,
+        "probeNodeKey": "dev-probe-1",
+        "answerPreview": "Several tour operators provide private China tours…",
+        "brandMentioned": false,
+        "rank": null,
+        "citationCount": 3
+      }
+    }
+  ]
+}
+```
+
+**加载**：Tab 首次激活时请求 · `v-loading` · 失败 `ElMessage.error`。
+
+---
+
+### 与创建诊断表单关系
+
+[diagnostics-list.md](./diagnostics-list.md) 已有 **校准比例** 滑块 0–30%：
+
+| `calibration_ratio` | 行为 |
+|---------------------|------|
+| `0` | 不生成重叠 browser-extension 任务 · 本 Tab 隐藏 |
+| `0.1`（10%） | M2 简化：同一批 question 各 1 样本双模式（Java 实现） |
+| 需同时勾选 | `grounded-api` + `browser-extension` · 否则表单项 warning |
+
+**合规 footnote**（创建抽屉已有）：报告将标注 probe_mode；校准 Tab 只读展示，不承诺排名。
+
+---
+
+### M2 空 / 错误
+
+| 场景 | UI |
+|------|-----|
+| Tab 隐藏 | 不满足双模式+ratio 条件 |
+| run 进行中 | empty + 「探针执行中，请稍后刷新」 |
+| 扩展全失败 | alert warning「browser-extension 子任务无成功样本，无法校准」 |
+| adapter 停用 | footnote 链 probe-adapters |
+
+---
+
+### M2 组件提示
+
+| 项 | 建议 |
+|----|------|
+| Tab | `diagnostics/detail.vue` 新增 `calibration` pane |
+| API | `src/api/tourgeo/diagnostic.ts` — `getDiagnosticCalibration(projectId, runId)` |
+| 双栏 | `el-col :span="12"` · 小屏 stack |
+| 常量 | `CALIBRATION_DEVIATION_META` — 低/中/高阈值 |
+
+**交叉引用**：[probe-adapters.md](./probe-adapters.md) · Java HANDOFF `2026-07-09-tech-director-to-dev-java-epic11-probe-m2.md`
+
+---
+
+## 版本
+
+| 日期 | 作者 | 说明 |
+|------|------|------|
+| 2026-06-26 | UI 设计 | EPIC-2 初版 · FR-104~106 |
+| 2026-07-09 | UI 设计 | **§M2** 校准对比 Tab FR-115 · ADR-20260709-22 |

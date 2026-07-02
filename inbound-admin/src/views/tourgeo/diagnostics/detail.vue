@@ -38,6 +38,9 @@
             <el-tag v-for="m in run.models" :key="m" size="small" class="mr-1">{{ m }}</el-tag>
           </el-descriptions-item>
           <el-descriptions-item label="采样">×{{ run.sampleCount }}</el-descriptions-item>
+          <el-descriptions-item v-if="run.calibrationRatio > 0" label="校准比例">
+            校准抽样 {{ formatCalibrationPct(run.calibrationRatio) }} · API vs 扩展重叠对比
+          </el-descriptions-item>
           <el-descriptions-item label="时间" :span="3">{{ timeRangeText }}</el-descriptions-item>
         </el-descriptions>
 
@@ -255,6 +258,155 @@
             </div>
           </el-tab-pane>
 
+          <el-tab-pane v-if="showCalibrationTab" label="校准对比" name="calibration">
+            <div v-loading="calibrationLoading">
+              <el-empty
+                v-if="run.status === 'RUNNING' || run.status === 'PENDING'"
+                description="探针执行中，请稍后刷新查看校准对比"
+              />
+
+              <template v-else-if="calibrationLoaded">
+                <el-row v-if="calibration" :gutter="16" class="calibration-kpi-row">
+                  <el-col :xs="24" :sm="8">
+                    <el-card shadow="never" class="calibration-kpi">
+                      <div class="calibration-kpi__label">
+                        综合偏差率
+                        <el-tooltip content="1 − 平均文本一致度（Jaccard）" placement="top">
+                          <el-icon class="kpi-tip"><QuestionFilled /></el-icon>
+                        </el-tooltip>
+                      </div>
+                      <div class="calibration-kpi__value">
+                        <el-tag
+                          v-if="calibration.deviationRate != null"
+                          size="large"
+                          :type="calibrationDeviationMeta(calibration.deviationRate).type"
+                        >
+                          {{ formatRatePct(calibration.deviationRate) }}
+                        </el-tag>
+                        <span v-else>—</span>
+                      </div>
+                      <div class="calibration-kpi__sub">
+                        {{ calibrationDeviationMeta(calibration.deviationRate).label }}
+                      </div>
+                    </el-card>
+                  </el-col>
+                  <el-col :xs="24" :sm="8">
+                    <el-card shadow="never" class="calibration-kpi">
+                      <div class="calibration-kpi__label">品牌 mention 一致率</div>
+                      <div class="calibration-kpi__value">
+                        {{ formatRatePct(calibration.brandMentionAgreementRate) }}
+                      </div>
+                    </el-card>
+                  </el-col>
+                  <el-col :xs="24" :sm="8">
+                    <el-card shadow="never" class="calibration-kpi">
+                      <div class="calibration-kpi__label">有效配对数</div>
+                      <div class="calibration-kpi__value">{{ calibration.pairedCount ?? 0 }}</div>
+                      <div v-if="calibration.sampleCount" class="calibration-kpi__sub">
+                        预期样本 {{ calibration.sampleCount }}
+                      </div>
+                    </el-card>
+                  </el-col>
+                </el-row>
+
+                <el-alert
+                  v-if="calibration.pairedCount === 0"
+                  type="warning"
+                  show-icon
+                  :closable="false"
+                  class="mb-3"
+                  title="browser-extension 子任务无成功样本或未与 grounded-api 形成配对，无法校准"
+                />
+
+                <el-table
+                  v-else
+                  :data="calibration.pairs"
+                  border
+                  row-key="questionId"
+                  default-expand-all
+                  class="calibration-table"
+                >
+                  <el-table-column type="expand">
+                    <template #default="{ row }">
+                      <el-row :gutter="16" class="calibration-expand">
+                        <el-col :xs="24" :md="12">
+                          <div class="calibration-side">
+                            <h4>grounded-api</h4>
+                            <p class="calibration-side__preview">
+                              {{ row.groundedApi?.answerPreview || '—' }}
+                            </p>
+                            <el-descriptions :column="2" size="small">
+                              <el-descriptions-item label="品牌提及">
+                                {{ row.groundedApi?.brandMentioned ? '是' : '否' }}
+                              </el-descriptions-item>
+                              <el-descriptions-item label="排名">
+                                {{ row.groundedApi?.rank ?? '—' }}
+                              </el-descriptions-item>
+                              <el-descriptions-item label="引用数">
+                                {{ row.groundedApi?.citationCount ?? 0 }}
+                              </el-descriptions-item>
+                            </el-descriptions>
+                          </div>
+                        </el-col>
+                        <el-col :xs="24" :md="12">
+                          <div class="calibration-side">
+                            <h4>browser-extension</h4>
+                            <p v-if="row.browserExtension?.probeNodeKey" class="calibration-node">
+                              节点 {{ row.browserExtension.probeNodeKey }}
+                            </p>
+                            <p class="calibration-side__preview">
+                              {{ row.browserExtension?.answerPreview || '—' }}
+                            </p>
+                            <el-descriptions :column="2" size="small">
+                              <el-descriptions-item label="品牌提及">
+                                {{ row.browserExtension?.brandMentioned ? '是' : '否' }}
+                              </el-descriptions-item>
+                              <el-descriptions-item label="排名">
+                                {{ row.browserExtension?.rank ?? '—' }}
+                              </el-descriptions-item>
+                              <el-descriptions-item label="引用数">
+                                {{ row.browserExtension?.citationCount ?? 0 }}
+                              </el-descriptions-item>
+                            </el-descriptions>
+                          </div>
+                        </el-col>
+                      </el-row>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="问题 ID" prop="questionId" width="90" align="center" />
+                  <el-table-column label="问题" prop="question" min-width="200" show-overflow-tooltip />
+                  <el-table-column label="平台" prop="platform" width="110">
+                    <template #default="{ row }">
+                      <el-tag size="small">{{ row.platform }}</el-tag>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="品牌一致" width="100" align="center">
+                    <template #default="{ row }">
+                      <el-tag size="small" :type="row.brandMatch ? 'success' : 'warning'">
+                        {{ row.brandMatch ? '一致' : '不一致' }}
+                      </el-tag>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="相似度" width="90" align="center">
+                    <template #default="{ row }">
+                      {{ formatRatePct(row.similarityScore) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="偏差" width="90" align="center">
+                    <template #default="{ row }">
+                      {{ formatRatePct(row.deviationScore) }}
+                    </template>
+                  </el-table-column>
+                </el-table>
+
+                <p class="calibration-footnote">
+                  校准对比为只读展示，不承诺 AI 推荐排名。
+                  <router-link to="/settings/probe-adapters">检查 Adapter 配置 →</router-link>
+                </p>
+              </template>
+            </div>
+          </el-tab-pane>
+
           <el-tab-pane label="探针进度" name="probes">
             <el-table :data="probeTasks" border>
               <el-table-column label="问题 ID" prop="questionId" width="90" align="center" />
@@ -288,14 +440,26 @@
 import {
   computeMetricsFromResults,
   downloadDiagnosticReport,
+  getDiagnosticCalibration,
   getDiagnosticResults,
   getDiagnosticRun,
   getProbeTasks
 } from '@/api/tourgeo/diagnostic';
-import type { DiagnosticResultVO, DiagnosticRunVO, ProbeTaskVO } from '@/api/tourgeo/types';
+import type {
+  DiagnosticCalibrationVO,
+  DiagnosticResultVO,
+  DiagnosticRunVO,
+  ProbeTaskVO
+} from '@/api/tourgeo/types';
 import DiagnosticStatusTag from '@/components/tourgeo/DiagnosticStatusTag.vue';
 import GeoScoreDisplay from '@/components/tourgeo/GeoScoreDisplay.vue';
-import { METRIC_WEIGHT_LABELS, PROBE_TASK_STATUS_META } from '@/constants/diagnostic';
+import {
+  calibrationDeviationMeta,
+  formatCalibrationPct,
+  METRIC_WEIGHT_LABELS,
+  PROBE_TASK_STATUS_META
+} from '@/constants/diagnostic';
+import { QuestionFilled } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 
 const POLL_MS = 5000;
@@ -312,6 +476,9 @@ const activeTab = ref('overview');
 const pollTimer = ref<ReturnType<typeof setInterval> | null>(null);
 const exportingDocx = ref(false);
 const exportingPdf = ref(false);
+const calibration = ref<DiagnosticCalibrationVO | null>(null);
+const calibrationLoading = ref(false);
+const calibrationLoaded = ref(false);
 
 const resultFilter = reactive({
   platform: '',
@@ -338,6 +505,13 @@ const showKpiGrid = computed(
 const showTabs = computed(
   () => run.value && !['PENDING', 'FAILED', 'CANCELLED'].includes(run.value.status)
 );
+
+const showCalibrationTab = computed(() => {
+  if (!run.value) return false;
+  const ratio = run.value.calibrationRatio ?? 0;
+  const modes = run.value.probeModes ?? [];
+  return ratio > 0 && modes.includes('grounded-api') && modes.includes('browser-extension');
+});
 
 const canExportReport = computed(
   () => run.value && ['SUCCESS', 'PARTIAL_FAILED'].includes(run.value.status)
@@ -432,12 +606,25 @@ const competitorStats = computed(() => {
 });
 
 watch(
+  () => activeTab.value,
+  (tab) => {
+    if (tab === 'calibration') {
+      void loadCalibration();
+    }
+  }
+);
+
+watch(
   () => run.value?.status,
   (status) => {
     if (status === 'RUNNING' || status === 'PENDING') {
       activeTab.value = 'probes';
+      calibrationLoaded.value = false;
     } else if (status === 'SUCCESS' || status === 'PARTIAL_FAILED') {
       activeTab.value = 'overview';
+      if (showCalibrationTab.value && activeTab.value === 'calibration') {
+        void loadCalibration(true);
+      }
     }
   },
   { immediate: true }
@@ -445,6 +632,29 @@ watch(
 
 function pct(v: number) {
   return `${(v * 100).toFixed(1)}%`;
+}
+
+function formatRatePct(v: number | null | undefined) {
+  if (v == null || Number.isNaN(v)) return '—';
+  return `${(v * 100).toFixed(1)}%`;
+}
+
+async function loadCalibration(force = false) {
+  if (!run.value || !showCalibrationTab.value) return;
+  if (calibrationLoaded.value && !force) return;
+  calibrationLoading.value = true;
+  try {
+    calibration.value = await getDiagnosticCalibration(run.value.projectId, run.value.id);
+    calibrationLoaded.value = true;
+  } catch (e) {
+    calibration.value = null;
+    const msg = e instanceof Error ? e.message : '加载校准数据失败';
+    if (msg !== 'error') {
+      ElMessage.error(msg);
+    }
+  } finally {
+    calibrationLoading.value = false;
+  }
 }
 
 function formatTime(iso: string) {
@@ -506,6 +716,13 @@ async function loadAll(silent = false) {
     results.value = resultData;
     probeTasks.value = taskData;
     loadError.value = null;
+    if (
+      showCalibrationTab.value &&
+      (runData.status === 'SUCCESS' || runData.status === 'PARTIAL_FAILED') &&
+      activeTab.value === 'calibration'
+    ) {
+      void loadCalibration(true);
+    }
   } catch {
     if (!run.value) loadError.value = '404';
   } finally {
@@ -707,6 +924,79 @@ onUnmounted(stopPolling);
 
 .trends-link a:hover {
   text-decoration: underline;
+}
+
+.calibration-kpi-row {
+  margin-bottom: var(--tg-space-3);
+}
+
+.calibration-kpi {
+  text-align: center;
+  margin-bottom: var(--tg-space-2);
+}
+
+.calibration-kpi__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: var(--tg-font-size-xs);
+  color: var(--tg-color-text-secondary);
+}
+
+.calibration-kpi__value {
+  font-size: var(--tg-font-size-lg);
+  font-weight: 600;
+  margin: var(--tg-space-2) 0;
+}
+
+.calibration-kpi__sub {
+  font-size: var(--tg-font-size-xs);
+  color: var(--tg-color-text-secondary);
+}
+
+.kpi-tip {
+  cursor: help;
+  color: var(--tg-color-text-secondary);
+}
+
+.calibration-expand {
+  padding: var(--tg-space-2);
+}
+
+.calibration-side h4 {
+  margin: 0 0 var(--tg-space-2);
+  font-size: var(--tg-font-size-sm);
+}
+
+.calibration-side__preview {
+  margin: 0 0 var(--tg-space-2);
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  color: var(--tg-color-text-regular);
+}
+
+.calibration-node {
+  margin: 0 0 var(--tg-space-1);
+  font-size: 12px;
+  color: var(--tg-color-text-secondary);
+  font-family: ui-monospace, monospace;
+}
+
+.calibration-footnote {
+  margin-top: var(--tg-space-3);
+  font-size: var(--tg-font-size-xs);
+  color: var(--tg-color-text-secondary);
+
+  a {
+    color: var(--tg-color-primary);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
 }
 
 @media (max-width: 768px) {

@@ -233,6 +233,16 @@
   - 月报扣额：复用 `reports_per_month`
 - **影响**：[EPIC-8 M2 Sprint](HANDOFFS/2026-07-08-tech-director-epic8-m2-reports-sprint.md)
 
+### ADR-20260709-22 | EPIC-11 M2 仅 FR-115/116 Adapter 配置 + 校准对比
+- **状态**：已采纳
+- **决策者**：技术总监（完整版路线图 #3）
+- **背景**：M1 poll+Perplexity 闭环已完成；运营无法热更新 adapter；诊断 `calibration_ratio` 字段未生效；PRD 要求 API vs 网页版可信度
+- **决策**：
+  - **M2 做**：Admin platform-adapters GET/PUT · `GET .../calibration` 重叠问题对比 · `createRun` calibration_ratio 双模式抽样 · 扩展第二平台 chatgpt · Admin 校准 Tab
+  - **M2 不做**：FR-117 截图 · FR-118 Headless · 国内平台 · adapter 版本灰度发布
+  - 校准指标 M2：品牌 mention 一致率 + answer 文本相似度简化（Jaccard/contains）· 报告只读展示
+- **影响**：[EPIC-11 M2 Sprint](HANDOFFS/2026-07-09-tech-director-epic11-m2-probe-sprint.md)
+
 ---
 
 ## 待讨论

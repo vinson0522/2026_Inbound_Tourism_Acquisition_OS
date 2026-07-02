@@ -1,3 +1,5 @@
+import { mergeAdapter as mergeChatgptAdapter } from "~adapters/chatgpt"
+import { mergeAdapter as mergePerplexityAdapter } from "~adapters/perplexity"
 import {
   defaultRuntimeState,
   fetchAdapters,
@@ -7,19 +9,40 @@ import {
   submitProbeResult
 } from "~lib/api"
 import {
+  isProbePlatform,
+  PLATFORM_HOME_URL,
+  PLATFORM_TAB_PATTERN,
+  PROBE_PLATFORMS,
+  type ProbePlatform
+} from "~lib/platforms"
+import {
   findAdapter,
   patchRuntimeState,
   readAdapters,
   readRuntimeState,
   saveAdapters
 } from "~lib/storage-state"
-import type { BackgroundMessage, ProbePollTask, ProbeRuntimeState } from "~lib/types"
-import { mergeAdapter } from "~adapters/perplexity"
+import type {
+  BackgroundMessage,
+  PlatformAdapterConfig,
+  ProbePollTask,
+  ProbeRuntimeState
+} from "~lib/types"
 
 const ALARM_NAME = "tourgeo-probe-poll"
-const PERPLEXITY_URL = "https://www.perplexity.ai/"
 
 let executingTaskId: number | null = null
+let pollPlatformIndex = 0
+
+function mergeAdapterForPlatform(
+  remote: PlatformAdapterConfig | undefined,
+  platform: ProbePlatform
+): PlatformAdapterConfig {
+  if (platform === "chatgpt") {
+    return mergeChatgptAdapter(remote)
+  }
+  return mergePerplexityAdapter(remote)
+}
 
 async function bootstrap(): Promise<void> {
   await patchRuntimeState(defaultRuntimeState())
@@ -28,7 +51,7 @@ async function bootstrap(): Promise<void> {
     const adapters = await fetchAdapters()
     await saveAdapters(adapters)
     await patchRuntimeState({
-      lastTaskMessage: `Registered · ${adapters.length} adapter(s)`
+      lastTaskMessage: `Registered · ${adapters.length} adapter(s) · platforms=${PROBE_PLATFORMS.join(",")}`
     })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
@@ -42,14 +65,15 @@ async function bootstrap(): Promise<void> {
   })
 }
 
-async function getPerplexityTab(): Promise<chrome.tabs.Tab> {
-  const tabs = await chrome.tabs.query({ url: "https://www.perplexity.ai/*" })
+async function getPlatformTab(platform: ProbePlatform): Promise<chrome.tabs.Tab> {
+  const pattern = PLATFORM_TAB_PATTERN[platform]
+  const tabs = await chrome.tabs.query({ url: pattern })
   if (tabs[0]?.id != null) {
     return tabs[0]
   }
-  const created = await chrome.tabs.create({ url: PERPLEXITY_URL, active: false })
+  const created = await chrome.tabs.create({ url: PLATFORM_HOME_URL[platform], active: false })
   if (created.id == null) {
-    throw new Error("Failed to open Perplexity tab")
+    throw new Error(`Failed to open ${platform} tab`)
   }
   await waitForTabLoad(created.id)
   return created
@@ -59,7 +83,7 @@ function waitForTabLoad(tabId: number, timeoutMs = 30_000): Promise<void> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
       chrome.tabs.onUpdated.removeListener(listener)
-      reject(new Error("Perplexity tab load timeout"))
+      reject(new Error("Platform tab load timeout"))
     }, timeoutMs)
 
     const listener = (updatedId: number, info: chrome.tabs.TabChangeInfo) => {
@@ -74,14 +98,19 @@ function waitForTabLoad(tabId: number, timeoutMs = 30_000): Promise<void> {
 }
 
 async function runTaskOnTab(task: ProbePollTask): Promise<void> {
-  const tab = await getPerplexityTab()
+  if (!isProbePlatform(task.platform)) {
+    throw new Error(`Unsupported probe platform: ${task.platform}`)
+  }
+
+  const platform = task.platform
+  const tab = await getPlatformTab(platform)
   if (tab.id == null) {
-    throw new Error("Perplexity tab has no id")
+    throw new Error(`${platform} tab has no id`)
   }
 
   const adapters = await readAdapters()
-  const remote = findAdapter(adapters, task.platform)
-  const adapter = mergeAdapter(remote)
+  const remote = findAdapter(adapters, platform)
+  const adapter = mergeAdapterForPlatform(remote, platform)
 
   const response = await chrome.tabs.sendMessage(tab.id, {
     type: "EXECUTE_PROBE",
@@ -97,6 +126,19 @@ async function runTaskOnTab(task: ProbePollTask): Promise<void> {
   await submitProbeResult(task.probeTaskId, "SUCCESS", response.result)
 }
 
+async function pollNextTask(): Promise<ProbePollTask | null> {
+  const start = pollPlatformIndex
+  for (let i = 0; i < PROBE_PLATFORMS.length; i++) {
+    const platform = PROBE_PLATFORMS[(start + i) % PROBE_PLATFORMS.length]
+    const task = await pollTask(platform)
+    pollPlatformIndex = (start + i + 1) % PROBE_PLATFORMS.length
+    if (task?.probeTaskId) {
+      return task
+    }
+  }
+  return null
+}
+
 async function handlePollCycle(): Promise<void> {
   if (executingTaskId != null) {
     return
@@ -105,7 +147,7 @@ async function handlePollCycle(): Promise<void> {
   await patchRuntimeState({ taskStatus: "polling", lastPollAt: new Date().toISOString() })
 
   try {
-    const task = await pollTask(probeConfig.platform)
+    const task = await pollNextTask()
     await patchRuntimeState({ lastPollError: null })
 
     if (!task?.probeTaskId) {
@@ -121,7 +163,7 @@ async function handlePollCycle(): Promise<void> {
     await patchRuntimeState({
       taskStatus: "running",
       currentTask: task,
-      lastTaskMessage: `Running task #${task.probeTaskId}`
+      lastTaskMessage: `Running ${task.platform} task #${task.probeTaskId}`
     })
 
     await runTaskOnTab(task)
@@ -129,7 +171,7 @@ async function handlePollCycle(): Promise<void> {
     await patchRuntimeState({
       taskStatus: "success",
       currentTask: null,
-      lastTaskMessage: `Task #${task.probeTaskId} submitted`
+      lastTaskMessage: `Task #${task.probeTaskId} (${task.platform}) submitted`
     })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)

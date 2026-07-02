@@ -192,8 +192,17 @@
           <el-input-number v-model="form.sampleCount" :min="1" :max="10" />
         </el-form-item>
         <el-form-item label="校准比例">
-          <el-slider v-model="form.calibrationRatio" :max="30" show-input />
-          <div class="field-hint">扩展探针校准采样比例（0–30%）</div>
+          <el-tooltip content="需同时勾选 browser-extension 探针模式" :disabled="calibrationEnabled">
+            <div class="calibration-slider">
+              <el-slider
+                v-model="form.calibrationRatio"
+                :max="30"
+                :disabled="!calibrationEnabled"
+                show-input
+              />
+            </div>
+          </el-tooltip>
+          <div class="field-hint">扩展探针校准采样比例（0–30%）· API vs 网页版重叠对比</div>
         </el-form-item>
       </el-form>
       <el-alert
@@ -275,6 +284,8 @@ const rules = ref<ElFormRules>({
 });
 
 const marketOptions = computed(() => projectStore.currentProject?.targetMarkets ?? MARKET_OPTIONS);
+
+const calibrationEnabled = computed(() => form.probeModes.includes('browser-extension'));
 
 async function getList() {
   if (!projectStore.currentProjectId) {
@@ -408,6 +419,10 @@ onMounted(async () => {
   font-size: var(--tg-font-size-xs);
   color: var(--tg-color-text-secondary);
   margin-top: var(--tg-space-1);
+}
+
+.calibration-slider {
+  width: 100%;
 }
 
 .drawer-alert {

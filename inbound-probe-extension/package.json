@@ -2,7 +2,7 @@
   "name": "inbound-probe-extension",
   "displayName": "TourGEO Probe",
   "version": "0.1.0",
-  "description": "Chrome MV3 GEO probe — poll tasks and capture Perplexity citations",
+  "description": "Chrome MV3 GEO probe — poll tasks and capture Perplexity / ChatGPT citations",
   "author": "TourGEO",
   "license": "MIT",
   "private": true,
@@ -29,6 +29,7 @@
   "manifest": {
     "host_permissions": [
       "https://www.perplexity.ai/*",
+      "https://chatgpt.com/*",
       "http://localhost:8080/*",
       "http://127.0.0.1:8080/*"
     ],

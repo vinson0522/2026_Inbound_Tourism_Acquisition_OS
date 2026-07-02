@@ -24,6 +24,9 @@
           <div class="summary-header">
             <span class="card-title">探针节点池</span>
             <div class="toolbar-actions">
+              <router-link to="/settings/probe-adapters">
+                <el-button link type="primary">配置 Adapter →</el-button>
+              </router-link>
               <el-button @click="installDrawerVisible = true">查看安装说明</el-button>
               <el-tooltip content="由扩展自动注册 · FR-113" placement="top">
                 <el-button disabled>注册节点</el-button>

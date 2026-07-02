@@ -88,4 +88,17 @@ VALUES (
 )
 ON CONFLICT (tenant_id, platform, version) DO NOTHING;
 
+INSERT INTO platform_adapter (tenant_id, platform, version, dom_selectors_json, api_patterns_json, parse_rules_json, enabled, created_by)
+VALUES (
+    1,
+    'chatgpt',
+    '1.0',
+    '{"input": "#prompt-textarea", "submit": "button[data-testid=send-button]"}',
+    '{"chatApi": "/backend-api/conversation", "sseApi": "/backend-api/conversation"}',
+    '{"citationsPath": "message.metadata.citations", "answerPath": "message.content.parts"}',
+    TRUE,
+    1
+)
+ON CONFLICT (tenant_id, platform, version) DO NOTHING;
+
 COMMIT;

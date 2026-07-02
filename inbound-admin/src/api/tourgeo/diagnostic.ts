@@ -9,6 +9,7 @@ import type {
   DiagnosticResultVO,
   DiagnosticRunQuery,
   DiagnosticRunVO,
+  DiagnosticCalibrationVO,
   DiagnosticTrendPointVO,
   DiagnosticTrendsData,
   PageResult,
@@ -53,7 +54,9 @@ export async function createDiagnosticRun(
       probeModes: form.probeModes,
       models: form.models?.length ? form.models : ['Gemini'],
       sampleCount: form.sampleCount ?? 1,
-      calibrationRatio: form.calibrationRatio ?? 0,
+      calibrationRatio: form.probeModes.includes('browser-extension')
+        ? (form.calibrationRatio ?? 0) / 100
+        : 0,
       questionScope: form.questionScope ?? 'all'
     }
   });
@@ -79,6 +82,49 @@ export async function getProbeTasks(runId: number): Promise<ProbeTaskVO[]> {
   const res = await request.get(`${BASE}/diagnostics/${runId}/probe-tasks`);
   const list = res.data ?? [];
   return list.map(mapProbeTaskVo);
+}
+
+/** FR-115 API vs browser-extension 校准对比 */
+export async function getDiagnosticCalibration(
+  projectId: number,
+  runId: number
+): Promise<DiagnosticCalibrationVO> {
+  const res = await request.get(`${BASE}/projects/${projectId}/diagnostics/${runId}/calibration`);
+  const raw = res.data ?? {};
+  return {
+    deviationRate: raw.deviationRate != null ? Number(raw.deviationRate) : null,
+    brandMentionAgreementRate:
+      raw.brandMentionAgreementRate != null ? Number(raw.brandMentionAgreementRate) : null,
+    sampleCount: raw.sampleCount != null ? Number(raw.sampleCount) : undefined,
+    pairedCount: raw.pairedCount != null ? Number(raw.pairedCount) : 0,
+    pairs: Array.isArray(raw.pairs) ? raw.pairs.map(mapCalibrationPair) : []
+  };
+}
+
+function mapCalibrationPair(raw: Record<string, unknown>) {
+  return {
+    questionId: Number(raw.questionId),
+    question: raw.question ? String(raw.question) : undefined,
+    stage: raw.stage ? String(raw.stage) : undefined,
+    platform: String(raw.platform ?? ''),
+    brandMatch: raw.brandMatch != null ? Boolean(raw.brandMatch) : undefined,
+    similarityScore: raw.similarityScore != null ? Number(raw.similarityScore) : undefined,
+    deviationScore: raw.deviationScore != null ? Number(raw.deviationScore) : undefined,
+    groundedApi: mapCalibrationSide(raw.groundedApi as Record<string, unknown> | undefined),
+    browserExtension: mapCalibrationSide(raw.browserExtension as Record<string, unknown> | undefined)
+  };
+}
+
+function mapCalibrationSide(raw?: Record<string, unknown>) {
+  if (!raw) return undefined;
+  return {
+    resultId: raw.resultId != null ? Number(raw.resultId) : undefined,
+    probeNodeKey: raw.probeNodeKey ? String(raw.probeNodeKey) : undefined,
+    answerPreview: raw.answerPreview ? String(raw.answerPreview) : undefined,
+    brandMentioned: raw.brandMentioned != null ? Boolean(raw.brandMentioned) : undefined,
+    rank: raw.rank != null ? Number(raw.rank) : null,
+    citationCount: raw.citationCount != null ? Number(raw.citationCount) : undefined
+  };
 }
 
 /** FR-108 诊断趋势序列 */
@@ -226,6 +272,7 @@ function mapRunVo(raw: Record<string, unknown>): DiagnosticRunVO {
     probeModes: (raw.probeModes as string[]) ?? [],
     models: (raw.models as string[]) ?? [],
     sampleCount: Number(raw.sampleCount ?? 1),
+    calibrationRatio: raw.calibrationRatio != null ? Number(raw.calibrationRatio) : 0,
     status: raw.status as DiagnosticRunVO['status'],
     progress: raw.progress != null ? Number(raw.progress) : null,
     geoScore: raw.geoScore != null ? Number(raw.geoScore) : null,
