@@ -34,5 +34,5 @@ EPIC-3 M2 三条开发线均已 Done（Python pytest 8 ✅ · Java smoke ✅ · 
 ## Done（由 To 角色填写）
 
 - **完成时间**：2026-07-06
-- **结果摘要**：C16 `762fefa` · 29 files · pytest 8 + `test_keywords_score` ✅ · push origin/main
+- **结果摘要**：C16 `20b7a87` · 29 files · pytest 8 + `test_keywords_score` ✅ · push origin/main
 - **遗留**：无

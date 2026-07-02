@@ -7,7 +7,7 @@
 |------|-----|
 | **最后更新** | 2026-07-06 |
 | **更新角色** | 开发 |
-| **Git 远程** | ✅ `origin/main` · C15 `3855266` · **C16 `762fefa`** |
+| **Git 远程** | ✅ `origin/main` · C15 `3855266` · **C16 `20b7a87`** |
 | **当前 EPIC 焦点** | **EPIC-3 M2 已关闭** · 待技术总监排下一 Sprint |
 
 ---
@@ -188,7 +188,7 @@
 
 **ADR-19**：五维加权 `keyword_score_v1`；无新 UI 线框
 
-**技术总监签核**：✅ **EPIC-3 M2 正式关闭** — C16 `762fefa` · pytest 8 + `test_keywords_score` ✅
+**技术总监签核**：✅ **EPIC-3 M2 正式关闭** — C16 `20b7a87` · pytest 8 + `test_keywords_score` ✅
 
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
@@ -235,9 +235,9 @@
 | **C13** | EPIC-6 M2 Astro 发布 | `feat(landing,core,admin,deploy): EPIC-6 M2…` | ✅ `71c374d` |
 | **C14** | EPIC-9 M1 计费 | `feat(core,admin): EPIC-9 M1 subscription quota and overage guard` | ✅ `f23e539` |
 | **C15** | EPIC-11 M1 探针 | `feat(core,admin,extension): EPIC-11 M1 browser probe poll and node registry` | ✅ `3855266` |
-| **C16** | EPIC-3 M2 关键词评分 | `feat(ai,core,admin): EPIC-3 M2 keyword opportunity scoring FR-203` | ✅ `762fefa` |
+| **C16** | EPIC-3 M2 关键词评分 | `feat(ai,core,admin): EPIC-3 M2 keyword opportunity scoring FR-203` | ✅ `20b7a87` |
 
-**执行**：C1–C16 ✅ · push ⏳
+**执行**：C1–C16 ✅ · push ✅
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -410,7 +410,7 @@
 | B-10 | ~~EPIC-8 M1 C12 未 commit/push~~ | 开发 | ✅ **已关闭** C12 `e127485` |
 | B-11 | ~~EPIC-6 M2 C13 未 commit/push~~ | 开发 | ✅ **已关闭** `71c374d` |
 | B-12 | ~~EPIC-11 M1 C15 未 commit/push~~ | 开发 | ✅ **已关闭** `3855266` · smoke ✅ |
-| B-13 | ~~EPIC-3 M2 C16 未 commit/push~~ | 开发 | ✅ **已关闭** C16 `762fefa` · pytest 8 + smoke ✅ |
+| B-13 | ~~EPIC-3 M2 C16 未 commit/push~~ | 开发 | ✅ **已关闭** C16 `20b7a87` · pytest 8 + smoke ✅ |
 
 ---
 
