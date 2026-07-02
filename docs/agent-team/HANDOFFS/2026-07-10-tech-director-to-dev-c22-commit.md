@@ -18,10 +18,10 @@ EPIC-7 M3 五线均已 Done。工作区 **~35 文件未 commit**（含 DDL `lead
 提交并 push **C22**，更新 MEMORY 签核 + 路线图 #6 关闭。
 
 **验收标准**：
-- [ ] message：`feat(core,ai,admin,landing): EPIC-7 M3 WhatsApp tracking and AI followup`
-- [ ] smoke：`python deploy/scripts/test_leads_whatsapp_ai.py` ✅
-- [ ] `git push origin main`
-- [ ] MEMORY：**EPIC-7 M3 正式关闭** — C22 `{hash}` · 路线图 #6 ✅
+- [x] message：`feat(core,ai,admin,landing): EPIC-7 M3 WhatsApp tracking and AI followup`
+- [x] smoke：`python deploy/scripts/test_leads_whatsapp_ai.py` ✅
+- [x] `git push origin main`
+- [x] MEMORY：**EPIC-7 M3 正式关闭** — C22 `18b17c0` · 路线图 #6 ✅
 
 ## Prompt
 
@@ -33,6 +33,6 @@ EPIC-7 M3 五线均已 Done。工作区 **~35 文件未 commit**（含 DDL `lead
 
 ## Done（由 To 角色填写）
 
-- **完成时间**：
-- **结果摘要**：
-- **遗留**：
+- **完成时间**：2026-07-02
+- **结果摘要**：C22 `18b17c0` · 47 files · smoke leadId=44 clicks=6 · push origin/main ✅ · MEMORY 签核 EPIC-7 M3 关闭
+- **遗留**：—

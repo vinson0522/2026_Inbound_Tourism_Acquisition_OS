@@ -5,10 +5,10 @@
 
 | 字段 | 值 |
 |------|-----|
-| **最后更新** | 2026-07-09 |
+| **最后更新** | 2026-07-02 |
 | **更新角色** | 开发 |
-| **Git 远程** | ✅ `origin/main` · C21 `fb28a96` |
-| **当前 EPIC 焦点** | **EPIC-7 M3** WhatsApp/AI 跟进 · 路线图 #6 |
+| **Git 远程** | ✅ `origin/main` · C22 `18b17c0` |
+| **当前 EPIC 焦点** | **EPIC-2 M3** 定时诊断（FR-109）· 路线图 #7 |
 
 ---
 
@@ -201,8 +201,8 @@
 | 3 | **M2 探针** | EPIC-11 · FR-115/116 | adapter + 校准 + ChatGPT | ✅ C19 `cf42562` |
 | 4 | M2 计费 | EPIC-9 · FR-804 扩展 | 套餐 CRUD + 周期重置 | ✅ C20 `942eddb` |
 | 5 | M1 素材 | EPIC-5 · FR-401~403 | 爆款拆解 MVP | ✅ C21 `fb28a96` |
-| 6 | M3 线索 | EPIC-7 · FR-602/603 | WhatsApp 追踪 + AI 跟进话术 | ⏳ **下一 Sprint** |
-| 7 | M3 诊断 | EPIC-2 · FR-109 | 定时诊断任务 |
+| 6 | M3 线索 | EPIC-7 · FR-602/603 | WhatsApp 追踪 + AI 跟进话术 | ✅ C22 `18b17c0` |
+| 7 | M3 诊断 | EPIC-2 · FR-109 | 定时诊断任务 | ⏳ **下一 Sprint** |
 | — | 维护 | — | smoke 9/9 · 扩展真 Perplexity hook | 并行 |
 
 ### EPIC-7 M2 Sprint — FR-605 轻量 CRM（2026-07-07 排期）
@@ -272,6 +272,21 @@
 
 **技术总监签核（2026-07-09）**：✅ **EPIC-5 M1 正式关闭** — C21 `fb28a96` · `test_material_breakdown` materialId=3 · pytest 4 · Admin build ✅ · 路线图 #5 ✅
 
+### EPIC-7 M3 Sprint — FR-602/603 WhatsApp + AI 跟进（2026-07-10 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | leads M3 线框 | [→UI](HANDOFFS/2026-07-10-tech-director-to-ui-epic7-leads-m3.md) | ✅ |
+| 2 | 开发 Java | lead-events + ai-suggestion | [→Java](HANDOFFS/2026-07-10-tech-director-to-dev-java-epic7-leads-m3.md) | ✅ 2026-07-02 |
+| 3 | 开发 Python | `/ai/followup/generate` | [→AI](HANDOFFS/2026-07-10-tech-director-to-dev-ai-epic7-followup.md) | ✅ mock 2026-07-02 |
+| 4 | 开发 Landing | WhatsApp beacon | [→Landing](HANDOFFS/2026-07-10-tech-director-to-dev-landing-epic7-whatsapp.md) | ✅ 2026-07-02 |
+| 5 | 开发 Admin | AI + 归因 UI | [→Admin](HANDOFFS/2026-07-10-tech-director-to-dev-admin-epic7-leads-m3.md) | ✅ build |
+| — | 总览 | Sprint 索引 | [EPIC-7 M3](HANDOFFS/2026-07-10-tech-director-epic7-m3-leads-sprint.md) | ✅ **关闭** |
+
+**ADR-25**：public lead-events · AI followup mock · 无归因报表 M3
+
+**技术总监签核（2026-07-10）**：✅ **EPIC-7 M3 正式关闭** — C22 `18b17c0` · `test_leads_whatsapp_ai` leadId=44 clicks=6 · pytest 7 · Admin/Landing build ✅ · 路线图 #6 ✅
+
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
 | # | 角色 | 任务 | HANDOFF | 状态 |
@@ -323,8 +338,9 @@
 | **C19** | EPIC-11 M2 探针 | `feat(core,admin,extension): EPIC-11 M2 probe adapters and calibration` | ✅ `cf42562` |
 | **C20** | EPIC-9 M2 计费 | `feat(core,admin): EPIC-9 M2 subscription CRUD and period reset` | ✅ `942eddb` |
 | **C21** | EPIC-5 M1 爆款 | `feat(core,ai,admin): EPIC-5 M1 viral video breakdown MVP` | ✅ `fb28a96` |
+| **C22** | EPIC-7 M3 线索 | `feat(core,ai,admin,landing): EPIC-7 M3 WhatsApp tracking and AI followup` | ✅ `18b17c0` |
 
-**执行**：C1–C21 ✅ · push ✅
+**执行**：C1–C22 ✅ · push ✅
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -402,6 +418,10 @@
 - **EPIC-7 M1 FR-601 Admin 线索页（2026-07-01）** ✅ `/leads` 侧栏 + 列表/筛选/脱敏 + 详情 drawer · `maskPii` · `pnpm build:prod` ✅
 - **EPIC-7 M2 FR-605 leads CRM Java（2026-07-07）** ✅ PATCH lead 状态/负责人 · GET/POST followups · `LeadStatusTransition` · 详情 `assigneeName`/`followups[]` · `tenant.excludes` + `lead_followup` · `test_leads_crm.py` ✅
 - **EPIC-7 M2 FR-605 Admin CRM drawer（2026-07-07）** ✅ 双 Tab CRM/线索信息 · 状态保存 · 指派给我 · 跟进 timeline · 终态禁用 · `pnpm build:prod` ✅
+- **EPIC-7 M3 FR-602/603 leads Java（2026-07-02）** ✅ `lead_channel_event` DDL · `POST /api/v1/public/lead-events` · 详情 WhatsApp 点击聚合 · `POST .../ai-suggestion` Feign · `test_leads_whatsapp_ai.py` ✅
+- **EPIC-7 M3 FR-603 followup AI（2026-07-02）** ✅ `POST /ai/followup/generate` · `FOLLOWUP_MOCK_LLM` 默认 · `template_service.load_followup_generate_prompt` · en/zh · LLM 路径+合规校验 · `tests/test_followup.py` 7 passed
+- **EPIC-7 M3 FR-602 Landing WhatsApp beacon（2026-07-02）** ✅ `WhatsAppBar.astro` + `whatsapp-beacon.ts` · `sendBeacon`/keepalive → `POST /api/v1/public/lead-events` · UTM · 不阻塞 wa.me · `pnpm build` ✅
+- **EPIC-7 M3 FR-602/603 Admin 线索 M3 UI（2026-07-02）** ✅ 线索信息 WhatsApp 归因+beacon 说明 · AI 跟进建议弹窗 en/zh · 复制/填入跟进 · `generateLeadAiSuggestion` · `pnpm build:prod` ✅
 - **EPIC-8 M2 FR-703/704 Admin 月报+白标（2026-07-08）** ✅ 月报 dialog · MONTHLY 预览 MoM/CRM · `/settings/report-template` 白标页 · `pnpm build:prod` ✅
 - **EPIC-8 M1 FR-701/702 Admin 报告中心（2026-07-02）** ✅ `/reports` 侧栏 + 列表/筛选 + 周报 dialog + 预览 drawer + DOCX/PDF 下载 · `pnpm build:prod` ✅
 - **EPIC-8 M2 FR-703/704 monthly+白标 Java（2026-07-08）** ✅ `POST .../reports/monthly` · `GET/PUT /api/v1/settings/report-template` · MoM/CRM/avgScore 聚合 · 导出白标 weekly/monthly/diagnostic · `template` entity · `test_reports_monthly.py` ✅ docx 3122B
@@ -486,9 +506,9 @@
 
 ## UI 设计
 
-- **已完成**：… probe-adapters (EPIC-11 M2) ✅ · billing-settings §M2 (EPIC-9 M2) ✅ · **viral-breakdown-list (EPIC-5 M1)** ✅
-- **HANDOFF**：[爆款拆解 → 开发](HANDOFFS/2026-07-09-ui-to-developer-viral-breakdown.md)
-- **待办**：—
+- **已完成**：… probe-adapters (EPIC-11 M2) ✅ · billing-settings §M2 (EPIC-9 M2) ✅ · viral-breakdown-list (EPIC-5 M1) ✅ · **leads-list §M3 (EPIC-7 M3)** ✅
+- **HANDOFF**：[UI→开发 leads M3](HANDOFFS/2026-07-10-ui-to-developer-leads-m3.md) ✅
+- **待办**：—（M3 开发由 Java / AI / Landing / Admin 窗口接手）
 
 ---
 
@@ -515,15 +535,16 @@
 | B-16 | ~~EPIC-11 M2 C19 未 commit/push~~ | 开发 | ✅ **已关闭** C19 `cf42562` · smoke runId=7 |
 | B-17 | ~~EPIC-9 M2 C20 未 commit/push~~ | 开发 | ✅ **已关闭** C20 `942eddb` · smoke ✅ |
 | B-18 | ~~EPIC-5 M1 C21 未 commit/push~~ | 开发 | ✅ **已关闭** C21 `fb28a96` · smoke materialId=3 |
+| B-19 | ~~EPIC-7 M3 C22 未 commit/push~~ | 开发 | ✅ **已关闭** C22 `18b17c0` · smoke leadId=44 |
 
 ---
 
-## 下一步（跨角色 · 2026-07-09）
+## 下一步（跨角色 · 2026-07-02）
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P2** | **开发** | diagnostic smoke 9/9 | 维护轨 |
-| **P2** | **开发** | EPIC-7 M3 线索 WhatsApp/AI 跟进 | 路线图 #6 |
+| **P0** | **技术总监** | 派发 **EPIC-2 M3** 定时诊断 | 路线图 #7 |
+| **P1** | **开发** | diagnostic smoke 9/9 | 维护轨 |
 
 ---
 
@@ -531,6 +552,12 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-02 | 开发 | C22 `18b17c0` EPIC-7 M3 WhatsApp+AI 全栈 commit+push · **EPIC-7 M3 正式关闭** · 路线图 #6 ✅ · B-19 关闭 |
+| 2026-07-10 | 技术总监 | EPIC-7 M3 五端复核 ✅ · smoke leadId=43 · 派发 C22 · B-19 打开 |
+| 2026-07-02 | 开发 Admin | EPIC-7 M3 leads drawer WhatsApp 归因 + AI 跟进弹窗 · `build:prod` ✅ |
+| 2026-07-02 | 开发 Landing | EPIC-7 M3 WhatsApp beacon · `sendBeacon` lead-events · `pnpm build` ✅ |
+| 2026-07-02 | 开发 Python | EPIC-7 M3 `/ai/followup/generate` 完整 mock+LLM 路径 · template_service · pytest 7 passed |
+| 2026-07-10 | 技术总监 | C21 已关闭 · 派发 **EPIC-7 M3** WhatsApp+AI跟进 · ADR-25 · 5 条 HANDOFF · 路线图 #6 |
 | 2026-07-09 | 开发 | C21 `fb28a96` EPIC-5 M1 爆款拆解全栈 commit+push · **EPIC-5 M1 正式关闭** · 路线图 #5 ✅ · B-18 关闭 |
 | 2026-07-09 | 技术总监 | EPIC-5 M1 四端复核 ✅ · smoke materialId=2 · pytest 4 · 派发 C21 · B-18 打开 · 修正 EPIC-9 签核 |
 | 2026-07-09 | UI 设计 | EPIC-5 M1 `viral-breakdown-list` 上传+拆解+七维 drawer+frames · FR-405 footnote · UI→开发 HANDOFF ✅ |
