@@ -9,6 +9,8 @@ import org.dromara.aiclient.model.AiApiResponse;
 import org.dromara.aiclient.model.GeneratedKeyword;
 import org.dromara.aiclient.model.KeywordGenerateData;
 import org.dromara.aiclient.model.KeywordGenerateRequest;
+import org.dromara.aiclient.model.KeywordScoreData;
+import org.dromara.aiclient.model.KeywordScoreRequest;
 import org.dromara.aiclient.model.StageKeywords;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
@@ -16,13 +18,18 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.project.domain.Competitor;
 import org.dromara.project.domain.CustomerProject;
 import org.dromara.project.billing.QuotaType;
 import org.dromara.project.domain.KeywordOpportunity;
 import org.dromara.project.domain.bo.KeywordGenerateBo;
 import org.dromara.project.domain.bo.KeywordOpportunityBo;
+import org.dromara.project.domain.bo.KeywordScoreBatchBo;
 import org.dromara.project.domain.vo.KeywordGenerateVo;
 import org.dromara.project.domain.vo.KeywordOpportunityVo;
+import org.dromara.project.domain.vo.KeywordScoreBatchVo;
+import org.dromara.project.domain.vo.KeywordScoreVo;
+import org.dromara.project.mapper.CompetitorMapper;
 import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.mapper.KeywordOpportunityMapper;
 import org.dromara.project.service.IKeywordOpportunityService;
@@ -32,6 +39,8 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,8 +53,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class KeywordOpportunityServiceImpl implements IKeywordOpportunityService {
 
+    private static final int SCORE_BATCH_LIMIT = 50;
+
     private final KeywordOpportunityMapper keywordOpportunityMapper;
     private final CustomerProjectMapper customerProjectMapper;
+    private final CompetitorMapper competitorMapper;
     private final AiServiceClient aiServiceClient;
     private final IQuotaService quotaService;
 
@@ -63,11 +75,41 @@ public class KeywordOpportunityServiceImpl implements IKeywordOpportunityService
             .eq(StringUtils.isNotBlank(bo.getStage()), KeywordOpportunity::getStage, bo.getStage())
             .eq(StringUtils.isNotBlank(bo.getMarket()), KeywordOpportunity::getMarket, bo.getMarket())
             .eq(StringUtils.isNotBlank(bo.getStatus()), KeywordOpportunity::getStatus, bo.getStatus())
-            .like(StringUtils.isNotBlank(bo.getKeyword()), KeywordOpportunity::getKeyword, bo.getKeyword())
-            .orderByDesc(KeywordOpportunity::getScore)
-            .orderByDesc(KeywordOpportunity::getCreatedAt);
-        Page<KeywordOpportunityVo> page = keywordOpportunityMapper.selectVoPage(pageQuery.build(), lqw);
+            .like(StringUtils.isNotBlank(bo.getKeyword()), KeywordOpportunity::getKeyword, bo.getKeyword());
+        PageQuery effectivePageQuery = pageQuery;
+        if (StringUtils.isBlank(pageQuery.getOrderByColumn())) {
+            lqw.last("ORDER BY score DESC NULLS LAST, created_at DESC");
+            effectivePageQuery = pageQueryWithoutOrder(pageQuery);
+        } else if (isScoreColumn(pageQuery.getOrderByColumn())) {
+            if (isDescSort(pageQuery.getIsAsc())) {
+                lqw.last("ORDER BY score DESC NULLS LAST, created_at DESC");
+            } else {
+                lqw.last("ORDER BY score ASC NULLS LAST, created_at DESC");
+            }
+            effectivePageQuery = pageQueryWithoutOrder(pageQuery);
+        }
+        Page<KeywordOpportunityVo> page = keywordOpportunityMapper.selectVoPage(effectivePageQuery.build(), lqw);
         return TableDataInfo.build(page);
+    }
+
+    private static PageQuery pageQueryWithoutOrder(PageQuery pageQuery) {
+        return new PageQuery(pageQuery.getPageSize(), pageQuery.getPageNum());
+    }
+
+    private static boolean isScoreColumn(String orderByColumn) {
+        return "score".equalsIgnoreCase(StringUtils.trim(orderByColumn));
+    }
+
+    private static boolean isDescSort(String isAsc) {
+        if (StringUtils.isBlank(isAsc)) {
+            return true;
+        }
+        String normalized = StringUtils.replaceEach(
+            isAsc,
+            new String[] {"ascending", "descending"},
+            new String[] {"asc", "desc"}
+        );
+        return "desc".equalsIgnoreCase(StringUtils.trim(normalized));
     }
 
     @Override
@@ -144,6 +186,152 @@ public class KeywordOpportunityServiceImpl implements IKeywordOpportunityService
         vo.setNeedsHumanReview(Boolean.TRUE.equals(data.getNeedsHumanReview()) || data.getNeedsHumanReview() == null);
         vo.setCaptureMethod(data.getCaptureMethod());
         return vo;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public KeywordScoreVo scoreKeyword(Long projectId, Long keywordId, Boolean useRag) {
+        CustomerProject project = getOwnedProjectOrThrow(projectId);
+        KeywordOpportunity entity = getOwnedKeywordOrThrow(projectId, keywordId);
+        return scoreEntity(project, entity, useRag);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public KeywordScoreBatchVo scoreBatch(Long projectId, KeywordScoreBatchBo bo) {
+        CustomerProject project = getOwnedProjectOrThrow(projectId);
+        Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        List<KeywordOpportunity> targets = resolveScoreTargets(projectId, tenantId, bo);
+        if (targets.isEmpty()) {
+            throw new ServiceException("没有可评分的关键词");
+        }
+
+        KeywordScoreBatchVo batchVo = new KeywordScoreBatchVo();
+        Boolean useRag = bo != null ? bo.getUseRag() : null;
+        for (KeywordOpportunity entity : targets) {
+            batchVo.getResults().add(scoreEntity(project, entity, useRag));
+        }
+        batchVo.setScoredCount(batchVo.getResults().size());
+        return batchVo;
+    }
+
+    private List<KeywordOpportunity> resolveScoreTargets(
+        Long projectId,
+        Long tenantId,
+        KeywordScoreBatchBo bo
+    ) {
+        List<Long> ids = bo != null ? bo.getKeywordIds() : null;
+        if (ids != null && !ids.isEmpty()) {
+            if (ids.size() > SCORE_BATCH_LIMIT) {
+                throw new ServiceException("批量评分最多 " + SCORE_BATCH_LIMIT + " 条");
+            }
+            return keywordOpportunityMapper.selectList(
+                Wrappers.lambdaQuery(KeywordOpportunity.class)
+                    .eq(KeywordOpportunity::getProjectId, projectId)
+                    .eq(KeywordOpportunity::getTenantId, tenantId)
+                    .in(KeywordOpportunity::getId, ids)
+                    .isNull(KeywordOpportunity::getDeletedAt)
+            );
+        }
+        return keywordOpportunityMapper.selectList(
+            Wrappers.lambdaQuery(KeywordOpportunity.class)
+                .eq(KeywordOpportunity::getProjectId, projectId)
+                .eq(KeywordOpportunity::getTenantId, tenantId)
+                .apply("status = 'ACTIVE'::entity_status")
+                .isNull(KeywordOpportunity::getDeletedAt)
+                .orderByDesc(KeywordOpportunity::getCreatedAt)
+                .last("LIMIT " + SCORE_BATCH_LIMIT)
+        );
+    }
+
+    private KeywordScoreVo scoreEntity(
+        CustomerProject project,
+        KeywordOpportunity entity,
+        Boolean useRag
+    ) {
+        Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        KeywordScoreRequest aiReq = buildScoreRequest(project, entity, tenantId, useRag);
+
+        AiApiResponse<KeywordScoreData> aiResp;
+        try {
+            aiResp = aiServiceClient.keywordsScore(aiReq);
+        } catch (IllegalStateException ex) {
+            throw new ServiceException("AI 关键词评分失败: " + ex.getMessage());
+        }
+        if (aiResp == null || aiResp.getCode() == null || aiResp.getCode() != 0 || aiResp.getData() == null) {
+            String msg = aiResp != null ? aiResp.getMessage() : "empty response";
+            throw new ServiceException("AI 关键词评分失败: " + msg);
+        }
+
+        KeywordScoreData data = aiResp.getData();
+        if (data.getScore() == null) {
+            throw new ServiceException("AI 未返回 score");
+        }
+
+        BigDecimal score = BigDecimal.valueOf(data.getScore()).setScale(1, RoundingMode.HALF_UP);
+        Map<String, Object> detail = data.getScoreDetail() != null
+            ? new HashMap<>(data.getScoreDetail())
+            : Collections.emptyMap();
+
+        OffsetDateTime now = OffsetDateTime.now();
+        entity.setScore(score);
+        entity.setScoreDetailJson(detail);
+        entity.setUpdatedAt(now);
+        keywordOpportunityMapper.updateById(entity);
+
+        KeywordScoreVo vo = new KeywordScoreVo();
+        vo.setKeywordId(entity.getId());
+        vo.setKeyword(entity.getKeyword());
+        vo.setScore(score);
+        vo.setScoreDetailJson(detail);
+        return vo;
+    }
+
+    private KeywordScoreRequest buildScoreRequest(
+        CustomerProject project,
+        KeywordOpportunity entity,
+        Long tenantId,
+        Boolean useRag
+    ) {
+        BigDecimal geoScore = keywordOpportunityMapper.selectLatestGeoScore(tenantId, project.getId());
+        List<String> competitors = loadCompetitorNames(project.getId(), tenantId);
+
+        KeywordScoreRequest aiReq = new KeywordScoreRequest();
+        aiReq.setTenantId(tenantId);
+        aiReq.setProjectId(project.getId());
+        aiReq.setKeywordId(entity.getId());
+        aiReq.setKeyword(entity.getKeyword());
+        aiReq.setKeywordEn(StringUtils.blankToDefault(entity.getKeywordEn(), entity.getKeyword()));
+        aiReq.setStage(entity.getStage());
+        aiReq.setMarket(StringUtils.blankToDefault(entity.getMarket(), defaultMarket(project)));
+        aiReq.setBrandName(StringUtils.blankToDefault(project.getBrandName(), project.getName()));
+        if (!competitors.isEmpty()) {
+            aiReq.setCompetitors(competitors);
+        }
+        if (geoScore != null) {
+            aiReq.setGeoScore(geoScore.doubleValue());
+        }
+        aiReq.setUseRag(useRag != null ? useRag : Boolean.TRUE);
+        aiReq.setTraceId(StringUtils.blankToDefault(MDC.get("traceId"), UUID.randomUUID().toString()));
+        return aiReq;
+    }
+
+    private List<String> loadCompetitorNames(Long projectId, Long tenantId) {
+        List<Competitor> rows = competitorMapper.selectList(
+            Wrappers.lambdaQuery(Competitor.class)
+                .eq(Competitor::getProjectId, projectId)
+                .eq(Competitor::getTenantId, tenantId)
+                .isNull(Competitor::getDeletedAt)
+                .orderByDesc(Competitor::getCreatedAt)
+                .last("LIMIT 10")
+        );
+        List<String> names = new ArrayList<>(rows.size());
+        for (Competitor row : rows) {
+            if (StringUtils.isNotBlank(row.getName())) {
+                names.add(row.getName().trim());
+            }
+        }
+        return names;
     }
 
     private int persistGeneratedKeywords(

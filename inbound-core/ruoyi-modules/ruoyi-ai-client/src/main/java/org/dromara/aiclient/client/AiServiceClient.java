@@ -15,6 +15,8 @@ import org.dromara.aiclient.model.LandingGenerateData;
 import org.dromara.aiclient.model.LandingGenerateRequest;
 import org.dromara.aiclient.model.KeywordGenerateData;
 import org.dromara.aiclient.model.KeywordGenerateRequest;
+import org.dromara.aiclient.model.KeywordScoreData;
+import org.dromara.aiclient.model.KeywordScoreRequest;
 import org.dromara.aiclient.model.RagSearchData;
 import org.dromara.aiclient.model.RagSearchRequest;
 import org.dromara.aiclient.model.ScoreRequest;
@@ -157,6 +159,39 @@ public class AiServiceClient {
             );
         } catch (JsonProcessingException ex) {
             throw new IllegalStateException("Failed to parse keywords generate response", ex);
+        }
+    }
+
+    /**
+     * POST /ai/keywords/score — FR-203 keyword opportunity scoring.
+     */
+    public AiApiResponse<KeywordScoreData> keywordsScore(KeywordScoreRequest request) {
+        String url = normalizeBaseUrl() + "/ai/keywords/score";
+        String jsonBody;
+        try {
+            jsonBody = objectMapper.writeValueAsString(request);
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Failed to serialize keywords score request", ex);
+        }
+        int timeoutMs = Math.max(Math.toIntExact(properties.getReadTimeoutMs()), 120_000);
+        HttpResponse response = HttpRequest.post(url)
+            .header("Authorization", "Bearer " + properties.getInternalToken())
+            .header("Accept", MediaType.APPLICATION_JSON_VALUE)
+            .body(jsonBody, ContentType.JSON.getValue())
+            .timeout(timeoutMs)
+            .execute();
+        if (!response.isOk()) {
+            throw new IllegalStateException(
+                "Keywords score failed: HTTP " + response.getStatus() + " " + response.body()
+            );
+        }
+        try {
+            return objectMapper.readValue(
+                response.body(),
+                objectMapper.getTypeFactory().constructParametricType(AiApiResponse.class, KeywordScoreData.class)
+            );
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Failed to parse keywords score response", ex);
         }
     }
 

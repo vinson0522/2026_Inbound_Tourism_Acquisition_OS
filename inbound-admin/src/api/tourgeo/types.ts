@@ -309,6 +309,25 @@ export interface KeywordOpportunityQuery {
   market?: string;
   keyword?: string;
   status?: EntityStatus | '';
+  orderByColumn?: string;
+  isAsc?: string;
+}
+
+export interface KeywordScoreResult {
+  keywordId: number;
+  keyword?: string;
+  score?: number | null;
+  scoreDetailJson?: Record<string, unknown>;
+}
+
+export interface KeywordScoreBatchForm {
+  keywordIds?: number[];
+  useRag?: boolean;
+}
+
+export interface KeywordScoreBatchResult {
+  scoredCount: number;
+  results?: KeywordScoreResult[];
 }
 
 export interface KeywordGenerateForm {

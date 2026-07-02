@@ -7,8 +7,8 @@
 |------|-----|
 | **最后更新** | 2026-07-06 |
 | **更新角色** | 开发 |
-| **Git 远程** | ✅ `origin/main` · C14 `f23e539` · **C15 `3855266`** |
-| **当前 EPIC 焦点** | **EPIC-3 M2** 关键词机会评分（FR-203） |
+| **Git 远程** | ✅ `origin/main` · C15 `3855266` · **C16 `762fefa`** |
+| **当前 EPIC 焦点** | **EPIC-3 M2 已关闭** · 待技术总监排下一 Sprint |
 
 ---
 
@@ -181,12 +181,14 @@
 | # | 角色 | 任务 | HANDOFF | 状态 |
 |---|------|------|---------|:----:|
 | 0 | 开发 | C15 commit+push | [→C15](HANDOFFS/2026-07-06-tech-director-to-dev-c15-commit.md) | ✅ `3855266` |
-| 1 | 开发 Python | `/ai/keywords/score` | [→AI](HANDOFFS/2026-07-06-tech-director-to-dev-ai-epic3-keyword-score.md) | ⏳ |
-| 2 | 开发 Java | score API + batch | [→Java](HANDOFFS/2026-07-06-tech-director-to-dev-java-epic3-keyword-score.md) | ⏳ |
-| 3 | 开发 Admin | 列表真实 score | [→Admin](HANDOFFS/2026-07-06-tech-director-to-dev-admin-epic3-keyword-score.md) | ⏳ |
-| — | 总览 | Sprint 索引 | [EPIC-3 M2](HANDOFFS/2026-07-06-tech-director-epic3-m2-keyword-score-sprint.md) | — |
+| 1 | 开发 Python | `/ai/keywords/score` | [→AI](HANDOFFS/2026-07-06-tech-director-to-dev-ai-epic3-keyword-score.md) | ✅ 2026-07-06 |
+| 2 | 开发 Java | score API + batch | [→Java](HANDOFFS/2026-07-06-tech-director-to-dev-java-epic3-keyword-score.md) | ✅ 2026-07-06 |
+| 3 | 开发 Admin | 列表真实 score | [→Admin](HANDOFFS/2026-07-06-tech-director-to-dev-admin-epic3-keyword-score.md) | ✅ 2026-07-06 |
+| — | 总览 | Sprint 索引 | [EPIC-3 M2](HANDOFFS/2026-07-06-tech-director-epic3-m2-keyword-score-sprint.md) | ✅ **关闭** |
 
 **ADR-19**：五维加权 `keyword_score_v1`；无新 UI 线框
+
+**技术总监签核**：✅ **EPIC-3 M2 正式关闭** — C16 `762fefa` · pytest 8 + `test_keywords_score` ✅
 
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
@@ -233,9 +235,9 @@
 | **C13** | EPIC-6 M2 Astro 发布 | `feat(landing,core,admin,deploy): EPIC-6 M2…` | ✅ `71c374d` |
 | **C14** | EPIC-9 M1 计费 | `feat(core,admin): EPIC-9 M1 subscription quota and overage guard` | ✅ `f23e539` |
 | **C15** | EPIC-11 M1 探针 | `feat(core,admin,extension): EPIC-11 M1 browser probe poll and node registry` | ✅ `3855266` |
-| **C16** | EPIC-3 M2 关键词评分 | `feat(ai,core,admin): EPIC-3 M2 keyword opportunity scoring FR-203` | `test_keywords_score` |
+| **C16** | EPIC-3 M2 关键词评分 | `feat(ai,core,admin): EPIC-3 M2 keyword opportunity scoring FR-203` | ✅ `762fefa` |
 
-**执行**：C1–C15 ✅ · push ✅ · **C16 ⏳** EPIC-3 M2
+**执行**：C1–C16 ✅ · push ⏳
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -295,6 +297,9 @@
 - **FR-005 知识库 RAG 检索预览（2026-06-29）** ✅ `POST .../knowledge-assets/search` → `/ai/rag/search` · Admin drawer top-3 + chunk_id · `test_knowledge_rag_search.py`（asset#1 · 1 hit）
 - **EPIC-10 Phase 2.2 Docling（2026-06-29）** ✅ PDF/DOCX 解析替换 mock 切片 · `file_storage`（HTTP/MinIO/本地）· embed 优先 `file_url` · DLQ 已有 · pytest fixture PDF + `test_embed_docling_pipeline`
 - **EPIC-3 M1 FR-201 keywords AI（2026-06-29）** ✅ `POST /ai/keywords/generate` · mock/无 Key 回退 · 可选 RAG top-3 · `template_service` · `test_keywords_generate.py` 7 passed
+- **EPIC-3 M2 FR-203 keywords score AI（2026-07-06）** ✅ `POST /ai/keywords/score` · ADR-19 五维加权 · `keyword_score_v1` template · mock · pytest 8 passed
+- **EPIC-3 M2 FR-203 keywords score Java（2026-07-06）** ✅ `POST .../keywords/{id}/score` + `POST .../score-batch`（≤50 · 空=ACTIVE）· Feign `/ai/keywords/score` · brand+竞品+geo_score · 列表 `score DESC NULLS LAST` · `test_keywords_score.py` ✅
+- **EPIC-3 M2 FR-203 Admin 关键词 score UI（2026-07-06）** ✅ 刷新评分 + 行内评分 · 五维 tooltip · 默认 score DESC · `pnpm build:prod` ✅
 - **EPIC-3 M1 FR-201/202 keywords Java（2026-06-29）** ✅ 并入 `ruoyi-project` · `GET/POST/DELETE .../keywords` + `POST .../generate` · Feign `/ai/keywords/generate` · `tenant.excludes` 加 `keyword_opportunity` · `test_keywords_api.py` ✅
 - **EPIC-3 M1 FR-201/202 Admin 关键词页（2026-06-29）** ✅ `/keywords/index` · commit `75e96cb`
 - **EPIC-4 M1 FR-301/302 content AI（2026-07-01）** ✅ `POST /ai/content/generate` · hook/script/voiceover/storyboard_json · `CONTENT_MOCK_LLM` · RAG top-3 · `content_script_v1` · `test_content_generate.py` 6 passed
@@ -405,6 +410,7 @@
 | B-10 | ~~EPIC-8 M1 C12 未 commit/push~~ | 开发 | ✅ **已关闭** C12 `e127485` |
 | B-11 | ~~EPIC-6 M2 C13 未 commit/push~~ | 开发 | ✅ **已关闭** `71c374d` |
 | B-12 | ~~EPIC-11 M1 C15 未 commit/push~~ | 开发 | ✅ **已关闭** `3855266` · smoke ✅ |
+| B-13 | ~~EPIC-3 M2 C16 未 commit/push~~ | 开发 | ✅ **已关闭** C16 `762fefa` · pytest 8 + smoke ✅ |
 
 ---
 
@@ -412,11 +418,7 @@
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P0** | **开发 Python** | [FR-203 score AI](HANDOFFS/2026-07-06-tech-director-to-dev-ai-epic3-keyword-score.md) | EPIC-3 M2 启动 |
-| **P0** | **开发 Java** | [score API](HANDOFFS/2026-07-06-tech-director-to-dev-java-epic3-keyword-score.md) | 依赖 Python |
-| **P1** | **开发 Admin** | [关键词 score UI](HANDOFFS/2026-07-06-tech-director-to-dev-admin-epic3-keyword-score.md) | 依赖 Java |
-| **P2** | **开发** | diagnostic smoke 9/9 恢复 | `DIAGNOSE_MOCK_LLM=true` |
-| **P2** | **开发 Extension** | 真 Perplexity hook 联调 | mock off · 非阻塞 C16 |
+| **P1** | **技术总监** | C16 后规划下一 Sprint | 候选：EPIC-9 M2 · EPIC-11 M2 · EPIC-7 M2 |
 
 ---
 
@@ -424,6 +426,11 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-06 | 开发 | C16 EPIC-3 M2 关键词评分全栈 commit+push · **EPIC-3 M2 正式关闭** |
+| 2026-07-06 | 技术总监 | 进度复核 EPIC-3 M2 三端 ✅ · 派发 C16 HANDOFF · B-13 打开 |
+| 2026-07-06 | 开发 Admin | EPIC-3 M2 关键词 score UI · 刷新评分 · 五维 tooltip · `build:prod` ✅ |
+| 2026-07-06 | 开发 Java | EPIC-3 M2 score/batch API · Feign · 列表 NULLS LAST · `test_keywords_score.py` ✅ |
+| 2026-07-06 | 开发 Python | EPIC-3 M2 `POST /ai/keywords/score` · ADR-19 五维 · pytest 8 passed |
 | 2026-07-06 | 开发 | C15 `3855266` EPIC-11 M1 探针全栈 commit+push · `test_probe_extension_e2e` ✅ · **EPIC-11 正式关闭** |
 | 2026-07-06 | 技术总监 | 定案 **EPIC-3 M2** FR-203 关键词评分 · ADR-19 · 4 条 HANDOFF · P0 C15 收尾 |
 | 2026-07-05 | 开发 Admin | EPIC-11 M1 `/settings/probe-nodes` 只读列表 · `build:prod` ✅ |

@@ -4,8 +4,11 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.project.domain.bo.KeywordGenerateBo;
 import org.dromara.project.domain.bo.KeywordOpportunityBo;
+import org.dromara.project.domain.bo.KeywordScoreBatchBo;
 import org.dromara.project.domain.vo.KeywordGenerateVo;
 import org.dromara.project.domain.vo.KeywordOpportunityVo;
+import org.dromara.project.domain.vo.KeywordScoreBatchVo;
+import org.dromara.project.domain.vo.KeywordScoreVo;
 
 public interface IKeywordOpportunityService {
 
@@ -16,4 +19,8 @@ public interface IKeywordOpportunityService {
     Boolean deleteById(Long projectId, Long keywordId);
 
     KeywordGenerateVo generateKeywords(Long projectId, KeywordGenerateBo bo);
+
+    KeywordScoreVo scoreKeyword(Long projectId, Long keywordId, Boolean useRag);
+
+    KeywordScoreBatchVo scoreBatch(Long projectId, KeywordScoreBatchBo bo);
 }

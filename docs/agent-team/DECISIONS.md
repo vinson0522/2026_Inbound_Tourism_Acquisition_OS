@@ -199,6 +199,18 @@
   - 扩展结果 Java 侧写 `diagnostic_result`；M1 可简化 citation 解析，后续接 `/ai/parse-citations`
 - **影响**：[EPIC-11 M1 Sprint](HANDOFFS/2026-07-05-tech-director-epic11-m1-probe-sprint.md)；`inbound-probe-extension` Plasmo
 
+### ADR-20260706-19 | EPIC-3 M2 仅 FR-203 关键词机会评分
+- **状态**：已采纳
+- **决策者**：技术总监
+- **背景**：M1 generate+列表已完成；`score`/`score_detail_json` 占位；Admin 列表已预留机会分列；FR-203 为 P0
+- **决策**：
+  - **M2 做**：Python `/ai/keywords/score` · Java 单条+批量 refresh · Admin 真实分数+排序+刷新按钮
+  - **M2 五维权重**（`keyword_score_v1`，存 template 表）：相关性 30% · 长尾价值 20% · 可生产性 20% · 落地页价值 15% · 竞品强度 15%
+  - **竞品强度输入**：可选最近 SUCCESS `diagnostic_run.geo_score` 反算（无诊断时用 LLM 估计）
+  - **M2 不做**：generate 后自动评分 · 权重运营 UI · 词库编辑/导出 · 额度单独计费（score 调用暂不占 quota）
+  - mock：`KEYWORD_SCORE_MOCK_LLM=true` deterministic
+- **影响**：[EPIC-3 M2 Sprint](HANDOFFS/2026-07-06-tech-director-epic3-m2-keyword-score-sprint.md)
+
 ---
 
 ## 待讨论

@@ -26,8 +26,11 @@
 
       <el-card shadow="hover" class="mb-3 toolbar-card">
         <div class="toolbar-row">
-          <el-button type="primary" icon="MagicStick" :loading="generating" :disabled="generating" @click="openGenerateConfirm">
+          <el-button type="primary" icon="MagicStick" :loading="generating" :disabled="generating || scoringBatch" @click="openGenerateConfirm">
             AI 生成机会词
+          </el-button>
+          <el-button icon="RefreshRight" :loading="scoringBatch" :disabled="generating || scoringBatch" @click="openBatchScoreConfirm">
+            刷新评分
           </el-button>
           <el-form :inline="true" class="toolbar-form" @submit.prevent="handleQuery">
             <el-form-item label="市场">
@@ -110,10 +113,10 @@
           </el-table-column>
           <el-table-column label="机会分" width="100" align="center">
             <template #default="{ row }">
-              <el-tooltip v-if="row.score == null" content="评分规则 FR-203 待上线" placement="top">
-                <span class="score-placeholder">—</span>
+              <span v-if="!hasKeywordScore(row.score)" class="score-placeholder">—</span>
+              <el-tooltip v-else :content="formatScoreDetailTooltip(row.scoreDetailJson)" placement="top">
+                <span :class="['score-value', scoreColorClass(row.score)]">{{ formatScore(row.score) }}</span>
               </el-tooltip>
-              <span v-else :class="['score-value', scoreColorClass(row.score)]">{{ formatScore(row.score) }}</span>
             </template>
           </el-table-column>
           <el-table-column label="状态" width="90" align="center">
@@ -124,14 +127,23 @@
           <el-table-column label="创建时间" width="160" class-name="hidden-md-only">
             <template #default="{ row }">{{ formatTime(row.createdAt) }}</template>
           </el-table-column>
-          <el-table-column label="操作" width="180" fixed="right" align="center">
+          <el-table-column label="操作" width="220" fixed="right" align="center">
             <template #default="{ row }">
-              <el-button link type="danger" :disabled="generating" @click="handleDelete(row)">删除</el-button>
+              <el-button
+                link
+                type="primary"
+                :loading="scoringKeywordIds.has(row.id)"
+                :disabled="generating || scoringBatch"
+                @click="handleScoreRow(row)"
+              >
+                评分
+              </el-button>
+              <el-button link type="danger" :disabled="generating || scoringBatch" @click="handleDelete(row)">删除</el-button>
               <el-tooltip content="创建内容任务 FR-205" placement="top">
-                <el-button link type="primary" :disabled="generating" @click="goCreateContent(row)">创建内容</el-button>
+                <el-button link type="primary" :disabled="generating || scoringBatch" @click="goCreateContent(row)">创建内容</el-button>
               </el-tooltip>
               <el-tooltip content="转落地页 FR-205" placement="top">
-                <el-button link type="primary" :disabled="generating" @click="goCreateLanding(row)">转落地页</el-button>
+                <el-button link type="primary" :disabled="generating || scoringBatch" @click="goCreateLanding(row)">转落地页</el-button>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -145,18 +157,18 @@
           :disabled="generating"
           @pagination="getList"
         />
-
-        <p class="score-hint">M1 机会分为占位展示；FR-203 评分规则上线后替换 tooltip 说明。</p>
       </el-card>
     </template>
   </div>
 </template>
 
 <script setup name="KeywordsList" lang="ts">
-import { deleteKeyword, generateKeywords, listKeywords } from '@/api/tourgeo/keyword';
+import { deleteKeyword, generateKeywords, listKeywords, scoreKeyword, scoreKeywordsBatch } from '@/api/tourgeo/keyword';
 import type { KeywordOpportunityVo } from '@/api/tourgeo/types';
 import ProjectSelector from '@/components/tourgeo/ProjectSelector.vue';
 import {
+  formatScoreDetailTooltip,
+  hasKeywordScore,
   KEYWORD_STAGE_TABS,
   LIFECYCLE_STAGE_KEYS,
   LIFECYCLE_STAGE_LABELS,
@@ -175,6 +187,18 @@ const projectStore = useProjectStore();
 const stageTabs = KEYWORD_STAGE_TABS;
 const loading = ref(false);
 const generating = ref(false);
+const scoringBatch = ref(false);
+const scoringKeywordIds = ref<Set<number>>(new Set());
+
+function setRowScoring(keywordId: number, scoring: boolean) {
+  const next = new Set(scoringKeywordIds.value);
+  if (scoring) {
+    next.add(keywordId);
+  } else {
+    next.delete(keywordId);
+  }
+  scoringKeywordIds.value = next;
+}
 const keywordList = ref<KeywordOpportunityVo[]>([]);
 const total = ref(0);
 const ALL_STAGE_TAB = 'all';
@@ -185,7 +209,9 @@ const queryParams = reactive({
   pageSize: 10,
   market: '',
   keyword: '',
-  status: 'ACTIVE' as const
+  status: 'ACTIVE' as const,
+  orderByColumn: 'score',
+  isAsc: 'desc'
 });
 
 const currentProject = computed(() => {
@@ -229,7 +255,8 @@ function statusMeta(status: string) {
   return ENTITY_STATUS_META[status] ?? { label: status, type: 'info' as const };
 }
 
-function formatScore(score: number): string {
+function formatScore(score: number | string | null | undefined): string {
+  if (!hasKeywordScore(score)) return '—';
   return Number(score).toFixed(1);
 }
 
@@ -379,6 +406,86 @@ async function runGenerate(pid: number) {
   }
 }
 
+async function openBatchScoreConfirm() {
+  const pid = projectId.value;
+  if (!pid) {
+    ElMessage.warning('请先选择项目');
+    return;
+  }
+  const filterHint =
+    activeStage.value !== ALL_STAGE_TAB || queryParams.market || queryParams.keyword
+      ? '当前 Tab/筛选条件下'
+      : '当前项目 ACTIVE 词条';
+  try {
+    await ElMessageBox.confirm(
+      `将对${filterHint}最多 50 条关键词刷新机会分（FR-203 五维加权）。\n\n已有评分将被覆盖，无评分词条将排在列表末尾。`,
+      '刷新评分',
+      {
+        confirmButtonText: '开始评分',
+        cancelButtonText: '取消',
+        type: 'info'
+      }
+    );
+    await runBatchScore(pid);
+  } catch {
+    /* cancelled */
+  }
+}
+
+async function runBatchScore(pid: number) {
+  scoringBatch.value = true;
+  try {
+    const hasFilters = Boolean(stageQueryValue() || queryParams.market || queryParams.keyword);
+    let keywordIds: number[] | undefined;
+    if (hasFilters) {
+      const res = await listKeywords(pid, {
+        pageNum: 1,
+        pageSize: 50,
+        market: queryParams.market,
+        keyword: queryParams.keyword,
+        status: queryParams.status,
+        stage: stageQueryValue(),
+        orderByColumn: queryParams.orderByColumn,
+        isAsc: queryParams.isAsc
+      });
+      keywordIds = res.rows.map((row) => row.id).filter((id) => id > 0);
+      if (!keywordIds.length) {
+        ElMessage.warning('没有可评分的关键词');
+        return;
+      }
+    }
+    const result = await scoreKeywordsBatch(pid, { keywordIds, useRag: false });
+    const count = result.scoredCount ?? result.results?.length ?? 0;
+    ElMessage.success(`已刷新 ${count} 条关键词评分`);
+    await getList();
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg && msg !== 'error') {
+      ElMessage.error(msg);
+    }
+  } finally {
+    scoringBatch.value = false;
+  }
+}
+
+async function handleScoreRow(row: KeywordOpportunityVo) {
+  const pid = projectId.value;
+  if (!pid || !row.id) return;
+  setRowScoring(row.id, true);
+  try {
+    const result = await scoreKeyword(pid, row.id, { useRag: false });
+    ElMessage.success(`「${row.keyword}」机会分 ${formatScore(result.score)}`);
+    await getList();
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg && msg !== 'error') {
+      ElMessage.error(msg);
+    }
+  } finally {
+    setRowScoring(row.id, false);
+  }
+}
+
 function goCreateContent(row: KeywordOpportunityVo) {
   const pid = projectId.value;
   if (!pid) {
@@ -519,12 +626,6 @@ onMounted(async () => {
 
   .score-placeholder {
     color: var(--tg-color-text-placeholder, #9ca3af);
-  }
-
-  .score-hint {
-    margin: var(--tg-space-3, 12px) 0 0;
-    font-size: var(--tg-font-size-xs, 12px);
-    color: var(--tg-color-text-secondary, #6b7280);
   }
 }
 

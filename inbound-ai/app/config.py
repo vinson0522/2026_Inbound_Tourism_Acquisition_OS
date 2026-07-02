@@ -54,6 +54,23 @@ class Settings(BaseSettings):
         "Follow the user message schema; one entry per requested lifecycle stage."
     )
 
+    keyword_score_mock_llm: bool = False
+    keyword_score_model: str = "openai/gpt-4o-mini"
+    keyword_score_template_name: str = "keyword_score_v1"
+    keyword_score_weights_version: str = "keyword_score_v1"
+    keyword_score_prompt_fallback: str = (
+        "Score one inbound tourism keyword opportunity on five dimensions (0-100 each): "
+        "relevance, long_tail_value, producibility, landing_value, competitive_pressure. "
+        "Return JSON only with those keys and brief rationale fields optional."
+    )
+    keyword_score_default_weights: dict[str, float] = {
+        "relevance": 0.30,
+        "long_tail_value": 0.20,
+        "producibility": 0.20,
+        "landing_value": 0.15,
+        "competitive_pressure": 0.15,
+    }
+
     content_mock_llm: bool = False
     content_model: str = "openai/gpt-4o-mini"
     content_template_name: str = "content_script_v1"
