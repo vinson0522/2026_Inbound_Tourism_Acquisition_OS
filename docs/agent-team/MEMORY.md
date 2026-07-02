@@ -6,8 +6,8 @@
 | 字段 | 值 |
 |------|-----|
 | **最后更新** | 2026-07-07 |
-| **更新角色** | 技术总监 |
-| **Git 远程** | ✅ `origin/main` · C16 `20b7a87` · **C17**（待 push） |
+| **更新角色** | 开发 |
+| **Git 远程** | ✅ `origin/main` · C16 `20b7a87` · **C17 `ecb0d46`** |
 | **当前 EPIC 焦点** | **EPIC-7 M2 已关闭** · 路线图 #1 ✅ · 待 EPIC-8 M2 |
 
 ---
@@ -196,7 +196,7 @@
 
 | 序 | Sprint | EPIC/FR | 目标 | 状态 |
 |:--:|--------|---------|------|:----:|
-| 1 | **M2 CRM** | EPIC-7 · FR-605 | 线索状态+跟进闭环 | ✅ C17 `PLACEHOLDER` |
+| 1 | **M2 CRM** | EPIC-7 · FR-605 | 线索状态+跟进闭环 | ✅ C17 `ecb0d46` |
 | 2 | M2 报告 | EPIC-8 · FR-703/704 | 月报 + 白标模板 |
 | 3 | M2 探针 | EPIC-11 · FR-115/116 | adapter 配置 + 校准 + 第二平台 |
 | 4 | M2 计费 | EPIC-9 · FR-802/805 | 套餐 CRUD + 周期重置 |
@@ -216,7 +216,7 @@
 
 **ADR-20**：五态 CRM · 无 AI/WhatsApp/归因 M2
 
-**技术总监签核**：✅ **EPIC-7 M2 正式关闭** — C17 `PLACEHOLDER` · `test_leads_crm` ✅
+**技术总监签核**：✅ **EPIC-7 M2 正式关闭** — C17 `ecb0d46` · `test_leads_crm` ✅
 
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
@@ -264,9 +264,9 @@
 | **C14** | EPIC-9 M1 计费 | `feat(core,admin): EPIC-9 M1 subscription quota and overage guard` | ✅ `f23e539` |
 | **C15** | EPIC-11 M1 探针 | `feat(core,admin,extension): EPIC-11 M1 browser probe poll and node registry` | ✅ `3855266` |
 | **C16** | EPIC-3 M2 关键词评分 | `feat(ai,core,admin): EPIC-3 M2 keyword opportunity scoring FR-203` | ✅ `20b7a87` |
-| **C17** | EPIC-7 M2 CRM | `feat(core,admin): EPIC-7 M2 light CRM lead status and followups` | ✅ `PLACEHOLDER` |
+| **C17** | EPIC-7 M2 CRM | `feat(core,admin): EPIC-7 M2 light CRM lead status and followups` | ✅ `ecb0d46` |
 
-**执行**：C1–C17 ✅ · push ⏳
+**执行**：C1–C17 ✅ · push ✅
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -442,7 +442,7 @@
 | B-11 | ~~EPIC-6 M2 C13 未 commit/push~~ | 开发 | ✅ **已关闭** `71c374d` |
 | B-12 | ~~EPIC-11 M1 C15 未 commit/push~~ | 开发 | ✅ **已关闭** `3855266` · smoke ✅ |
 | B-13 | ~~EPIC-3 M2 C16 未 commit/push~~ | 开发 | ✅ **已关闭** C16 `20b7a87` · pytest 8 + smoke ✅ |
-| B-14 | ~~EPIC-7 M2 C17 未 commit/push~~ | 开发 | ✅ **已关闭** C17 `PLACEHOLDER` · smoke ✅ |
+| B-14 | ~~EPIC-7 M2 C17 未 commit/push~~ | 开发 | ✅ **已关闭** C17 `ecb0d46` · smoke ✅ |
 
 ---
 

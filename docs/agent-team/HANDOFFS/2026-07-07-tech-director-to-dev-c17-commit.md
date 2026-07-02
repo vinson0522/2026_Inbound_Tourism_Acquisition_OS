@@ -32,5 +32,5 @@ EPIC-7 M2 三条开发线均已 Done（Java smoke ✅ · Admin build:prod ✅ ·
 ## Done（由 To 角色填写）
 
 - **完成时间**：2026-07-07
-- **结果摘要**：C17 `PLACEHOLDER` · Java+Admin+docs · `test_leads_crm` ✅ · push origin/main
+- **结果摘要**：C17 `ecb0d46` · Java+Admin+docs · `test_leads_crm` ✅ · push origin/main
 - **遗留**：无
