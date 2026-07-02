@@ -11,6 +11,15 @@ import { getLanguage } from '@/lang';
 import { encryptBase64, encryptWithAes, generateAesKey, decryptWithAes, decryptBase64 } from '@/utils/crypto';
 import { encrypt, decrypt } from '@/utils/jsencrypt';
 import router from '@/router';
+import {
+  QuotaExceededError,
+  extractQuotaMessage,
+  isQuotaExceededPayload,
+  showQuotaExceededMessage
+} from '@/utils/quotaError';
+import { QUOTA_EXCEEDED_CODE } from '@/constants/billing';
+
+type RequestConfigExt = InternalAxiosRequestConfig & { silentError?: boolean };
 
 const encryptHeader = 'encrypt-key';
 let downloadLoadingInstance: LoadingInstance;
@@ -151,6 +160,9 @@ service.interceptors.response.use(
         });
       }
       return Promise.reject('无效的会话，或者会话已过期，请重新登录。');
+    } else if (code === QUOTA_EXCEEDED_CODE) {
+      showQuotaExceededMessage(msg);
+      return Promise.reject(new QuotaExceededError(msg));
     } else if (code === HttpStatus.SERVER_ERROR) {
       ElMessage({ message: msg, type: 'error' });
       return Promise.reject(new Error(msg));
@@ -158,13 +170,23 @@ service.interceptors.response.use(
       ElMessage({ message: msg, type: 'warning' });
       return Promise.reject(new Error(msg));
     } else if (code !== HttpStatus.SUCCESS) {
-      ElNotification.error({ title: msg });
-      return Promise.reject('error');
+      const silentError = (res.config as RequestConfigExt).silentError;
+      if (!silentError) {
+        ElNotification.error({ title: msg });
+      }
+      return Promise.reject(new Error(msg));
     } else {
       return Promise.resolve(res.data);
     }
   },
   (error: any) => {
+    const response = error.response;
+    if (response?.data && (response.status === 402 || isQuotaExceededPayload(response.data))) {
+      const quotaMsg = extractQuotaMessage(response.data);
+      showQuotaExceededMessage(quotaMsg);
+      return Promise.reject(new QuotaExceededError(quotaMsg));
+    }
+
     let { message } = error;
     if (message == 'Network Error') {
       message = '后端接口连接异常';

@@ -11,13 +11,16 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.project.billing.QuotaType;
 import org.dromara.project.domain.CustomerProject;
 import org.dromara.project.domain.bo.CustomerProjectBo;
 import org.dromara.project.domain.vo.CustomerProjectVo;
 import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.service.ICustomerProjectService;
+import org.dromara.project.service.IQuotaService;
 import org.dromara.project.support.BusinessTenantHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -28,6 +31,7 @@ import java.util.Map;
 public class CustomerProjectServiceImpl implements ICustomerProjectService {
 
     private final CustomerProjectMapper baseMapper;
+    private final IQuotaService quotaService;
 
     @Override
     public TableDataInfo<CustomerProjectVo> queryPageList(CustomerProjectBo bo, PageQuery pageQuery) {
@@ -48,9 +52,11 @@ public class CustomerProjectServiceImpl implements ICustomerProjectService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long insertByBo(CustomerProjectBo bo) {
-        CustomerProject entity = MapstructUtils.convert(bo, CustomerProject.class);
         Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        quotaService.checkAndConsume(tenantId, QuotaType.PROJECTS, 1);
+        CustomerProject entity = MapstructUtils.convert(bo, CustomerProject.class);
         OffsetDateTime now = OffsetDateTime.now();
         entity.setTenantId(tenantId);
         entity.setIndustry(StringUtils.blankToDefault(entity.getIndustry(), "inbound_tourism"));

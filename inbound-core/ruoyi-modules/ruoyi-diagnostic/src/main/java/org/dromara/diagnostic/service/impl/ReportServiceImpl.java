@@ -28,6 +28,7 @@ import org.dromara.diagnostic.report.WeeklyReportContext;
 import org.dromara.diagnostic.service.IDiagnosticReportExportService;
 import org.dromara.diagnostic.service.IReportService;
 import org.dromara.diagnostic.support.BusinessTenantHelper;
+import org.dromara.project.billing.QuotaType;
 import org.dromara.project.domain.ContentTask;
 import org.dromara.project.domain.CustomerProject;
 import org.dromara.project.domain.KeywordOpportunity;
@@ -38,6 +39,7 @@ import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.mapper.KeywordOpportunityMapper;
 import org.dromara.project.mapper.LandingPageMapper;
 import org.dromara.project.mapper.LeadMapper;
+import org.dromara.project.service.IQuotaService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,6 +81,7 @@ public class ReportServiceImpl implements IReportService {
     private final CustomerProjectMapper customerProjectMapper;
     private final IDiagnosticReportExportService diagnosticReportExportService;
     private final GotenbergClient gotenbergClient;
+    private final IQuotaService quotaService;
 
     @Override
     public TableDataInfo<ReportVo> queryPageList(Long projectId, ReportQueryBo bo, PageQuery pageQuery) {
@@ -115,6 +118,7 @@ public class ReportServiceImpl implements IReportService {
     public Long createWeeklyReport(Long projectId, WeeklyReportBo bo) {
         Long tenantId = BusinessTenantHelper.getBusinessTenantId();
         CustomerProject project = assertProjectOwned(projectId, tenantId);
+        quotaService.checkAndConsume(tenantId, QuotaType.REPORTS_PER_MONTH, 1);
 
         LocalDate end = parseDateOrDefault(bo != null ? bo.getPeriodEnd() : null, LocalDate.now());
         LocalDate start = parseDateOrDefault(

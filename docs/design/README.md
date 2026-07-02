@@ -21,6 +21,7 @@
 | [wireframes/landing-page-publish.md](./wireframes/landing-page-publish.md) | 落地页 Agent · 发布与公网预览 EPIC-6 M2 |
 | [wireframes/leads-list.md](./wireframes/leads-list.md) | 线索与转化 · 询盘线索列表 EPIC-7 M1 |
 | [wireframes/reports-list.md](./wireframes/reports-list.md) | 报告中心 · 报告列表 EPIC-8 M1 |
+| [wireframes/billing-settings.md](./wireframes/billing-settings.md) | 系统设置 · 套餐与额度 EPIC-9 M1 |
 | [wireframes/projects-list.md](./wireframes/projects-list.md) | 客户项目列表 + FR-001 创建线框 |
 | [wireframes/project-detail.md](./wireframes/project-detail.md) | 客户项目详情 · Story 3 Tab（品牌/竞品/知识库） |
 | [../agent-team/HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md](../agent-team/HANDOFFS/2026-06-25-ui-to-developer-admin-pages.md) | UI → 开发（工作台/GEO） |
@@ -32,6 +33,7 @@
 | [../agent-team/HANDOFFS/2026-07-03-ui-to-developer-landing-publish.md](../agent-team/HANDOFFS/2026-07-03-ui-to-developer-landing-publish.md) | UI → 开发（落地页发布 EPIC-6 M2） |
 | [../agent-team/HANDOFFS/2026-07-01-ui-to-developer-landing-page-list.md](../agent-team/HANDOFFS/2026-07-01-ui-to-developer-landing-page-list.md) | UI → 开发（落地页 EPIC-6 M1） |
 | [../agent-team/HANDOFFS/2026-07-01-ui-to-developer-leads-list.md](../agent-team/HANDOFFS/2026-07-01-ui-to-developer-leads-list.md) | UI → 开发（线索 EPIC-7 M1） |
+| [../agent-team/HANDOFFS/2026-07-04-ui-to-developer-billing-settings.md](../agent-team/HANDOFFS/2026-07-04-ui-to-developer-billing-settings.md) | UI → 开发（计费 EPIC-9 M1） |
 | [../agent-team/HANDOFFS/2026-07-02-ui-to-developer-reports-list.md](../agent-team/HANDOFFS/2026-07-02-ui-to-developer-reports-list.md) | UI → 开发（报告 EPIC-8 M1） |
 
 ---
@@ -48,7 +50,7 @@
 | 落地页 Agent | `/landing` | ✅ [列表 M1](wireframes/landing-page-list.md) · ✅ [发布 M2](wireframes/landing-page-publish.md) |
 | 线索与转化 | `/leads` | ✅ [leads-list.md](wireframes/leads-list.md) EPIC-7 M1 |
 | 报告中心 | `/reports` | ✅ [reports-list.md](wireframes/reports-list.md) EPIC-8 M1 |
-| 系统设置 | `/settings/*` | 沿用若依系统菜单 |
+| 系统设置 | `/settings/*` | ✅ [billing-settings.md](wireframes/billing-settings.md) FR-804 M1 · 其余沿用若依 |
 
 二级页「问题库 / 探针节点」待后续 Sprint；诊断详情已覆盖「诊断结果」；趋势监控见 [diagnostic-trends.md](wireframes/diagnostic-trends.md)。
 
@@ -90,6 +92,7 @@ Token 落地时优先在 `variables.module.scss` 的 `:root` 追加 `--tg-*` 变
 
 | 日期 | 作者 | 说明 |
 |------|------|------|
+| 2026-07-04 | UI 设计 | EPIC-9 M1 套餐与额度设置线框 + 6 quota 进度条 + HANDOFF |
 | 2026-07-03 | UI 设计 | EPIC-6 M2 落地页发布/公网预览/Astro 八模块 + Turnstile 线框 |
 | 2026-07-02 | UI 设计 | EPIC-8 M1 报告中心列表 + 周报生成 + 下载线框 + HANDOFF |
 | 2026-07-01 | UI 设计 | EPIC-7 M1 询盘线索列表 + 详情 drawer 线框 + HANDOFF |

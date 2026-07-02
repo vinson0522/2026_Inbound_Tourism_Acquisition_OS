@@ -176,6 +176,29 @@
   - **CORS**：Java 允许 landing origin 访问 `/api/v1/public/**`
 - **影响**：[EPIC-6 M2 Sprint](HANDOFFS/2026-07-03-tech-director-epic6-m2-landing-publish-sprint.md)
 
+### ADR-20260704-17 | EPIC-9 M1 仅 FR-804 额度查询 + 超额拦截
+- **状态**：已采纳
+- **决策者**：技术总监
+- **背景**：V1.0 商业化需套餐额度；DDL `subscription` + demo seed 已就绪；各 EPIC 生成 API 无扣费
+- **决策**：
+  - **M1 做**：`GET` 当前订阅 · `QuotaService` 在 6 个入口 `checkAndConsume` · Admin 只读用量页 · HTTP 402
+  - **M1 存储**：PG `used_json` 同事务更新（不用 Redis）
+  - **M1 不做**：支付、套餐 CRUD、FR-802 模型配置、FR-806 审计、周期自动重置 Job
+  - 无 ACTIVE 订阅：dev 默认放行；staging 可 seed TRIAL
+- **影响**：[EPIC-9 M1 Sprint](HANDOFFS/2026-07-04-tech-director-epic9-m1-billing-sprint.md)
+
+### ADR-20260705-18 | EPIC-11 M1 仅 FR-112~114 扩展探针 poll 闭环
+- **状态**：已采纳
+- **决策者**：技术总监
+- **背景**：grounded-api 已跑通；Admin 创建诊断可选 `browser-extension` 但无调度/API；`probe_node`/`platform_adapter` DDL 已就绪；扩展目录待 scaffold
+- **决策**：
+  - **M1 做**：Java `ProbeController`（register/poll/result/adapters）+ `createRun` 按 probe_mode 分叉 · Plasmo 扩展 1 平台（`perplexity`）· Admin `/settings/probe-nodes` 只读列表
+  - **M1 调度**：HTTP poll 分配 PENDING 任务（不用 MQ `diag.probe-extension`）
+  - **M1 鉴权**：`X-Probe-Node-Key` + `@SaIgnore`（dev 白名单 node_key）
+  - **M1 不做**：FR-115 校准 · FR-116 adapter 后台 CRUD · FR-117 截图 · FR-118 Headless · 国内平台 adapter
+  - 扩展结果 Java 侧写 `diagnostic_result`；M1 可简化 citation 解析，后续接 `/ai/parse-citations`
+- **影响**：[EPIC-11 M1 Sprint](HANDOFFS/2026-07-05-tech-director-epic11-m1-probe-sprint.md)；`inbound-probe-extension` Plasmo
+
 ---
 
 ## 待讨论

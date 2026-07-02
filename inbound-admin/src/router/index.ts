@@ -250,6 +250,22 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/settings',
+    component: Layout,
+    redirect: '/settings/billing',
+    name: 'TourgeoSettings',
+    meta: { title: '系统设置', icon: 'system' },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'billing',
+        component: () => import('@/views/tourgeo/settings/billing/index.vue'),
+        name: 'BillingSettings',
+        meta: { title: '套餐与额度', icon: 'money' }
+      }
+    ]
+  },
+  {
     path: '/user',
     component: Layout,
     hidden: true,

@@ -19,6 +19,7 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.project.billing.QuotaType;
 import org.dromara.project.domain.CustomerProject;
 import org.dromara.project.domain.KeywordOpportunity;
 import org.dromara.project.domain.LandingPage;
@@ -35,6 +36,7 @@ import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.mapper.KeywordOpportunityMapper;
 import org.dromara.project.mapper.LandingPageMapper;
 import org.dromara.project.service.ILandingPageService;
+import org.dromara.project.service.IQuotaService;
 import org.dromara.project.support.BusinessTenantHelper;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
@@ -62,6 +64,7 @@ public class LandingPageServiceImpl implements ILandingPageService {
     private final ObjectMapper objectMapper;
     private final LandingPublishProperties landingPublishProperties;
     private final TurnstileProperties turnstileProperties;
+    private final IQuotaService quotaService;
 
     @Override
     public TableDataInfo<LandingPageVo> queryPageList(Long projectId, LandingPageBo bo, PageQuery pageQuery) {
@@ -152,6 +155,7 @@ public class LandingPageServiceImpl implements ILandingPageService {
         }
         KeywordOpportunity keyword = getOwnedKeywordOrThrow(projectId, page.getKeywordId());
         Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        quotaService.checkAndConsume(tenantId, QuotaType.LANDING_PAGES_PER_MONTH, 1);
 
         updatePageStatus(pageId, "EDITING");
 

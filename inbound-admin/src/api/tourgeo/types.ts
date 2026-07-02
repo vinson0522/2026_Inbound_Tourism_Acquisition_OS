@@ -568,3 +568,30 @@ export interface WeeklyReportForm {
   periodStart: string;
   periodEnd: string;
 }
+
+/** EPIC-9 M1 — 套餐与额度 (FR-804) */
+export type QuotaItemStatus = 'normal' | 'warning' | 'overage';
+
+export interface QuotaItemVo {
+  key: string;
+  label: string;
+  used: number;
+  limit: number;
+  unit: string;
+  period: 'total' | 'monthly' | string;
+  percentage?: number;
+  status?: QuotaItemStatus;
+}
+
+export interface SubscriptionVo {
+  planCode: string;
+  planName: string;
+  status: string;
+  periodStart?: string;
+  periodEnd?: string;
+  daysRemaining?: number;
+  quotas: QuotaItemVo[];
+  hasOverage?: boolean;
+  hasWarning?: boolean;
+  overageKeys?: string[];
+}

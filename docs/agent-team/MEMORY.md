@@ -5,10 +5,10 @@
 
 | 字段 | 值 |
 |------|-----|
-| **最后更新** | 2026-07-03 |
-| **更新角色** | 运维 |
-| **Git 远程** | ✅ `origin/main` · C13 `71c374d` |
-| **当前 EPIC 焦点** | **EPIC-6 M2** ✅ 关闭 · C13 pushed |
+| **最后更新** | 2026-07-05 |
+| **更新角色** | 开发 |
+| **Git 远程** | ✅ `origin/main` · C13 `71c374d` · **C14 `3862a72`** |
+| **当前 EPIC 焦点** | **EPIC-11 M1** 浏览器探针（FR-112~114）· C14 → UI → Java ∥ Extension → Admin |
 
 ---
 
@@ -144,9 +144,35 @@
 | 3 | 运维 | landing compose :4321 | [→运维](HANDOFFS/2026-07-03-tech-director-to-devops-epic6-landing-compose.md) | ✅ |
 | 4 | 开发 Landing | Astro scaffold | [→Astro](HANDOFFS/2026-07-03-tech-director-to-dev-landing-epic6-astro.md) | ✅ build + 404 |
 | 5 | 开发 Admin | 发布/预览按钮 | [→Admin](HANDOFFS/2026-07-03-tech-director-to-dev-admin-epic6-landing-publish.md) | ✅ build |
-| — | 总览 | Sprint 索引 | [EPIC-6 M2](HANDOFFS/2026-07-03-tech-director-epic6-m2-landing-publish-sprint.md) | 功能 ✅ · **C13 ⏳** |
+| — | 总览 | Sprint 索引 | [EPIC-6 M2](HANDOFFS/2026-07-03-tech-director-epic6-m2-landing-publish-sprint.md) | ✅ **关闭** |
 
-**技术总监签核（2026-07-03）**：✅ **EPIC-6 M2 功能验收** — 五棒齐 · Java compile ✅ · landing `:4321` 200 · dev smoke 报告通过 · **C13 待 commit**
+**技术总监签核（2026-07-03）**：✅ **EPIC-6 M2 正式关闭** — C13 `71c374d`
+
+### EPIC-9 M1 Sprint — FR-804 套餐计费（2026-07-04 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | UI | 计费设置线框 | [→UI](HANDOFFS/2026-07-04-tech-director-to-ui-epic9-billing-settings.md) | ✅ |
+| 2 | 开发 Java | QuotaService + 402 拦截 | [→Java](HANDOFFS/2026-07-04-tech-director-to-dev-java-epic9-billing.md) | ✅ 2026-07-02 |
+| 3 | 开发 Admin | `/settings/billing` | [→Admin](HANDOFFS/2026-07-04-tech-director-to-dev-admin-epic9-billing.md) | ✅ 2026-07-02 |
+| — | 总览 | Sprint 索引 | [EPIC-9 M1](HANDOFFS/2026-07-04-tech-director-epic9-m1-billing-sprint.md) | — |
+
+**ADR-17**：M1 额度查询 + 6 拦截点；支付/套餐 CRUD → M2
+
+**技术总监签核**：✅ **EPIC-9 M1 正式关闭** — C14 `3862a72` · `test_billing_quota` ✅
+
+### EPIC-11 M1 Sprint — FR-112~114 浏览器探针（2026-07-05 排期）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 0 | 开发 | C14 commit+push | [→C14](HANDOFFS/2026-07-05-tech-director-to-dev-c14-commit.md) | ✅ |
+| 1 | UI | 探针节点线框 | [→UI](HANDOFFS/2026-07-05-tech-director-to-ui-epic11-probe-nodes.md) | ✅ |
+| 2 | 开发 Java | Probe API + poll 调度 | [→Java](HANDOFFS/2026-07-05-tech-director-to-dev-java-epic11-probe.md) | ⏳ |
+| 3 | 开发 Extension | Plasmo MV3 scaffold | [→Extension](HANDOFFS/2026-07-05-tech-director-to-dev-extension-epic11-plasmo.md) | ⏳ |
+| 4 | 开发 Admin | `/settings/probe-nodes` | [→Admin](HANDOFFS/2026-07-05-tech-director-to-dev-admin-epic11-probe-nodes.md) | ⏳ |
+| — | 总览 | Sprint 索引 | [EPIC-11 M1](HANDOFFS/2026-07-05-tech-director-epic11-m1-probe-sprint.md) | — |
+
+**ADR-18**：M1 poll 闭环 + 1 平台（perplexity）；校准/Headless/adapter CRUD → M2+
 
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
@@ -190,9 +216,11 @@
 | **C10** | EPIC-6 M1 全栈 landing | `feat(core,ai,admin): EPIC-6 M1 landing page generate` | ✅ `91b3ea4` |
 | **C11** | EPIC-7 M1 全栈 leads | `feat(core,admin): EPIC-7 M1 public leads and Admin list` | ✅ `76da501` |
 | **C12** | EPIC-8 M1 报告中心 | `feat(core,admin): EPIC-8 M1 report center and weekly report` | ✅ `e127485` |
-| **C13** | EPIC-6 M2 Astro 发布 | `feat(landing,core,admin,deploy): EPIC-6 M2 Astro publish and Turnstile leads` | ✅ `71c374d` |
+| **C13** | EPIC-6 M2 Astro 发布 | `feat(landing,core,admin,deploy): EPIC-6 M2…` | ✅ `71c374d` |
+| **C14** | EPIC-9 M1 计费 | `feat(core,admin): EPIC-9 M1 subscription quota and overage guard` | ✅ `3862a72` |
+| **C15** | EPIC-11 M1 探针 | `feat(core,admin,extension): EPIC-11 M1 browser probe poll and node registry` | `test_probe_extension_e2e` |
 
-**执行**：C1–C13 ✅ · push ✅
+**执行**：C1–C14 ✅ · push ✅ · **C15 ⏳** EPIC-11
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -266,7 +294,8 @@
 - **EPIC-7 M1 FR-601 leads Java（2026-07-01）** ✅ `POST /api/v1/public/leads` + `GET .../leads` 列表/详情 · Turnstile M1 stub · IP+landingPageId 限流 · `tenant.excludes` 加 `lead` · `test_public_leads_api.py` ✅
 - **EPIC-7 M1 FR-601 Admin 线索页（2026-07-01）** ✅ `/leads` 侧栏 + 列表/筛选/脱敏 + 详情 drawer · `maskPii` · `pnpm build:prod` ✅
 - **EPIC-8 M1 FR-701/702 Admin 报告中心（2026-07-02）** ✅ `/reports` 侧栏 + 列表/筛选 + 周报 dialog + 预览 drawer + DOCX/PDF 下载 · `pnpm build:prod` ✅
-- **EPIC-8 M1 FR-701/702 report Java（2026-07-02）** ✅ `ReportController` list/detail/weekly/export · 周报聚合 5 域 KPI + 3 条静态 recommendations · `WeeklyHtmlReportRenderer`/`WeeklyDocxReportRenderer` · DIAGNOSTIC 复用 FR-106 · `tenant.excludes` 加 `report` · `test_reports_api.py` ✅（docx 2884B）
+- **EPIC-9 M1 FR-804 billing Java（2026-07-02）** ✅ `GET /api/v1/settings/billing` · `QuotaService.checkAndConsume` · 6 拦截点（项目/诊断/关键词/内容/落地页/周报）· HTTP 402 `code=40201` · `tenant.excludes` 加 `subscription` · `test_billing_quota.py` ✅
+- **EPIC-9 M1 FR-804 Admin 计费页（2026-07-02）** ✅ `/settings/billing` 只读用量 · 6×`el-progress` · 超额/预警 alert · Axios 402 全局提示 · `pnpm build:prod` ✅
 - **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ **已提交** `f40cf8d` — `ai.embed` worker · asset#1 READY
 - **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` / `e22cd43` / `f96ba7e`（已 push）
 - **EPIC-2 M1 代码** ✅ **已提交** `54d8ca5` / `6ba5e1e` / `48926d2`（已 push）
@@ -335,9 +364,9 @@
 
 ## UI 设计
 
-- **已完成**：reports-list (EPIC-8 M1) ✅ · leads-list (EPIC-7 M1) ✅ · landing-page-list (EPIC-6 M1) ✅ · **landing-page-publish (EPIC-6 M2)** ✅
-- **HANDOFF**：[落地页发布 → 开发](HANDOFFS/2026-07-03-ui-to-developer-landing-publish.md)
-- **待办**：线索 CRM M2 · 报告白标/月报 M2 · PostHog M3
+- **已完成**：… billing-settings (EPIC-9 M1) ✅ · **probe-nodes (EPIC-11 M1)** ✅
+- **HANDOFF**：[探针节点 → 开发](HANDOFFS/2026-07-05-ui-to-developer-probe-nodes.md)
+- **待办**：线索 CRM M2 · 报告白标/月报 M2 · 探针今日任务量 M2
 
 ---
 
@@ -360,13 +389,15 @@
 
 ---
 
-## 下一步（跨角色 · 2026-07-03）
+## 下一步（跨角色 · 2026-07-05）
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P0** | **开发** | **C13** commit + push 全栈 | `test_landing_publish_e2e` + `test_landing_astro_e2e` |
-| **P1** | **技术总监** | EPIC-6 M2 正式签核关闭 | C13 后 |
-| **P2** | **开发** | 重启 Java :8080 后复跑全量 smoke 12/12 | 本机 login 阻塞时先 `spring-boot:run` |
+| **P0** | **开发 Java** | [Probe API](HANDOFFS/2026-07-05-tech-director-to-dev-java-epic11-probe.md) | poll + browser-extension 分支 |
+| **P1** | **开发 Extension** | [Plasmo scaffold](HANDOFFS/2026-07-05-tech-director-to-dev-extension-epic11-plasmo.md) | 依赖 Java #2 |
+| **P1** | **开发 Admin** | [探针节点页](HANDOFFS/2026-07-05-tech-director-to-dev-admin-epic11-probe-nodes.md) | 依赖 Java API · 线框 ✅ |
+| **P2** | **开发** | EPIC-3 M2 FR-203 关键词评分 | [可选 Sprint](HANDOFFS/2026-06-29-tech-director-epic3-m2-keyword-score-sprint.md) 并行 |
+| **P3** | **开发** | diagnostic smoke 9/9 恢复 | `DIAGNOSE_MOCK_LLM=true` |
 
 ---
 
@@ -374,6 +405,14 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-05 | 开发 | C14 `3862a72` EPIC-9 M1 计费 commit+push · `test_billing_quota` ✅ |
+| 2026-07-05 | UI 设计 | EPIC-11 M1 probe-nodes 线框 FR-113 · 在线/离线 · 空态安装引导 · HANDOFF |
+| 2026-07-05 | 技术总监 | 定案 **EPIC-11 M1** 浏览器探针 · ADR-18 · 6 条 HANDOFF（含 C14 前置） |
+| 2026-07-02 | 开发 Admin | EPIC-9 M1 `/settings/billing` + Axios 402 全局提示 · `build:prod` ✅ |
+| 2026-07-02 | 开发 Java | EPIC-9 M1 QuotaService + GET billing + 6×402 拦截 · `test_billing_quota` ✅ |
+| 2026-07-04 | UI 设计 | EPIC-9 M1 billing-settings 线框 FR-804 · 6 quota 进度条 · 超额 alert · HANDOFF |
+| 2026-07-04 | 技术总监 | 定案 **EPIC-9 M1** 计费 · ADR-17 · 3 条 HANDOFF |
+| 2026-07-03 | 技术总监 | **EPIC-6 M2 正式关闭** C13 `71c374d` |
 | 2026-07-03 | 开发 | C13 `71c374d` EPIC-6 M2 全栈 push · smoke publish + astro ✅ |
 | 2026-07-03 | 开发 Admin | EPIC-6 M2 落地页发布/下线/公网预览 · drawer + 列表 · build:prod ✅ |
 | 2026-07-03 | 开发 Landing | EPIC-6 M2 Astro `/p/[projectId]/[slug]` 八模块 + Turnstile LeadForm · `pnpm build` · 404 smoke ✅ |

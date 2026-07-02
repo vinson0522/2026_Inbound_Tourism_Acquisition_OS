@@ -42,8 +42,10 @@ import org.dromara.diagnostic.support.PlatformModelResolver;
 import org.dromara.diagnostic.support.PlatformModelResolver.PlatformModel;
 import org.dromara.project.domain.Competitor;
 import org.dromara.project.domain.CustomerProject;
+import org.dromara.project.billing.QuotaType;
 import org.dromara.project.mapper.CompetitorMapper;
 import org.dromara.project.mapper.CustomerProjectMapper;
+import org.dromara.project.service.IQuotaService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -87,12 +89,14 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
     private final AiServiceClient aiServiceClient;
     private final DiagGroundedApiPublisher groundedApiPublisher;
     private final ApplicationContext applicationContext;
+    private final IQuotaService quotaService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long createRun(Long projectId, CreateDiagnosticBo bo) {
         Long tenantId = BusinessTenantHelper.getBusinessTenantId();
         CustomerProject project = getOwnedProjectOrThrow(projectId, tenantId);
+        quotaService.checkAndConsume(tenantId, QuotaType.DIAGNOSTICS_PER_MONTH, 1);
 
         List<String> probeModes = normalizeProbeModes(bo.getProbeModes());
         List<String> modelNames = normalizeModels(bo.getModels());

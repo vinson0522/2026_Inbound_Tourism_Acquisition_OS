@@ -151,6 +151,7 @@ tenant:
     - probe_task
     - question_bank
     - report
+    - subscription
 
 # MyBatisPlus配置
 # https://baomidou.com/config/

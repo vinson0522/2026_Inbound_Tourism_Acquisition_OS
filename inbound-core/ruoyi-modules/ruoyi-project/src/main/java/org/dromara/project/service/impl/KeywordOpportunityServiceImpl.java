@@ -17,6 +17,7 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.project.domain.CustomerProject;
+import org.dromara.project.billing.QuotaType;
 import org.dromara.project.domain.KeywordOpportunity;
 import org.dromara.project.domain.bo.KeywordGenerateBo;
 import org.dromara.project.domain.bo.KeywordOpportunityBo;
@@ -25,6 +26,7 @@ import org.dromara.project.domain.vo.KeywordOpportunityVo;
 import org.dromara.project.mapper.CustomerProjectMapper;
 import org.dromara.project.mapper.KeywordOpportunityMapper;
 import org.dromara.project.service.IKeywordOpportunityService;
+import org.dromara.project.service.IQuotaService;
 import org.dromara.project.support.BusinessTenantHelper;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,7 @@ public class KeywordOpportunityServiceImpl implements IKeywordOpportunityService
     private final KeywordOpportunityMapper keywordOpportunityMapper;
     private final CustomerProjectMapper customerProjectMapper;
     private final AiServiceClient aiServiceClient;
+    private final IQuotaService quotaService;
 
     @Override
     public TableDataInfo<KeywordOpportunityVo> queryPageList(
@@ -110,6 +113,7 @@ public class KeywordOpportunityServiceImpl implements IKeywordOpportunityService
     public KeywordGenerateVo generateKeywords(Long projectId, KeywordGenerateBo bo) {
         CustomerProject project = getOwnedProjectOrThrow(projectId);
         Long tenantId = BusinessTenantHelper.getBusinessTenantId();
+        quotaService.checkAndConsume(tenantId, QuotaType.KEYWORDS_PER_MONTH, 1);
         String market = StringUtils.blankToDefault(bo.getMarket(), defaultMarket(project));
 
         KeywordGenerateRequest aiReq = new KeywordGenerateRequest();
