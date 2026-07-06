@@ -56,6 +56,14 @@ def main() -> int:
         )
 
     print(f"FR-108 trends smoke passed: {len(runs)} points")
+
+    wide_path = f"{path}&from=2020-01-01&to=2099-12-31"
+    print(f"3. GET {wide_path} (date range filter)")
+    wide = _http("GET", wide_path, headers=auth)
+    if wide.get("code") != 200:
+        raise RuntimeError(f"trends with from/to failed: {wide}")
+    wide_runs = (wide.get("data") or {}).get("runs") or []
+    print(f"   runs={len(wide_runs)} (from/to accepted)")
     return 0
 
 

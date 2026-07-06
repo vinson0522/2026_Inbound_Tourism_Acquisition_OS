@@ -16,7 +16,26 @@
 
     <template v-else>
       <el-card shadow="hover" class="mb-3 filter-card">
-        <el-form :inline="true" label-width="56px">
+        <el-form :inline="true" label-width="72px">
+          <el-form-item label="时间范围">
+            <el-select v-model="timePreset" placeholder="时间范围" style="width: 120px">
+              <el-option label="近30天" value="30" />
+              <el-option label="近90天" value="90" />
+              <el-option label="全部" value="all" />
+              <el-option label="自定义" value="custom" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="timePreset === 'custom'" label="日期">
+            <el-date-picker
+              v-model="customDateRange"
+              type="daterange"
+              range-separator="-"
+              start-placeholder="开始"
+              end-placeholder="结束"
+              value-format="YYYY-MM-DD"
+              style="width: 240px"
+            />
+          </el-form-item>
           <el-form-item label="市场">
             <el-select v-model="marketFilter" placeholder="全部" clearable style="width: 120px">
               <el-option label="全部" value="" />
@@ -102,7 +121,13 @@
       <el-card v-if="selectedRuns.length >= 2" shadow="hover" class="mb-3">
         <template #header>分项指标对比</template>
         <div ref="barChartRef" class="chart-box chart-box--bar" />
-        <el-table :data="selectedRuns" border size="small" class="metrics-table">
+        <el-table
+          :data="selectedRuns"
+          border
+          size="small"
+          class="metrics-table metrics-table--clickable"
+          @row-click="goRunDetail"
+        >
           <el-table-column label="诊断任务" prop="name" min-width="140" show-overflow-tooltip />
           <el-table-column label="完成时间" width="170">
             <template #default="{ row }">{{ formatTime(row.finishedAt) }}</template>
@@ -142,6 +167,7 @@ import { ElMessage } from 'element-plus';
 const TREND_LINE_COLOR = '#1677A0';
 const TREND_COLORS = ['#1677A0', '#059669', '#D4920A', '#64748B', '#7C3AED', '#DC2626'];
 const MAX_SELECT = 6;
+type TimePreset = '30' | '90' | 'all' | 'custom';
 
 const METRIC_COLUMNS = [
   { key: 'brandMentionRate' as const, label: '品牌出现率' },
@@ -160,6 +186,8 @@ const loading = ref(false);
 const allRuns = ref<DiagnosticTrendPointVO[]>([]);
 const selectedRunIds = ref<number[]>([]);
 const marketFilter = ref('');
+const timePreset = ref<TimePreset>('90');
+const customDateRange = ref<string[]>([]);
 const lineChartRef = ref<HTMLElement>();
 const barChartRef = ref<HTMLElement>();
 let lineChart: echarts.ECharts | null = null;
@@ -194,6 +222,41 @@ const summary = computed(() => {
 
 function pct(rate: number): string {
   return `${(rate * 100).toFixed(1)}%`;
+}
+
+function formatIsoDate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function resolveFinishedRange(): { from?: string; to?: string } | null {
+  if (timePreset.value === 'all') {
+    return {};
+  }
+  if (timePreset.value === '30' || timePreset.value === '90') {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - Number(timePreset.value) + 1);
+    return { from: formatIsoDate(start), to: formatIsoDate(end) };
+  }
+  if (timePreset.value === 'custom') {
+    if (!customDateRange.value || customDateRange.value.length !== 2) {
+      return null;
+    }
+    const [from, to] = customDateRange.value;
+    if (to < from) {
+      ElMessage.warning('结束日期不能早于开始日期');
+      return null;
+    }
+    return { from, to };
+  }
+  return {};
+}
+
+function goRunDetail(row: DiagnosticTrendPointVO) {
+  router.push(`/diagnostics/runs/${row.runId}`);
 }
 
 function formatShortDate(iso: string): string {
@@ -277,7 +340,7 @@ function renderLineChart() {
         formatter: (items: { dataIndex: number }[]) => {
           const run = runs[items[0]?.dataIndex ?? 0];
           if (!run) return '';
-          return `${run.name}<br/>GEO ${run.geoScore.toFixed(1)}<br/>${run.market}<br/>${formatTime(run.finishedAt)}`;
+          return `${run.name}<br/>GEO ${run.geoScore.toFixed(1)}<br/>${run.market}<br/>${formatTime(run.finishedAt)}<br/><span style="opacity:0.75">点击查看详情</span>`;
         }
       },
       grid: { left: 48, right: 24, top: 32, bottom: 48 },
@@ -368,11 +431,21 @@ function updateCharts() {
 async function loadTrends() {
   const projectId = projectStore.currentProjectId;
   if (!projectId) return;
+
+  const range = resolveFinishedRange();
+  if (range === null) {
+    ElMessage.warning('请选择自定义日期范围');
+    return;
+  }
+
   loading.value = true;
+  disposeCharts();
   try {
     const data = await getDiagnosticTrends(projectId, {
-      limit: 12,
-      market: marketFilter.value || undefined
+      limit: 52,
+      market: marketFilter.value || undefined,
+      from: range.from,
+      to: range.to
     });
     allRuns.value = data.runs;
     initDefaultSelection();
@@ -384,6 +457,8 @@ async function loadTrends() {
 
 function resetFilters() {
   marketFilter.value = '';
+  timePreset.value = '90';
+  customDateRange.value = [];
   loadTrends();
 }
 
@@ -519,6 +594,14 @@ onBeforeUnmount(() => {
 
 .metrics-table {
   margin-top: var(--tg-space-2);
+}
+
+.metrics-table--clickable :deep(.el-table__row) {
+  cursor: pointer;
+}
+
+.metrics-table--clickable :deep(.el-table__row:hover) {
+  background-color: var(--el-fill-color-light);
 }
 
 .compliance-footer {

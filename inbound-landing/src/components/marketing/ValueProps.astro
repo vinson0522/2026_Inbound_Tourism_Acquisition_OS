@@ -1,0 +1,38 @@
+---
+const items = [
+  {
+    icon: '📊',
+    title: 'Measure',
+    body: 'See how often AI assistants mention your brand vs competitors across real traveler questions.',
+  },
+  {
+    icon: '✨',
+    title: 'Act',
+    body: 'Prioritize keyword opportunities and generate review-ready scripts and English landing copy.',
+  },
+  {
+    icon: '📥',
+    title: 'Convert',
+    body: 'Publish compliant landing pages with lead forms and WhatsApp handoff — track inquiries in one place.',
+  },
+];
+---
+
+<section id="value" class="mk-section lp-section--alt" aria-labelledby="value-title">
+  <div class="mk-section__inner">
+    <h2 id="value-title" class="mk-section__title">Why tour operators choose TourGEO</h2>
+    <div class="mk-value-grid">
+      {
+        items.map((item) => (
+          <article class="mk-value-card">
+            <div class="mk-value-card__icon" aria-hidden="true">
+              {item.icon}
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

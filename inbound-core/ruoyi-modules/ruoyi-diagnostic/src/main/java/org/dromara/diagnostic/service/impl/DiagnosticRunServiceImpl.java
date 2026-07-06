@@ -61,7 +61,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -330,7 +332,7 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
     }
 
     @Override
-    public DiagnosticTrendsVo queryTrends(Long projectId, int limit, String market) {
+    public DiagnosticTrendsVo queryTrends(Long projectId, int limit, String market, LocalDate from, LocalDate to) {
         Long tenantId = BusinessTenantHelper.getBusinessTenantId();
         getOwnedProjectOrThrow(projectId, tenantId);
 
@@ -345,6 +347,14 @@ public class DiagnosticRunServiceImpl implements IDiagnosticRunService {
         lqw.apply("status IN ('SUCCESS'::diagnostic_run_status, 'PARTIAL_FAILED'::diagnostic_run_status)");
         if (StringUtils.isNotBlank(market)) {
             lqw.eq(DiagnosticRun::getMarket, market);
+        }
+        if (from != null) {
+            OffsetDateTime rangeStart = from.atStartOfDay().atOffset(ZoneOffset.UTC);
+            lqw.ge(DiagnosticRun::getFinishedAt, rangeStart);
+        }
+        if (to != null) {
+            OffsetDateTime rangeEnd = to.plusDays(1).atStartOfDay().atOffset(ZoneOffset.UTC).minusNanos(1);
+            lqw.le(DiagnosticRun::getFinishedAt, rangeEnd);
         }
         lqw.orderByDesc(DiagnosticRun::getFinishedAt);
         lqw.last("LIMIT " + cappedLimit);

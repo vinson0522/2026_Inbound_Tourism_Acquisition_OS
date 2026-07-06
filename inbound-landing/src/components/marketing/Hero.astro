@@ -1,0 +1,26 @@
+---
+interface Props {
+  adminUrl: string;
+  demoUrl: string;
+}
+
+const { adminUrl, demoUrl } = Astro.props;
+---
+
+<section class="mk-hero" aria-labelledby="hero-title">
+  <div class="mk-hero__inner">
+    <p class="mk-hero__sub-zh">旅获 AI · 入境游海外获客增长系统</p>
+    <h1 id="hero-title">Win overseas travelers where they ask AI</h1>
+    <p class="mk-hero__lead">
+      GEO visibility diagnostics, keyword insights, and AI-assisted content &amp; landing pages — built
+      for China inbound tour operators.
+    </p>
+    <div class="mk-hero__actions">
+      <a class="lp-btn lp-btn--primary" href={demoUrl}>Book a demo</a>
+      <a class="lp-btn lp-btn--outline" href={adminUrl}>Log in to Admin</a>
+    </div>
+    <p class="mk-hero__compliance">
+      Sample-based AI visibility insights. No ranking guarantees.
+    </p>
+  </div>
+</section>

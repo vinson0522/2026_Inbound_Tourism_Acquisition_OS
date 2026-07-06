@@ -43,5 +43,5 @@
 ## 完成后
 
 - smoke：`deploy/scripts/test_diagnostic_schedule.py` ✅ runId=11
-- commit **C23**：`feat(core,admin): EPIC-2 M3 scheduled diagnostic runs FR-109` ✅
-- **完整版路线图 #1–#7 全部关闭** · 进入维护轨（smoke 9/9 · 扩展真 hook）
+- commit **C23**：`feat(core,admin): EPIC-2 M3 scheduled diagnostic runs FR-109` ✅ `cfda3a7`
+- **完整版路线图 #1–#7 全部关闭** ✅ · 进入 [维护轨](2026-07-10-tech-director-maintenance-smoke-regression-sprint.md)

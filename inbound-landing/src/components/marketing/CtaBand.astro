@@ -1,0 +1,19 @@
+---
+interface Props {
+  adminUrl: string;
+  demoUrl: string;
+}
+
+const { adminUrl, demoUrl } = Astro.props;
+---
+
+<section id="contact" class="mk-cta-band" aria-labelledby="cta-title">
+  <div class="mk-section__inner">
+    <h2 id="cta-title">Ready to see your brand in AI answers?</h2>
+    <p>Book a walkthrough with our team or sign in to your workspace.</p>
+    <div class="mk-cta-band__actions">
+      <a class="lp-btn lp-btn--accent" href={demoUrl}>Book a demo</a>
+      <a class="lp-btn lp-btn--outline-white" href={adminUrl}>Log in to Admin</a>
+    </div>
+  </div>
+</section>

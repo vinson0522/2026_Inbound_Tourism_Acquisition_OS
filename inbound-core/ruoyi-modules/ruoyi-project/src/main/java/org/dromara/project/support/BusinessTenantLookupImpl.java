@@ -22,16 +22,26 @@ public class BusinessTenantLookupImpl implements BusinessTenantLookup {
         if (StringUtils.isBlank(ruoyiTenantId)) {
             throw new ServiceException("未登录或缺少租户上下文", HttpStatus.UNAUTHORIZED);
         }
+        ruoyiTenantId = ruoyiTenantId.trim();
 
-        Long mapped = businessTenantMapper.selectIdByRuoyiTenantId(ruoyiTenantId.trim());
+        Long mapped = businessTenantMapper.selectIdByRuoyiTenantId(ruoyiTenantId);
         if (mapped != null) {
             return mapped;
         }
 
         if (StringUtils.isNumeric(ruoyiTenantId)) {
-            Long numericId = Long.parseLong(ruoyiTenantId);
-            if (businessTenantMapper.countActiveById(numericId) > 0) {
-                return numericId;
+            long numeric = Long.parseLong(ruoyiTenantId);
+            String padded = String.format("%06d", numeric);
+            if (!padded.equals(ruoyiTenantId)) {
+                mapped = businessTenantMapper.selectIdByRuoyiTenantId(padded);
+                if (mapped != null) {
+                    return mapped;
+                }
+            }
+            // Only treat plain numeric ids (e.g. "2") as business tenant primary keys.
+            if (ruoyiTenantId.equals(Long.toString(numeric))
+                && businessTenantMapper.countActiveById(numeric) > 0) {
+                return numeric;
             }
         }
 

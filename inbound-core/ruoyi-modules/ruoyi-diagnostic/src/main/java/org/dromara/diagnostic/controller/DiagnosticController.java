@@ -20,6 +20,7 @@ import org.dromara.diagnostic.domain.vo.DiagnosticTrendsVo;
 import org.dromara.diagnostic.domain.vo.ProbeTaskVo;
 import org.dromara.diagnostic.service.IDiagnosticRunService;
 import org.dromara.diagnostic.service.IDiagnosticScheduleService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.dromara.diagnostic.report.DiagnosticReportFile;
@@ -95,9 +98,11 @@ public class DiagnosticController extends BaseController {
     public R<DiagnosticTrendsVo> trends(
         @NotNull @PathVariable Long projectId,
         @RequestParam(defaultValue = "12") int limit,
-        @RequestParam(required = false) String market
+        @RequestParam(required = false) String market,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
     ) {
-        return R.ok(diagnosticRunService.queryTrends(projectId, limit, market));
+        return R.ok(diagnosticRunService.queryTrends(projectId, limit, market, from, to));
     }
 
     @SaCheckLogin

@@ -1,0 +1,56 @@
+---
+import '../styles/marketing.css';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  adminUrl: string;
+}
+
+const { title, description, canonicalUrl, adminUrl } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+  </head>
+  <body>
+    <div class="mk-page">
+      <header class="mk-header">
+        <a class="mk-header__logo" href="/">TourGEO</a>
+        <nav class="mk-header__nav" aria-label="Primary">
+          <a href="#capabilities">Features</a>
+          <a href="#" class="is-disabled" aria-disabled="true">Pricing</a>
+        </nav>
+        <div class="mk-header__actions">
+          <a class="lp-btn lp-btn--outline" href={adminUrl}>Log in</a>
+        </div>
+      </header>
+      <main class="mk-main">
+        <slot />
+      </main>
+      <footer class="mk-footer">
+        <p>© {year} TourGEO / 旅获 AI</p>
+        <div class="mk-footer__links">
+          <a href="#">Privacy</a>
+          <span aria-hidden="true">·</span>
+          <a href="#">Terms</a>
+        </div>
+        <p class="mk-footer__disclaimer">
+          GEO and AI outputs are sampled at a specific time and platform set; not a guarantee of future
+          visibility. Prices and visa information on generated pages require human confirmation.
+        </p>
+        <p>Powered by TourGEO Agent</p>
+      </footer>
+    </div>
+  </body>
+</html>

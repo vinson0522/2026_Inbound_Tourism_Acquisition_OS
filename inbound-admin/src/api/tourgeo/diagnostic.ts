@@ -187,12 +187,14 @@ function mapScheduleVo(raw: Record<string, unknown>): DiagnosticScheduleVO {
 /** FR-108 诊断趋势序列 */
 export async function getDiagnosticTrends(
   projectId: number,
-  params?: { limit?: number; market?: string }
+  params?: { limit?: number; market?: string; from?: string; to?: string }
 ): Promise<DiagnosticTrendsData> {
   const res = await request.get(`${BASE}/projects/${projectId}/diagnostics/trends`, {
     params: {
       limit: params?.limit ?? 12,
-      market: params?.market || undefined
+      market: params?.market || undefined,
+      from: params?.from || undefined,
+      to: params?.to || undefined
     }
   });
   const runs = (res.data?.runs ?? []).map(mapTrendPoint);

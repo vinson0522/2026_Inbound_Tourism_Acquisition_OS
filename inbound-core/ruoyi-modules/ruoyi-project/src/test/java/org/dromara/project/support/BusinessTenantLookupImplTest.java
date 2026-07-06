@@ -40,6 +40,21 @@ class BusinessTenantLookupImplTest {
     }
 
     @Test
+    void resolve_zeroPaddedRuoyiId_doesNotFallbackToParseLong() {
+        when(businessTenantMapper.selectIdByRuoyiTenantId("000001")).thenReturn(null);
+        assertThatThrownBy(() -> lookup.resolve("000001"))
+            .isInstanceOf(ServiceException.class)
+            .hasMessageContaining("无效租户");
+    }
+
+    @Test
+    void resolve_shortNumeric_triesSixDigitPadding() {
+        when(businessTenantMapper.selectIdByRuoyiTenantId("1")).thenReturn(null);
+        when(businessTenantMapper.selectIdByRuoyiTenantId("000001")).thenReturn(2L);
+        assertThat(lookup.resolve("1")).isEqualTo(2L);
+    }
+
+    @Test
     void resolve_numericFallback_whenNoMappingRow() {
         when(businessTenantMapper.selectIdByRuoyiTenantId("2")).thenReturn(null);
         when(businessTenantMapper.countActiveById(2L)).thenReturn(1);

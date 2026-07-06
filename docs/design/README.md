@@ -18,6 +18,7 @@
 | [wireframes/keywords-list.md](./wireframes/keywords-list.md) | 关键词洞察 · 机会词列表 FR-201/202 |
 | [wireframes/content-task-list.md](./wireframes/content-task-list.md) | 内容 Agent · 内容任务列表 EPIC-4 M1（预研） |
 | [wireframes/viral-breakdown-list.md](./wireframes/viral-breakdown-list.md) | 内容 Agent · 爆款拆解 EPIC-5 M1 FR-401~403 |
+| [wireframes/marketing-portal-home.md](./wireframes/marketing-portal-home.md) | 营销门户 · 首页 Sprint #3（`inbound-landing` `/`） |
 | [wireframes/landing-page-list.md](./wireframes/landing-page-list.md) | 落地页 Agent · 页面列表 EPIC-6 M1 |
 | [wireframes/landing-page-publish.md](./wireframes/landing-page-publish.md) | 落地页 Agent · 发布与公网预览 EPIC-6 M2 |
 | [wireframes/leads-list.md](./wireframes/leads-list.md) | 线索与转化 · 询盘列表 EPIC-7 M1 + **CRM M2** + **M3 WhatsApp/AI FR-602/603** |
@@ -46,6 +47,7 @@
 | [../agent-team/HANDOFFS/2026-07-09-ui-to-developer-billing-m2.md](../agent-team/HANDOFFS/2026-07-09-ui-to-developer-billing-m2.md) | UI → 开发（计费编辑/重置 EPIC-9 M2） |
 | [../agent-team/HANDOFFS/2026-07-09-ui-to-developer-viral-breakdown.md](../agent-team/HANDOFFS/2026-07-09-ui-to-developer-viral-breakdown.md) | UI → 开发（爆款拆解 EPIC-5 M1） |
 | [../agent-team/HANDOFFS/2026-07-10-ui-to-developer-leads-m3.md](../agent-team/HANDOFFS/2026-07-10-ui-to-developer-leads-m3.md) | UI → 开发（线索 WhatsApp 归因 + AI 跟进 EPIC-7 M3） |
+| [../agent-team/HANDOFFS/2026-07-11-ui-to-developer-marketing-portal.md](../agent-team/HANDOFFS/2026-07-11-ui-to-developer-marketing-portal.md) | UI → 开发（营销门户 Sprint #3） |
 | [../agent-team/HANDOFFS/2026-07-10-ui-to-developer-diagnostic-schedule-m3.md](../agent-team/HANDOFFS/2026-07-10-ui-to-developer-diagnostic-schedule-m3.md) | UI → 开发（定时诊断 EPIC-2 M3 FR-109） |
 
 ---
@@ -104,6 +106,7 @@ Token 落地时优先在 `variables.module.scss` 的 `:root` 追加 `--tg-*` 变
 
 | 日期 | 作者 | 说明 |
 |------|------|------|
+| 2026-07-11 | UI 设计 | Sprint #3 marketing-portal-home 营销首页线框 + UI→Landing HANDOFF |
 | 2026-07-10 | UI 设计 | EPIC-2 M3 diagnostics-list §M3 定时计划 Tab FR-109 + HANDOFF |
 | 2026-07-10 | UI 设计 | EPIC-7 M3 leads-list §M3 WhatsApp 归因 + AI 跟进弹窗 FR-602/603 + HANDOFF |
 | 2026-07-09 | UI 设计 | EPIC-5 M1 viral-breakdown-list 上传+七维拆解 drawer FR-401~403 + HANDOFF |

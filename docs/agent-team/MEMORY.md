@@ -6,9 +6,9 @@
 | 字段 | 值 |
 |------|-----|
 | **最后更新** | 2026-07-11 |
-| **更新角色** | 技术总监 |
-| **Git 远程** | ✅ `origin/main` · C24 `6f4738a` |
-| **当前 EPIC 焦点** | **Sprint #3 产品化并行** · C25 FR-807 · 门户 · FR-108 P2 |
+| **更新角色** | 运维 |
+| **Git 远程** | ✅ `origin/main` · C25 `c78a157` |
+| **当前 EPIC 焦点** | **Sprint #4** 入库 C26 + 文档/工作台链 |
 
 ---
 
@@ -22,7 +22,7 @@
 | 基础设施 | 服务器 **全绿** ✅；**本机 Docker Desktop + 4 容器 healthy** ✅（ADR-09） |
 | EPIC-1 最小闭环 | ✅ Story 2 完成（项目 CRUD + Admin `/projects`） |
 | AI 服务 | `inbound-ai` Phase 1 ✅ · **Phase 2 embed MVP** ✅（ai.embed + `/ai/rag/search`） |
-| 落地页/探针/门户 | `inbound-landing` ✅ M2 · **探针扩展 M1 scaffold** ✅ · 门户待开发 |
+| 落地页/探针/门户 | `inbound-landing` ✅ M2 · **探针扩展 M1 scaffold** ✅ · **营销门户 MVP** ✅ |
 
 ## 技术总监
 
@@ -331,13 +331,26 @@
 | # | 角色 | 任务 | HANDOFF | 状态 |
 |---|------|------|---------|:----:|
 | 1 | 开发 Java | **C25** FR-807 commit | [→C25](HANDOFFS/2026-07-11-tech-director-to-dev-c25-fr807-commit.md) | ✅ |
-| 2 | 开发 Admin | FR-108 趋势时间筛选 | [→Admin](HANDOFFS/2026-07-11-tech-director-to-dev-admin-fr108-trends-filter.md) | ⏳ |
+| 2 | 开发 Admin | FR-108 趋势时间筛选 | [→Admin](HANDOFFS/2026-07-11-tech-director-to-dev-admin-fr108-trends-filter.md) | ✅ |
 | 3 | UI 设计 | 营销门户线框 | [→UI](HANDOFFS/2026-07-11-tech-director-to-ui-marketing-portal.md) | ✅ |
-| 4 | 开发 Landing | 门户首页 MVP | [→Landing](HANDOFFS/2026-07-11-tech-director-to-dev-landing-portal-home.md) | ⏳ |
-| 5 | 开发 Java | 租户 smoke 扩展 | [→smoke](HANDOFFS/2026-07-11-tech-director-to-dev-java-tenant-smoke-expand.md) | ⏳ |
-| 6 | 运维 | LOCAL_DOCKER 文档 | [→运维](HANDOFFS/2026-07-11-tech-director-to-devops-local-docker-smoke-docs.md) | ⏳ |
-| — | 总览 | Sprint 索引 | [Sprint #3](HANDOFFS/2026-07-11-tech-director-sprint3-productization-parallel.md) | — |
+| 4 | 开发 Landing | 门户首页 MVP | [→Landing](HANDOFFS/2026-07-11-tech-director-to-dev-landing-portal-home.md) | ✅ |
+| 5 | 开发 Java | 租户 smoke 扩展 | [→smoke](HANDOFFS/2026-07-11-tech-director-to-dev-java-tenant-smoke-expand.md) | ✅ |
+| 6 | 运维 | LOCAL_DOCKER 文档 | [→运维](HANDOFFS/2026-07-11-tech-director-to-devops-local-docker-smoke-docs.md) | ✅ |
+| — | 总览 | Sprint 索引 | [Sprint #3](HANDOFFS/2026-07-11-tech-director-sprint3-productization-parallel.md) | ✅ **关闭** |
 
+**技术总监签核（2026-07-11）**：Sprint #3 ✅ — C25 push · FR-108/门户/tenant smoke 工作区 Done · 待 **C26** 入库
+
+### 产品化 Sprint #4 — 入库 + 体验收尾（2026-07-11）
+
+| # | 角色 | 任务 | HANDOFF | 状态 |
+|---|------|------|---------|:----:|
+| 1 | 开发 | **C26** Sprint #3 增量 commit | [→C26](HANDOFFS/2026-07-11-tech-director-to-dev-c26-sprint3-commit.md) | ⏳ |
+| 2 | 运维 | LOCAL_DOCKER + smoke README | [→运维](HANDOFFS/2026-07-11-tech-director-to-devops-local-docker-smoke-docs.md) | ✅ |
+| 3 | 开发 Admin | FR-006 dashboard 深链 | [→Admin](HANDOFFS/2026-07-11-tech-director-to-dev-admin-dashboard-links.md) | ⏳ |
+| 4 | 开发 Landing | 门户 compose :4321 | [→Landing](HANDOFFS/2026-07-11-tech-director-to-dev-landing-compose-verify.md) | ⏳ |
+| — | 总览 | Sprint 索引 | [Sprint #4](HANDOFFS/2026-07-11-tech-director-sprint4-closeout-parallel.md) | — |
+
+### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
 | # | 角色 | 任务 | HANDOFF | 状态 |
 |---|------|------|---------|:----:|
@@ -392,8 +405,9 @@
 | **C23** | EPIC-2 M3 定时诊断 | `feat(core,admin): EPIC-2 M3 scheduled diagnostic runs FR-109` | ✅ `cfda3a7` |
 | **C24** | 维护轨 smoke 9/9 | `fix(ai,deploy,extension): restore smoke 9/9 regression defaults` | ✅ `6f4738a` |
 | **C25** | FR-807 租户隔离 | `feat(core): FR-807 business tenant mapping and cross-tenant isolation` | ✅ `c78a157` |
+| **C26** | FR-108+门户+tenant smoke | `feat(core,admin,landing): FR-108 trends filter, marketing portal, tenant smoke 10/10` | `run_smoke_regression` 10/10 |
 
-**执行**：C1–C25 ✅ · push ✅ · Sprint #3 并行
+**执行**：C1–C25 ✅ · **C26 ⏳** 工作区 Done 未 push
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -413,6 +427,7 @@
 - **验证时间**：2026-07-03（本机 Docker + **inbound-landing :4321** ✅）
 - **Git 远程（2026-07-01）** ✅ `origin` = `git@github.com:vinson0522/2026_Inbound_Tourism_Acquisition_OS.git`（SSH）· `git push -u origin main` 成功 · **25 commits** · `deploy/.env` 未入库（`.gitignore`）
 - **EPIC-6 M2 landing（2026-07-03）** ✅ `inbound-landing/Dockerfile` · compose `:4321` · env 文档 · `curl localhost:4321/` **200** · container **healthy**
+- **Smoke 文档（2026-07-11）** ✅ `LOCAL_DOCKER.md` §2.9 一键 **10/10** · mock 说明 · FR-807 tenant B · B-23 opt-in · [`deploy/scripts/README.md`](../deploy/scripts/README.md)
 
 ### 本机（资源提供人 Windows — **主开发路径 ADR-09**）
 
@@ -444,13 +459,14 @@
 ## 开发
 
 - **负责目录**：`inbound-core/`、`inbound-ai/`、`database/`、`inbound-probe-extension/`
-- **维护轨 FR-807 租户隔离 Java（2026-07-11）** ✅ 统一 `BusinessTenantHelper` → `ruoyi-common-tenant` · `BusinessTenantLookupImpl` · `tenant.ruoyi_tenant_id` · seed tenant B + `tenantb` · `BusinessTenantLookupImplTest` + `CustomerProjectTenantIsolationTest` · `test_tenant_isolation.py` projectId=8 code=403 · smoke 9/9 ✅
+- **维护轨 FR-807 租户隔离 Java（2026-07-11）** ✅ 统一 `BusinessTenantHelper` → `ruoyi-common-tenant` · `BusinessTenantLookupImpl` · `tenant.ruoyi_tenant_id` · seed tenant B + `tenantb` · `BusinessTenantLookupImplTest` + `CustomerProjectTenantIsolationTest` · `test_tenant_isolation.py` 4 端点 403 · `run_smoke_regression.ps1` 10/10 ✅
 - **6/29 增量二（2026-06-29）** ✅ **已提交** `a87b780` Story3 · `91c215b` Phase2.1 · `06c4660` docs wireframes
 - **Sprint HANDOFF 归档（2026-06-29）** ✅ **已提交** `3ac6853` — 2026-06-25~27 HANDOFF + INFRA/DECISIONS
 - **Push 状态** ✅ **2026-07-01** 运维 SSH push 完成（25 commits → `origin/main`）
 - **EPIC-2 M2 FR-106（2026-06-29）** ✅ DOCX + PDF 报告导出 runId=2；`test_diagnostic_report_export.py` docx/pdf；PDF ~32KB 含 geo_score
 - **EPIC-2 M2.2 FR-108 trends API（2026-06-29）** ✅ `GET /api/v1/projects/{id}/diagnostics/trends?limit=12` · 租户隔离 · 从 `diagnostic_result` 聚合 6 分项 · `DiagnosticMetricsAggregatorTest` + `test_diagnostic_trends.py`（runId=2/3 · 2 点 ASC）
 - **EPIC-2 M2.2 FR-108 Admin 趋势页（2026-06-29）** ✅ `/diagnostics/trends` · ECharts 折线+分项柱图 · run 多选 2–6 · 空态「至少需要 2 次成功诊断」· 详情页链趋势
+- **Sprint #3 FR-108 趋势时间筛选（2026-07-11）** ✅ Admin 近30/90/全部/自定义 · Java `?from=&to=` 按 `finished_at` · 折线点+表格行 → `/diagnostics/runs/:id` · `test_diagnostic_trends.py` from/to 步骤 · `pnpm build:prod` ✅
 - **FR-005 知识库 RAG 检索预览（2026-06-29）** ✅ `POST .../knowledge-assets/search` → `/ai/rag/search` · Admin drawer top-3 + chunk_id · `test_knowledge_rag_search.py`（asset#1 · 1 hit）
 - **EPIC-10 Phase 2.2 Docling（2026-06-29）** ✅ PDF/DOCX 解析替换 mock 切片 · `file_storage`（HTTP/MinIO/本地）· embed 优先 `file_url` · DLQ 已有 · pytest fixture PDF + `test_embed_docling_pipeline`
 - **EPIC-3 M1 FR-201 keywords AI（2026-06-29）** ✅ `POST /ai/keywords/generate` · mock/无 Key 回退 · 可选 RAG top-3 · `template_service` · `test_keywords_generate.py` 7 passed
@@ -467,6 +483,7 @@
 - **EPIC-6 M1 FR-501~505 Admin 落地页（2026-07-01）** ✅ `/landing-pages` 列表 + 创建 dialog + AI 生成 + JSON/SEO 预览 drawer · 关键词「转落地页」· `pnpm build:prod` ✅
 - **EPIC-6 M2 landing publish Java（2026-07-03）** ✅ `PublicLandingPageController` + publish/unpublish · `LandingPublishProperties` · `PublicApiCorsConfig` · Turnstile siteverify · `test_landing_publish_e2e.py` ✅
 - **EPIC-6 M2 Astro landing（2026-07-03）** ✅ `/p/[projectId]/[slug]` hybrid SSR · 八模块 · Turnstile LeadForm · `404.astro` · `pnpm build` ✅ · `test_landing_astro_e2e.py` · 404 友好页 ✅
+- **Sprint #3 营销门户 MVP（2026-07-11）** ✅ `/` SSG · `MarketingLayout` · Hero/价值/能力/CTA · `PUBLIC_ADMIN_URL` · 与 `/p/...` 共存 · `pnpm build` + HTTP 200 ✅
 - **EPIC-6 M2 Admin 落地页发布（2026-07-03）** ✅ 列表/ drawer 发布·下线·公网预览 · `publishLandingPage`/`unpublishLandingPage` · `pnpm build:prod` ✅
 - **EPIC-7 M1 FR-601 leads Java（2026-07-01）** ✅ `POST /api/v1/public/leads` + `GET .../leads` 列表/详情 · Turnstile M1 stub · IP+landingPageId 限流 · `tenant.excludes` 加 `lead` · `test_public_leads_api.py` ✅
 - **EPIC-7 M1 FR-601 Admin 线索页（2026-07-01）** ✅ `/leads` 侧栏 + 列表/筛选/脱敏 + 详情 drawer · `maskPii` · `pnpm build:prod` ✅
@@ -599,20 +616,21 @@
 | B-20 | ~~EPIC-2 M3 C23 未 commit/push~~ | 开发 | ✅ **已关闭** C23 `cfda3a7` · smoke runId=11 |
 | B-21 | ~~smoke 9/9 回归：embed/RAG 500 · report export runId=2~~ | 开发 | ✅ **已关闭** 2026-07-10 · `run_smoke_regression.ps1` 9/9 |
 | B-22 | ~~维护轨 C24 未 commit/push~~ | 开发 | ✅ **已关闭** C24 `6f4738a` |
-| B-24 | ~~FR-807 **C25 未 commit/push**~~ | 开发 Java | ✅ **已关闭** C25 `c78a157` · smoke 9/9 + `test_tenant_isolation` |
+| B-24 | ~~FR-807 C25 未 commit/push~~ | 开发 Java | ✅ **已关闭** C25 `c78a157` |
+| B-25 | **C26 未 commit/push**（FR-108/门户/tenant smoke 10） | 开发 | ⏳ [C26 HANDOFF](HANDOFFS/2026-07-11-tech-director-to-dev-c26-sprint3-commit.md) |
 
 ---
 
-## 下一步（跨角色 · Sprint #3 · 2026-07-11）
+## 下一步（跨角色 · Sprint #4 · 2026-07-11）
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P1** | **开发 Admin** | [FR-108 趋势筛选](HANDOFFS/2026-07-11-tech-director-to-dev-admin-fr108-trends-filter.md) |
-| **P1** | **开发 Landing** | [门户首页](HANDOFFS/2026-07-11-tech-director-to-dev-landing-portal-home.md) | 对齐线框 §MVP |
-| **P2** | **开发 Java** | [租户 smoke 扩展](HANDOFFS/2026-07-11-tech-director-to-dev-java-tenant-smoke-expand.md) · C25 后 |
-| **P2** | **运维** | [LOCAL_DOCKER 文档](HANDOFFS/2026-07-11-tech-director-to-devops-local-docker-smoke-docs.md) |
-| ⏸ | — | B-23 三方 · 勿开窗口 |
-| — | 总览 | [Sprint #3 索引](HANDOFFS/2026-07-11-tech-director-sprint3-productization-parallel.md) |
+| **P0** | **开发** | [C26 commit](HANDOFFS/2026-07-11-tech-director-to-dev-c26-sprint3-commit.md) · B-25 |
+| ~~P1~~ | ~~运维~~ | ~~LOCAL_DOCKER + smoke README~~ | ✅ 2026-07-11 |
+| **P1** | **开发 Admin** | [Dashboard 深链](HANDOFFS/2026-07-11-tech-director-to-dev-admin-dashboard-links.md) |
+| **P2** | **开发 Landing** | [门户 compose](HANDOFFS/2026-07-11-tech-director-to-dev-landing-compose-verify.md) |
+| ⏸ | — | B-23 三方 |
+| — | 总览 | [Sprint #4](HANDOFFS/2026-07-11-tech-director-sprint4-closeout-parallel.md) |
 
 ---
 
@@ -620,6 +638,11 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-11 | 运维 | LOCAL_DOCKER §2.9 smoke 10/10 · tenant B FR-807 · `scripts/README.md` · B-23 opt-in |
+| 2026-07-11 | 技术总监 | Sprint #3 签核关闭 · 派发 **Sprint #4** C26+文档+dashboard+compose · B-25 打开 |
+| 2026-07-11 | 开发 Java | FR-807 tenant smoke 扩展 · regression 10/10 |
+| 2026-07-11 | 开发 Landing | TourGEO 营销门户 MVP · Hero/价值/能力/CTA · `MarketingLayout` · `pnpm build` + HTTP 200 ✅ |
+| 2026-07-11 | 开发 Admin | FR-108 趋势页时间筛选（30/90/自定义）· Java `from`/`to` · 点击跳转详情 · `build:prod` ✅ |
 | 2026-07-11 | UI 设计 | Sprint #3 `marketing-portal-home` Hero/价值/能力/CTA/页脚 · 替换 index 占位 · UI→Landing HANDOFF ✅ |
 | 2026-07-11 | 开发 Java | C25 `c78a157` FR-807 commit+push · B-24 关闭 |
 | 2026-07-11 | 技术总监 | 派发 **Sprint #3** 六路并行（C25/门户/趋势/文档/tenant smoke）· 无三方依赖 · B-24 打开 |

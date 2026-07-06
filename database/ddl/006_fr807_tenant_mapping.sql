@@ -35,3 +35,57 @@ WHERE NOT EXISTS (SELECT 1 FROM sys_user WHERE user_name = 'tenantb' AND tenant_
 INSERT INTO sys_user_role (user_id, role_id)
 SELECT 100, 1
 WHERE NOT EXISTS (SELECT 1 FROM sys_user_role WHERE user_id = 100 AND role_id = 1);
+
+-- Tenant B smoke resources (cross-tenant isolation: diagnostics + leads)
+INSERT INTO diagnostic_run (
+    id, tenant_id, project_id, name, market, locale, region,
+    probe_modes_json, models_json, sample_count, question_scope_json,
+    status, geo_score, started_at, finished_at, created_by
+)
+SELECT
+    100, 2, cp.id,
+    'Tenant B Isolation Smoke Run',
+    'US', 'en-US', 'us-east',
+    '["grounded-api"]'::jsonb,
+    '["gemini"]'::jsonb,
+    1,
+    '{"mode":"all"}'::jsonb,
+    'SUCCESS'::diagnostic_run_status,
+    72.00,
+    NOW() - INTERVAL '1 day',
+    NOW() - INTERVAL '1 day',
+    1
+FROM customer_project cp
+WHERE cp.tenant_id = 2 AND cp.deleted_at IS NULL
+ORDER BY cp.id
+LIMIT 1
+ON CONFLICT (id) DO UPDATE SET
+    tenant_id = 2,
+    project_id = EXCLUDED.project_id,
+    name = EXCLUDED.name,
+    status = EXCLUDED.status,
+    geo_score = EXCLUDED.geo_score,
+    finished_at = EXCLUDED.finished_at,
+    updated_at = NOW();
+
+INSERT INTO lead (id, tenant_id, project_id, name, email, source, status)
+SELECT 100, 2, cp.id, 'Tenant B Smoke Lead', 'lead@beta.example.com', 'smoke', 'NEW'::lead_status
+FROM customer_project cp
+WHERE cp.tenant_id = 2 AND cp.deleted_at IS NULL
+ORDER BY cp.id
+LIMIT 1
+ON CONFLICT (id) DO UPDATE SET
+    tenant_id = 2,
+    project_id = EXCLUDED.project_id,
+    name = EXCLUDED.name,
+    updated_at = NOW();
+
+SELECT setval(
+    pg_get_serial_sequence('diagnostic_run', 'id'),
+    GREATEST((SELECT COALESCE(MAX(id), 1) FROM diagnostic_run), 100)
+);
+
+SELECT setval(
+    pg_get_serial_sequence('lead', 'id'),
+    GREATEST((SELECT COALESCE(MAX(id), 1) FROM lead), 100)
+);

@@ -168,4 +168,45 @@ INSERT INTO customer_project (
 SELECT 2, 'Tenant B Sample Project', 'Beta Journeys', 'https://beta.example.com', '["US"]', '["en"]', 1
 WHERE NOT EXISTS (SELECT 1 FROM customer_project WHERE tenant_id = 2 AND deleted_at IS NULL);
 
+INSERT INTO diagnostic_run (
+    id, tenant_id, project_id, name, market, locale, region,
+    probe_modes_json, models_json, sample_count, question_scope_json,
+    status, geo_score, started_at, finished_at, created_by
+)
+SELECT
+    100, 2, cp.id,
+    'Tenant B Isolation Smoke Run',
+    'US', 'en-US', 'us-east',
+    '["grounded-api"]'::jsonb,
+    '["gemini"]'::jsonb,
+    1,
+    '{"mode":"all"}'::jsonb,
+    'SUCCESS'::diagnostic_run_status,
+    72.00,
+    NOW() - INTERVAL '1 day',
+    NOW() - INTERVAL '1 day',
+    1
+FROM customer_project cp
+WHERE cp.tenant_id = 2 AND cp.deleted_at IS NULL
+ORDER BY cp.id
+LIMIT 1
+ON CONFLICT (id) DO UPDATE SET
+    tenant_id = 2,
+    project_id = EXCLUDED.project_id,
+    status = EXCLUDED.status,
+    geo_score = EXCLUDED.geo_score,
+    finished_at = EXCLUDED.finished_at,
+    updated_at = NOW();
+
+INSERT INTO lead (id, tenant_id, project_id, name, email, source, status)
+SELECT 100, 2, cp.id, 'Tenant B Smoke Lead', 'lead@beta.example.com', 'smoke', 'NEW'::lead_status
+FROM customer_project cp
+WHERE cp.tenant_id = 2 AND cp.deleted_at IS NULL
+ORDER BY cp.id
+LIMIT 1
+ON CONFLICT (id) DO UPDATE SET
+    tenant_id = 2,
+    project_id = EXCLUDED.project_id,
+    updated_at = NOW();
+
 COMMIT;
