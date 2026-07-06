@@ -344,7 +344,7 @@
 
 | # | 角色 | 任务 | HANDOFF | 状态 |
 |---|------|------|---------|:----:|
-| 1 | 开发 | **C26** Sprint #3 增量 commit | [→C26](HANDOFFS/2026-07-11-tech-director-to-dev-c26-sprint3-commit.md) | ⏳ |
+| 1 | 开发 | **C26** Sprint #3 增量 commit | [→C26](HANDOFFS/2026-07-11-tech-director-to-dev-c26-sprint3-commit.md) | ✅ `5875276` |
 | 2 | 运维 | LOCAL_DOCKER + smoke README | [→运维](HANDOFFS/2026-07-11-tech-director-to-devops-local-docker-smoke-docs.md) | ✅ |
 | 3 | 开发 Admin | FR-006 dashboard 深链 | [→Admin](HANDOFFS/2026-07-11-tech-director-to-dev-admin-dashboard-links.md) | ⏳ |
 | 4 | 开发 Landing | 门户 compose :4321 | [→Landing](HANDOFFS/2026-07-11-tech-director-to-dev-landing-compose-verify.md) | ⏳ |
@@ -405,9 +405,9 @@
 | **C23** | EPIC-2 M3 定时诊断 | `feat(core,admin): EPIC-2 M3 scheduled diagnostic runs FR-109` | ✅ `cfda3a7` |
 | **C24** | 维护轨 smoke 9/9 | `fix(ai,deploy,extension): restore smoke 9/9 regression defaults` | ✅ `6f4738a` |
 | **C25** | FR-807 租户隔离 | `feat(core): FR-807 business tenant mapping and cross-tenant isolation` | ✅ `c78a157` |
-| **C26** | FR-108+门户+tenant smoke | `feat(core,admin,landing): FR-108 trends filter, marketing portal, tenant smoke 10/10` | `run_smoke_regression` 10/10 |
+| **C26** | FR-108+门户+tenant smoke | `feat(core,admin,landing): FR-108 trends filter, marketing portal, tenant smoke 10/10` | ✅ `5875276` · smoke 10/10 |
 
-**执行**：C1–C25 ✅ · **C26 ⏳** 工作区 Done 未 push
+**执行**：C1–C26 ✅
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -617,7 +617,7 @@
 | B-21 | ~~smoke 9/9 回归：embed/RAG 500 · report export runId=2~~ | 开发 | ✅ **已关闭** 2026-07-10 · `run_smoke_regression.ps1` 9/9 |
 | B-22 | ~~维护轨 C24 未 commit/push~~ | 开发 | ✅ **已关闭** C24 `6f4738a` |
 | B-24 | ~~FR-807 C25 未 commit/push~~ | 开发 Java | ✅ **已关闭** C25 `c78a157` |
-| B-25 | **C26 未 commit/push**（FR-108/门户/tenant smoke 10） | 开发 | ⏳ [C26 HANDOFF](HANDOFFS/2026-07-11-tech-director-to-dev-c26-sprint3-commit.md) |
+| B-25 | ~~C26 未 commit/push~~（FR-108/门户/tenant smoke 10） | 开发 | ✅ **已关闭** C26 `5875276` · smoke 10/10 |
 
 ---
 
@@ -625,8 +625,6 @@
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P0** | **开发** | [C26 commit](HANDOFFS/2026-07-11-tech-director-to-dev-c26-sprint3-commit.md) · B-25 |
-| ~~P1~~ | ~~运维~~ | ~~LOCAL_DOCKER + smoke README~~ | ✅ 2026-07-11 |
 | **P1** | **开发 Admin** | [Dashboard 深链](HANDOFFS/2026-07-11-tech-director-to-dev-admin-dashboard-links.md) |
 | **P2** | **开发 Landing** | [门户 compose](HANDOFFS/2026-07-11-tech-director-to-dev-landing-compose-verify.md) |
 | ⏸ | — | B-23 三方 |
@@ -638,6 +636,7 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-11 | 开发 | C26 `5875276` Sprint #3 push · FR-108/门户/tenant smoke 10/10 · B-25 关闭 |
 | 2026-07-11 | 运维 | LOCAL_DOCKER §2.9 smoke 10/10 · tenant B FR-807 · `scripts/README.md` · B-23 opt-in |
 | 2026-07-11 | 技术总监 | Sprint #3 签核关闭 · 派发 **Sprint #4** C26+文档+dashboard+compose · B-25 打开 |
 | 2026-07-11 | 开发 Java | FR-807 tenant smoke 扩展 · regression 10/10 |

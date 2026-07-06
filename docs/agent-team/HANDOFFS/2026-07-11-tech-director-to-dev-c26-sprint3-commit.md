@@ -17,10 +17,10 @@
 
 - [x] commit **C26**：`feat(core,admin,landing): FR-108 trends filter, marketing portal, tenant smoke 10/10`
 - [x] `run_smoke_regression.ps1` **10/10**（Java :8080 + docker ai-api 前提）
-- [ ] push `origin/main` · 关闭 **B-25**
+- [x] push `origin/main` · 关闭 **B-25**
 
 ## Done
 
 - **完成时间**：2026-07-11
-- **commit hash**：（push 后填入）
+- **commit hash**：`5875276`
 - **smoke**：`run_smoke_regression.ps1` 10/10
