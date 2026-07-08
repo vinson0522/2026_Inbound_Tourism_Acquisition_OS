@@ -46,11 +46,25 @@ export interface ContactField {
   placeholder?: string;
 }
 
+export interface LegalSection {
+  heading: string;
+  body: string[];
+}
+
+export interface LegalPage {
+  metaTitle: string;
+  heading: string;
+  updated: string;
+  sections: LegalSection[];
+}
+
 export interface Dictionary {
   htmlLang: string;
   meta: { title: string; description: string };
   nav: NavCopy;
   footer: FooterCopy;
+  privacy: LegalPage;
+  terms: LegalPage;
   hero: {
     subZh: string;
     title: string;
@@ -119,6 +133,69 @@ const en: Dictionary = {
       'GEO and AI outputs are sampled at a specific time and platform set; not a guarantee of future visibility. Prices and visa information on generated pages require human confirmation.',
     poweredBy: 'Powered by TourGEO Agent',
     rights: 'TourGEO / 旅获 AI',
+  },
+  privacy: {
+    metaTitle: 'Privacy Policy — TourGEO',
+    heading: 'Privacy Policy',
+    updated: 'Last updated: July 2026',
+    sections: [
+      {
+        heading: 'What we collect',
+        body: [
+          'Contact form submissions: name, email, phone, company, and your message. We use these only to respond to your inquiry.',
+          'Landing-page inquiry forms operated for our customers collect the fields shown on the form (e.g. travel date, party size) and are processed on behalf of that customer.',
+          'Basic technical data such as user agent and UTM parameters, used for attribution and service quality.',
+        ],
+      },
+      {
+        heading: 'How we use it',
+        body: [
+          'To respond to inquiries, deliver the service, and send reports you request.',
+          'We do not sell personal data. We do not use inquiry data to train AI models.',
+          'Lead data is stored per tenant with isolation controls; exports are masked by default.',
+        ],
+      },
+      {
+        heading: 'Retention & your rights',
+        body: [
+          'We keep inquiry data only as long as needed for the purpose above, then delete or anonymize it.',
+          'You may request access, correction, or deletion of your personal data at any time via hello@tourgeo.ai.',
+        ],
+      },
+    ],
+  },
+  terms: {
+    metaTitle: 'Terms of Service — TourGEO',
+    heading: 'Terms of Service',
+    updated: 'Last updated: July 2026',
+    sections: [
+      {
+        heading: 'Service description',
+        body: [
+          'TourGEO provides GEO visibility diagnostics, keyword insights, AI-assisted content and landing pages, and inquiry management for China inbound tourism businesses.',
+          'AI visibility results are based on sampling at a specific time and platform set. They are informational and do not constitute a guarantee of ranking or recommendation in any AI product.',
+        ],
+      },
+      {
+        heading: 'Acceptable use',
+        body: [
+          'You may not use the service to publish unlawful, infringing, or misleading content.',
+          'AI-generated content is flagged for human review; you are responsible for verifying prices, visa policies, and other regulated information before publishing.',
+        ],
+      },
+      {
+        heading: 'Quotas & billing',
+        body: [
+          'Paid plans are quota-based per period (diagnostics, keywords, content, landing pages, reports). Quotas reset each billing cycle; unused quota does not roll over.',
+        ],
+      },
+      {
+        heading: 'Liability',
+        body: [
+          'The service is provided "as is". To the maximum extent permitted by law, TourGEO is not liable for indirect or consequential damages arising from reliance on sampled AI visibility data.',
+        ],
+      },
+    ],
   },
   hero: {
     subZh: '旅获 AI · 入境游海外获客增长系统',
@@ -319,6 +396,65 @@ const zh: Dictionary = {
       'GEO 与 AI 结果基于特定时间和平台抽样，不构成对未来可见率的保证。生成页面中的价格与签证信息需人工确认。',
     poweredBy: '由 TourGEO Agent 提供支持',
     rights: 'TourGEO / 旅获 AI',
+  },
+  privacy: {
+    metaTitle: '隐私政策 — TourGEO 旅获 AI',
+    heading: '隐私政策',
+    updated: '最近更新：2026 年 7 月',
+    sections: [
+      {
+        heading: '我们收集什么',
+        body: [
+          '联系表单提交：姓名、邮箱、电话、公司与留言内容，仅用于回复您的咨询。',
+          '为客户运营的落地页询盘表单，收集表单所示字段（如出行日期、人数），代表该客户处理。',
+          '基础技术数据（如 User-Agent、UTM 参数），用于归因与服务质量。',
+        ],
+      },
+      {
+        heading: '我们如何使用',
+        body: [
+          '用于回复咨询、交付服务、发送您请求的报告。',
+          '我们不出售个人数据，也不将询盘数据用于训练 AI 模型。',
+          '线索数据按租户隔离存储；导出默认脱敏。',
+        ],
+      },
+      {
+        heading: '保留与您的权利',
+        body: [
+          '询盘数据仅在上述目的所需期限内保留，随后删除或匿名化。',
+          '您可随时通过 hello@tourgeo.ai 请求访问、更正或删除您的个人数据。',
+        ],
+      },
+    ],
+  },
+  terms: {
+    metaTitle: '服务条款 — TourGEO 旅获 AI',
+    heading: '服务条款',
+    updated: '最近更新：2026 年 7 月',
+    sections: [
+      {
+        heading: '服务说明',
+        body: [
+          'TourGEO 面向中国入境游企业提供 GEO 可见率诊断、关键词洞察、AI 辅助内容与落地页、询盘管理。',
+          'AI 可见率结果基于特定时间与平台集抽样，仅供参考，不构成在任何 AI 产品中排名或推荐的保证。',
+        ],
+      },
+      {
+        heading: '可接受使用',
+        body: [
+          '不得使用本服务发布违法、侵权或误导性内容。',
+          'AI 生成内容均带人工复核标记；发布前您有责任核实价格、签证政策等受监管信息。',
+        ],
+      },
+      {
+        heading: '配额与计费',
+        body: ['付费套餐按周期配额计费（诊断、关键词、内容、落地页、报告）。配额每周期重置，未用尽不结转。'],
+      },
+      {
+        heading: '责任限制',
+        body: ['服务按「现状」提供。在法律允许的最大范围内，TourGEO 不对因依赖抽样 AI 可见率数据而产生的间接或衍生损失承担责任。'],
+      },
+    ],
   },
   hero: {
     subZh: '旅获 AI · 入境游海外获客增长系统',

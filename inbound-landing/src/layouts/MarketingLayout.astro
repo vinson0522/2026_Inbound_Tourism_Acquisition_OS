@@ -63,6 +63,10 @@ const otherLangLabel = otherLang === 'zh' ? '中文' : 'EN';
           <span aria-hidden="true">·</span>
           <a href={contactHref}>{dict.nav.contact}</a>
           <span aria-hidden="true">·</span>
+          <a href={localizePath(lang, '/privacy')}>{dict.footer.privacy}</a>
+          <span aria-hidden="true">·</span>
+          <a href={localizePath(lang, '/terms')}>{dict.footer.terms}</a>
+          <span aria-hidden="true">·</span>
           <a href={otherLangHref}>{otherLangLabel}</a>
         </div>
         <p class="mk-footer__disclaimer">{dict.footer.disclaimer}</p>

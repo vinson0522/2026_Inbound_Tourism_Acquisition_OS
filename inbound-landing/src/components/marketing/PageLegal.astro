@@ -1,0 +1,39 @@
+---
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import { getDict, localizePath, type Lang } from '../../i18n/ui';
+import { getSiteUrls } from '../../lib/site';
+
+interface Props {
+  lang: Lang;
+  kind: 'privacy' | 'terms';
+}
+
+const { lang, kind } = Astro.props;
+const dict = getDict(lang);
+const page = dict[kind];
+const { siteUrl, adminUrl } = getSiteUrls();
+const canonicalUrl = `${siteUrl}${localizePath(lang, `/${kind}`)}`;
+---
+
+<MarketingLayout
+  lang={lang}
+  title={page.metaTitle}
+  description={page.sections[0]?.body[0] ?? page.heading}
+  canonicalUrl={canonicalUrl}
+  adminUrl={adminUrl}
+>
+  <section class="mk-section" aria-labelledby="legal-title">
+    <div class="mk-section__inner mk-legal">
+      <h1 id="legal-title">{page.heading}</h1>
+      <p class="mk-legal__updated">{page.updated}</p>
+      {
+        page.sections.map((section) => (
+          <section>
+            <h2>{section.heading}</h2>
+            {section.body.map((paragraph) => <p>{paragraph}</p>)}
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</MarketingLayout>
