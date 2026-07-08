@@ -1,32 +1,6 @@
 ---
 export const prerender = true;
-
-import MarketingLayout from '../layouts/MarketingLayout.astro';
-import Hero from '../components/marketing/Hero.astro';
-import ValueProps from '../components/marketing/ValueProps.astro';
-import CapabilityGrid from '../components/marketing/CapabilityGrid.astro';
-import WorkflowStrip from '../components/marketing/WorkflowStrip.astro';
-import CtaBand from '../components/marketing/CtaBand.astro';
-
-const title = 'TourGEO — AI Growth for China Inbound Tourism';
-const description =
-  'GEO visibility diagnostics, keyword insights, and AI content for tour operators targeting US, UK, and Australia travelers.';
-
-const siteUrl = (
-  import.meta.env.PUBLIC_SITE_URL ??
-  import.meta.env.PUBLIC_LANDING_BASE_URL ??
-  'http://localhost:4321'
-).replace(/\/+$/, '');
-
-const adminUrl = import.meta.env.PUBLIC_ADMIN_URL ?? '#';
-const demoUrl = import.meta.env.PUBLIC_DEMO_URL ?? 'mailto:hello@tourgeo.ai';
-const canonicalUrl = `${siteUrl}/`;
+import PageHome from '../components/marketing/PageHome.astro';
 ---
 
-<MarketingLayout title={title} description={description} canonicalUrl={canonicalUrl} adminUrl={adminUrl}>
-  <Hero adminUrl={adminUrl} demoUrl={demoUrl} />
-  <ValueProps />
-  <CapabilityGrid />
-  <WorkflowStrip />
-  <CtaBand adminUrl={adminUrl} demoUrl={demoUrl} />
-</MarketingLayout>
+<PageHome lang="en" />

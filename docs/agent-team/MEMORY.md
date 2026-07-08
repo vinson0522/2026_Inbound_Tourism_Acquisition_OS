@@ -8,7 +8,7 @@
 | **最后更新** | 2026-07-08 |
 | **更新角色** | 开发 |
 | **Git 远程** | ✅ `origin/main` · C27 `d7f042a` (Sprint #4 收尾) · C26 `5875276` |
-| **当前 EPIC 焦点** | Sprint #4 ✅ **入库 C27** · smoke 10/10 可重复 · B-26/B-27 关闭 |
+| **当前 EPIC 焦点** | **Sprint #5 A1** 交付硬化 ✅ 代码完成（Pricing/Contact/i18n/营销联系端点）· 待 **C28** 入库 |
 
 ---
 
@@ -352,6 +352,26 @@
 
 **技术总监签核（2026-07-06）**：Sprint #4 **实质完成** ✅ — C26 已 push · 运维文档/Admin 深链/Landing compose 验通 · **C27 未 commit**（6 文件 + HANDOFFs）· smoke **8/10**（`40201` 套餐额度 — 创建项目/诊断，非 Sprint #4 回归项）
 
+### Phase 2 交付硬化 Sprint #5 A1 — 营销门户收尾 + Turnstile 真集成（2026-07-08）
+
+> 技术总监拍板 A1 · 本窗口开发直接实现 · 零三方依赖
+
+| # | 层 | 任务 | 状态 |
+|---|----|------|:----:|
+| 1 | Landing | i18n 骨架 `src/i18n/ui.ts`（EN/ZH 词典 + `localizePath`/`switchLangPath`） | ✅ |
+| 2 | Landing | 门户组件 i18n 化（Hero/ValueProps/CapabilityGrid/WorkflowStrip/CtaBand）+ `MarketingLayout` 语言切换/hreflang | ✅ |
+| 3 | Landing | Pricing 页 `/pricing`·`/zh/pricing`（三档 + FAQ） | ✅ |
+| 4 | Landing | Contact 页 `/contact`·`/zh/contact` + Turnstile widget + `marketing-contact.ts` | ✅ |
+| 5 | Java | `POST /api/v1/public/marketing-contact`（`MarketingProperties` tenant/project · `TurnstileValidator.verifyOrSkip` · `@SaIgnore` · IP 限流 5/60s） | ✅ |
+| 6 | 验证 | `pnpm build` 7 路由 ✅ · Java 编译+启动 ✅ · curl 端点 200 leadId=101 ✅ · `test_marketing_contact.py` ✅ · smoke **10/10** | ✅ |
+
+**改动文件**：
+- Landing：`src/i18n/ui.ts` · `src/lib/site.ts` · `layouts/MarketingLayout.astro` · `components/marketing/{Hero,ValueProps,CapabilityGrid,WorkflowStrip,CtaBand,PricingTiers,MarketingContactForm,PageHome,PagePricing,PageContact}.astro` · `pages/{index,pricing,contact}.astro` + `pages/zh/{index,pricing,contact}.astro` · `scripts/marketing-contact.ts` · `styles/marketing.css` · `README.md`
+- Java：`config/MarketingProperties.java` · `domain/bo/PublicMarketingContactBo.java` · `controller/PublicMarketingContactController.java` · `service/ILeadService.java`(+impl) · `application-dev.yml`(`inbound.marketing`)
+- Smoke：`deploy/scripts/test_marketing_contact.py` · `deploy/scripts/README.md`
+
+**技术总监签核（2026-07-08）**：Sprint #5 A1 ✅ 代码完成并验证 · **C28 未 commit** · Turnstile 生产 Key（`CLOUDFLARE_TURNSTILE_*`）待运维配置（opt-in，本地 `enabled:false` 跳过）
+
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
 | # | 角色 | 任务 | HANDOFF | 状态 |
@@ -626,6 +646,8 @@
 | B-25 | ~~C26 未 commit/push~~（FR-108/门户/tenant smoke 10） | 开发 | ✅ **已关闭** C26 `5875276` · smoke 10/10 |
 | B-26 | ~~C27 未 commit~~（Sprint #4：LOCAL_DOCKER · scripts README · dashboard 深链 · landing Docker/README · HANDOFFs） | 开发 | ✅ **已关闭** C27 `d7f042a` |
 | B-27 | ~~smoke **8/10**：`test_projects_api` / `test_diagnostic_e2e` → `40201` 套餐额度不足~~ | 开发 Java | ✅ **已关闭** 2026-07-08 · `007_smoke_quota_reset.sql` + 脚本内联重置 · 连跑两次 10/10 |
+| B-28 | **C28 未 commit**（Sprint #5 A1：门户 Pricing/Contact/i18n · `marketing-contact` 端点 · smoke 脚本 · README/MEMORY） | 开发 | ⏳ 打开 |
+| B-29 | Turnstile 生产 Key 配置（`CLOUDFLARE_TURNSTILE_SECRET`/`_SITE_KEY` + `inbound.turnstile.enabled=true`） | 运维 | ⏳ opt-in · 本地跳过不阻塞 |
 
 ---
 
@@ -633,9 +655,11 @@
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P0** | **技术总监** | Sprint #4 复核签核（C27 入库 · smoke 10/10 可重复 · B-26/B-27 关闭）· 排下一 Sprint |
-| ⏸ | — | B-23 三方 Perplexity live · Gemini real E2E（有账号/配额再开） |
-| — | 总览 | Sprint #1–#4 全部入库 · 路线图 #1–#7 关闭 |
+| **P0** | **开发** | **C28** commit+push Sprint #5 A1 增量（Landing + Java + smoke + docs） |
+| **P1** | 技术总监 | 排 Sprint #6（A2 API 统一响应 `{code,trace_id}` 或 A3 生产 compose/演示数据） |
+| ⏸ | 运维 | B-29 Turnstile 生产 Key（有 Cloudflare 账号再开） |
+| ⏸ | — | B-23 三方 Perplexity live · Gemini real E2E |
+| — | 总览 | Sprint #1–#4 入库 · **Sprint #5 A1 代码完成待 C28** · 路线图 #1–#7 关闭 |
 
 ---
 
@@ -643,6 +667,7 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-08 | 开发 | **Sprint #5 A1** 交付硬化：营销门户 Pricing/Contact + EN/中文 i18n（`src/i18n/ui.ts`）· `POST /api/v1/public/marketing-contact`（Turnstile 真集成）· `pnpm build` 7 路由 ✅ · Java 编译+启动 ✅ · curl 端点 200 leadId=101 · `test_marketing_contact.py` ✅ · smoke **10/10** · **待 C28 入库（B-28）** |
 | 2026-07-08 | 开发 | **C27 `d7f042a`** Sprint #4 收尾 commit+push · `007_smoke_quota_reset.sql` + 脚本内联重置 · smoke **连跑两次 10/10** · curl :4321/ 200 · `build:prod` ✅ · **B-26/B-27 关闭** |
 | 2026-07-06 | 技术总监 | Sprint #4 签核 ✅ · C27/B-26 打开 · smoke 8/10（40201 额度） |
 | 2026-07-11 | 开发 Admin | FR-006 dashboard 深链 · GEO KPI→趋势 · 最近诊断→详情 · `build:prod` ✅ |

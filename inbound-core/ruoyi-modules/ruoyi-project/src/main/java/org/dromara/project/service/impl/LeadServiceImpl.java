@@ -21,6 +21,8 @@ import org.dromara.project.domain.bo.LeadQueryBo;
 import org.dromara.project.domain.bo.LeadUpdateBo;
 import org.dromara.project.domain.bo.PublicLeadEventBo;
 import org.dromara.project.domain.bo.PublicLeadSubmitBo;
+import org.dromara.project.domain.bo.PublicMarketingContactBo;
+import org.dromara.project.config.MarketingProperties;
 import org.dromara.project.domain.vo.LeadAiSuggestionVo;
 import org.dromara.project.domain.vo.LeadDetailVo;
 import org.dromara.project.domain.vo.LeadFollowupVo;
@@ -74,6 +76,7 @@ public class LeadServiceImpl implements ILeadService {
     private final CustomerProjectMapper customerProjectMapper;
     private final TurnstileValidator turnstileValidator;
     private final AiServiceClient aiServiceClient;
+    private final MarketingProperties marketingProperties;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -107,6 +110,42 @@ public class LeadServiceImpl implements ILeadService {
         entity.setBudget(StringUtils.trim(bo.getBudget()));
         entity.setMessage(StringUtils.trim(bo.getMessage()));
         entity.setSource(StringUtils.blankToDefault(StringUtils.trim(bo.getSource()), "form"));
+        entity.setUtmJson(bo.getUtm() != null ? bo.getUtm() : new HashMap<>());
+        entity.setDevice(StringUtils.trim(bo.getDevice()));
+        entity.setStatus("NEW");
+        entity.setCreatedAt(now);
+        entity.setUpdatedAt(now);
+        leadMapper.insert(entity);
+        return new PublicLeadSubmitVo(entity.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public PublicLeadSubmitVo submitMarketingContact(PublicMarketingContactBo bo, String turnstileToken) {
+        turnstileValidator.verifyOrSkip(turnstileToken);
+
+        if (StringUtils.isBlank(bo.getName())) {
+            throw new ServiceException("请填写姓名");
+        }
+        if (StringUtils.isBlank(bo.getEmail()) && StringUtils.isBlank(bo.getPhone())) {
+            throw new ServiceException("邮箱与电话至少填写一项");
+        }
+
+        String message = StringUtils.trim(bo.getMessage());
+        String company = StringUtils.trim(bo.getCompany());
+        if (StringUtils.isNotBlank(company)) {
+            message = "[Company] " + company + (StringUtils.isNotBlank(message) ? "\n" + message : "");
+        }
+
+        OffsetDateTime now = OffsetDateTime.now();
+        Lead entity = new Lead();
+        entity.setTenantId(marketingProperties.getTenantId());
+        entity.setProjectId(marketingProperties.getProjectId());
+        entity.setName(StringUtils.trim(bo.getName()));
+        entity.setEmail(StringUtils.trim(bo.getEmail()));
+        entity.setPhone(StringUtils.trim(bo.getPhone()));
+        entity.setMessage(message);
+        entity.setSource(StringUtils.blankToDefault(StringUtils.trim(bo.getSource()), "marketing"));
         entity.setUtmJson(bo.getUtm() != null ? bo.getUtm() : new HashMap<>());
         entity.setDevice(StringUtils.trim(bo.getDevice()));
         entity.setStatus("NEW");

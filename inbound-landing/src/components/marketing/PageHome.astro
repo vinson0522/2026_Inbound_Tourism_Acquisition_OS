@@ -1,0 +1,35 @@
+---
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import Hero from './Hero.astro';
+import ValueProps from './ValueProps.astro';
+import CapabilityGrid from './CapabilityGrid.astro';
+import WorkflowStrip from './WorkflowStrip.astro';
+import CtaBand from './CtaBand.astro';
+import { getDict, localizePath, type Lang } from '../../i18n/ui';
+import { getSiteUrls } from '../../lib/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+const { siteUrl, adminUrl } = getSiteUrls();
+
+const canonicalUrl = `${siteUrl}${localizePath(lang, '/')}`.replace(/([^:]\/)\/+/g, '$1');
+const contactHref = localizePath(lang, '/contact');
+---
+
+<MarketingLayout
+  lang={lang}
+  title={dict.meta.title}
+  description={dict.meta.description}
+  canonicalUrl={canonicalUrl}
+  adminUrl={adminUrl}
+>
+  <Hero hero={dict.hero} bookDemoHref={contactHref} loginHref={adminUrl} />
+  <ValueProps value={dict.value} />
+  <CapabilityGrid capabilities={dict.capabilities} />
+  <WorkflowStrip workflow={dict.workflow} />
+  <CtaBand cta={dict.cta} bookDemoHref={contactHref} loginHref={adminUrl} />
+</MarketingLayout>

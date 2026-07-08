@@ -64,6 +64,18 @@ python deploy/scripts/test_tenant_isolation.py --verbose
 
 ---
 
+## 营销门户 smoke（Sprint #5 A1 · 非 10/10）
+
+| 脚本 | 说明 | 在 10/10？ |
+|------|------|:----------:|
+| [`test_marketing_contact.py`](test_marketing_contact.py) | 营销联系表单 `POST /api/v1/public/marketing-contact`：happy 200 + leadId · 缺姓名/缺联系方式拒绝 · 无 auth/无配额消耗 | 否 |
+
+```powershell
+python deploy/scripts/test_marketing_contact.py
+```
+
+---
+
 ## 探针 / 扩展 smoke（非 10/10 · fixture 默认绿）
 
 | 脚本 | 说明 | 在 10/10？ |

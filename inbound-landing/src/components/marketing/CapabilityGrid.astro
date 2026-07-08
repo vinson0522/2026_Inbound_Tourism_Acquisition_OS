@@ -1,61 +1,26 @@
 ---
-const capabilities = [
-  {
-    icon: '🌐',
-    title: 'GEO Diagnostics',
-    bullets: [
-      'Grounded AI sampling across Perplexity, Gemini, OpenAI',
-      'Visibility score with citation coverage',
-      'Scheduled re-runs for US, UK, AU markets',
-    ],
-  },
-  {
-    icon: '🔑',
-    title: 'Keyword Intelligence',
-    bullets: [
-      'Eight-stage traveler journey mapping',
-      'Opportunity scoring for overseas demand',
-      'Export insights straight into content workflows',
-    ],
-  },
-  {
-    icon: '🎬',
-    title: 'Content Agent',
-    bullets: [
-      'Social scripts and storyboards in English',
-      'RAG from your knowledge base with source citations',
-      'Human review flag on every generated asset',
-    ],
-  },
-  {
-    icon: '📄',
-    title: 'Landing Page Agent',
-    bullets: [
-      'English SSG pages aligned to keyword intent',
-      'Turnstile lead forms and WhatsApp handoff',
-      'Publish and preview in one click',
-    ],
-  },
-];
+import type { Dictionary } from '../../i18n/ui';
+
+interface Props {
+  capabilities: Dictionary['capabilities'];
+}
+
+const { capabilities } = Astro.props;
 ---
 
 <section id="capabilities" class="mk-section" aria-labelledby="capabilities-title">
   <div class="mk-section__inner">
-    <h2 id="capabilities-title" class="mk-section__title">Everything you need for inbound growth</h2>
+    <h2 id="capabilities-title" class="mk-section__title">{capabilities.title}</h2>
     <div class="mk-cap-grid">
       {
-        capabilities.map((cap) => (
+        capabilities.cards.map((card) => (
           <article class="mk-cap-card">
             <div class="mk-cap-card__head">
-              <span class="mk-cap-card__icon" aria-hidden="true">
-                {cap.icon}
-              </span>
-              <h3>{cap.title}</h3>
+              <span class="mk-cap-card__icon" aria-hidden="true">{card.icon}</span>
+              <h3>{card.title}</h3>
             </div>
             <ul>
-              {cap.bullets.map((bullet) => (
-                <li>{bullet}</li>
-              ))}
+              {card.points.map((point) => <li>{point}</li>)}
             </ul>
           </article>
         ))

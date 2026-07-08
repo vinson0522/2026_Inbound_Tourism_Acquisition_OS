@@ -1,19 +1,22 @@
 ---
+import type { Dictionary } from '../../i18n/ui';
+
 interface Props {
-  adminUrl: string;
-  demoUrl: string;
+  cta: Dictionary['cta'];
+  bookDemoHref: string;
+  loginHref: string;
 }
 
-const { adminUrl, demoUrl } = Astro.props;
+const { cta, bookDemoHref, loginHref } = Astro.props;
 ---
 
-<section id="contact" class="mk-cta-band" aria-labelledby="cta-title">
+<section id="contact-cta" class="mk-cta-band" aria-labelledby="cta-title">
   <div class="mk-section__inner">
-    <h2 id="cta-title">Ready to see your brand in AI answers?</h2>
-    <p>Book a walkthrough with our team or sign in to your workspace.</p>
+    <h2 id="cta-title">{cta.title}</h2>
+    <p>{cta.body}</p>
     <div class="mk-cta-band__actions">
-      <a class="lp-btn lp-btn--accent" href={demoUrl}>Book a demo</a>
-      <a class="lp-btn lp-btn--outline-white" href={adminUrl}>Log in to Admin</a>
+      <a class="lp-btn lp-btn--accent" href={bookDemoHref}>{cta.bookDemo}</a>
+      <a class="lp-btn lp-btn--outline-white" href={loginHref}>{cta.login}</a>
     </div>
   </div>
 </section>

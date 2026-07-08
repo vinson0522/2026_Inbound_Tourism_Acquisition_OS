@@ -290,6 +290,9 @@ inbound:
     enabled: false
     secret-key: ${CLOUDFLARE_TURNSTILE_SECRET:}
     site-key: ${CLOUDFLARE_TURNSTILE_SITE_KEY:}
+  marketing:
+    tenant-id: ${MARKETING_TENANT_ID:1}
+    project-id: ${MARKETING_PROJECT_ID:1}
   probe:
     online-within-seconds: 60
     allowed-node-keys:

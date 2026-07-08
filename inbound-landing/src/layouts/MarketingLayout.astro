@@ -1,19 +1,32 @@
 ---
 import '../styles/marketing.css';
+import { getDict, localizePath, switchLangPath, type Lang } from '../i18n/ui';
 
 interface Props {
+  lang: Lang;
   title: string;
   description: string;
   canonicalUrl?: string;
   adminUrl: string;
 }
 
-const { title, description, canonicalUrl, adminUrl } = Astro.props;
+const { lang, title, description, canonicalUrl, adminUrl } = Astro.props;
+const dict = getDict(lang);
 const year = new Date().getFullYear();
+const pathname = Astro.url.pathname;
+
+const homeHref = localizePath(lang, '/');
+const featuresHref = `${homeHref}#capabilities`;
+const pricingHref = localizePath(lang, '/pricing');
+const contactHref = localizePath(lang, '/contact');
+
+const otherLang: Lang = lang === 'en' ? 'zh' : 'en';
+const otherLangHref = switchLangPath(lang, otherLang, pathname);
+const otherLangLabel = otherLang === 'zh' ? '中文' : 'EN';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={dict.htmlLang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,35 +34,39 @@ const year = new Date().getFullYear();
     <meta name="description" content={description} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <link rel="alternate" hreflang="en" href={switchLangPath(lang, 'en', pathname)} />
+    <link rel="alternate" hreflang="zh" href={switchLangPath(lang, 'zh', pathname)} />
   </head>
   <body>
     <div class="mk-page">
       <header class="mk-header">
-        <a class="mk-header__logo" href="/">TourGEO</a>
+        <a class="mk-header__logo" href={homeHref}>TourGEO</a>
         <nav class="mk-header__nav" aria-label="Primary">
-          <a href="#capabilities">Features</a>
-          <a href="#" class="is-disabled" aria-disabled="true">Pricing</a>
+          <a href={featuresHref}>{dict.nav.features}</a>
+          <a href={pricingHref}>{dict.nav.pricing}</a>
+          <a href={contactHref}>{dict.nav.contact}</a>
         </nav>
         <div class="mk-header__actions">
-          <a class="lp-btn lp-btn--outline" href={adminUrl}>Log in</a>
+          <a class="mk-lang-toggle" href={otherLangHref} hreflang={otherLang} rel="alternate">{otherLangLabel}</a>
+          <a class="lp-btn lp-btn--outline" href={adminUrl}>{dict.nav.login}</a>
         </div>
       </header>
       <main class="mk-main">
         <slot />
       </main>
       <footer class="mk-footer">
-        <p>© {year} TourGEO / 旅获 AI</p>
+        <p>© {year} {dict.footer.rights}</p>
         <div class="mk-footer__links">
-          <a href="#">Privacy</a>
+          <a href={pricingHref}>{dict.nav.pricing}</a>
           <span aria-hidden="true">·</span>
-          <a href="#">Terms</a>
+          <a href={contactHref}>{dict.nav.contact}</a>
+          <span aria-hidden="true">·</span>
+          <a href={otherLangHref}>{otherLangLabel}</a>
         </div>
-        <p class="mk-footer__disclaimer">
-          GEO and AI outputs are sampled at a specific time and platform set; not a guarantee of future
-          visibility. Prices and visa information on generated pages require human confirmation.
-        </p>
-        <p>Powered by TourGEO Agent</p>
+        <p class="mk-footer__disclaimer">{dict.footer.disclaimer}</p>
+        <p>{dict.footer.poweredBy}</p>
       </footer>
     </div>
   </body>

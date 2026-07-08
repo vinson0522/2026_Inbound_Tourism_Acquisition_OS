@@ -1,0 +1,27 @@
+---
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import PricingTiers from './PricingTiers.astro';
+import { getDict, localizePath, type Lang } from '../../i18n/ui';
+import { getSiteUrls } from '../../lib/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+const { siteUrl, adminUrl } = getSiteUrls();
+
+const canonicalUrl = `${siteUrl}${localizePath(lang, '/pricing')}`;
+const contactHref = localizePath(lang, '/contact');
+---
+
+<MarketingLayout
+  lang={lang}
+  title={dict.pricing.metaTitle}
+  description={dict.pricing.metaDescription}
+  canonicalUrl={canonicalUrl}
+  adminUrl={adminUrl}
+>
+  <PricingTiers pricing={dict.pricing} contactHref={contactHref} />
+</MarketingLayout>

@@ -1,0 +1,26 @@
+---
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import MarketingContactForm from './MarketingContactForm.astro';
+import { getDict, localizePath, type Lang } from '../../i18n/ui';
+import { getSiteUrls } from '../../lib/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+const { siteUrl, adminUrl, apiBase, turnstileSiteKey } = getSiteUrls();
+
+const canonicalUrl = `${siteUrl}${localizePath(lang, '/contact')}`;
+---
+
+<MarketingLayout
+  lang={lang}
+  title={dict.contact.metaTitle}
+  description={dict.contact.metaDescription}
+  canonicalUrl={canonicalUrl}
+  adminUrl={adminUrl}
+>
+  <MarketingContactForm contact={dict.contact} apiBase={apiBase} turnstileSiteKey={turnstileSiteKey} />
+</MarketingLayout>

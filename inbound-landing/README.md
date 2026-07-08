@@ -41,8 +41,12 @@ pnpm build        # hybrid SSG + Node SSR（/p/...）
 
 | 路由 | 说明 |
 |------|------|
-| `/` | 营销门户（TourGEO Hero / 能力 / CTA） |
+| `/` · `/zh` | 营销门户首页（Hero / 价值 / 能力 / 工作流 / CTA）· EN + 中文 |
+| `/pricing` · `/zh/pricing` | 套餐价格（体验/成长/代理三档 + FAQ） |
+| `/contact` · `/zh/contact` | 联系表单 → `POST /api/v1/public/marketing-contact`（Turnstile 可选） |
 | `/p/{projectId}/{slug}` | 已发布客户落地页（M2 SSR + LeadForm） |
+
+**i18n**：`src/i18n/ui.ts` 单一词典（`en` / `zh`）；EN 在 `/`，中文在 `/zh/*`；页头右上角语言切换 + `<link hreflang>`。新增文案改词典即可，组件与路由复用。
 
 ## Docker（本地 :4321）
 
@@ -61,9 +65,10 @@ curl.exe -s http://localhost:4321/ | findstr /i "TourGEO Win overseas"
 
 ## 对应 EPIC
 
-EPIC-6 落地页 Agent（M2 发布阶段 + 营销门户 `/`）
+EPIC-6 落地页 Agent（M2 发布阶段 + 营销门户 `/`）· 交付硬化 Sprint #5 A1（Pricing / Contact / i18n / Turnstile）
 
 ## 状态
 
 ✅ **M2** — `/p/{projectId}/{slug}` SSR · 八模块 · Turnstile LeadForm → `POST /api/v1/public/leads`  
-✅ **营销门户** — `/` SSG · TourGEO 首页 · 与 `/p/...` 共存
+✅ **营销门户** — `/` `/zh` SSG · TourGEO 首页 · 与 `/p/...` 共存  
+✅ **A1 交付硬化** — Pricing / Contact 页 · EN+中文 i18n · Contact → `POST /api/v1/public/marketing-contact`（真集成 Turnstile 可选）

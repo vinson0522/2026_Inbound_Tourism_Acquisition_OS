@@ -1,0 +1,87 @@
+---
+import type { Dictionary } from '../../i18n/ui';
+
+interface Props {
+  contact: Dictionary['contact'];
+  apiBase: string;
+  turnstileSiteKey: string;
+}
+
+const { contact, apiBase, turnstileSiteKey } = Astro.props;
+const siteKey = turnstileSiteKey || '';
+const f = contact.fields;
+---
+
+<section class="mk-section" aria-labelledby="contact-title">
+  <div class="mk-section__inner mk-contact">
+    <h1 id="contact-title" class="mk-contact__heading">{contact.heading}</h1>
+    <p class="mk-contact__sub">{contact.subheading}</p>
+
+    <form
+      class="lp-form mk-contact__form"
+      id="marketing-contact-form"
+      data-api-base={apiBase}
+      data-site-key={siteKey}
+      data-msg-required={contact.errRequired}
+      data-msg-contact={contact.errContact}
+      data-msg-captcha={contact.errCaptcha}
+      data-msg-network={contact.errNetwork}
+      data-msg-generic={contact.errGeneric}
+      data-msg-success={contact.success}
+      data-msg-submit={contact.submit}
+      data-msg-submitting={contact.submitting}
+    >
+      <label for="mc-name">
+        {f.name.label} *
+        <input id="mc-name" name="name" type="text" placeholder={f.name.placeholder} required />
+      </label>
+
+      <div class="mk-contact__row">
+        <label for="mc-email">
+          {f.email.label}
+          <input id="mc-email" name="email" type="email" placeholder={f.email.placeholder} />
+        </label>
+        <label for="mc-phone">
+          {f.phone.label}
+          <input id="mc-phone" name="phone" type="tel" placeholder={f.phone.placeholder} />
+        </label>
+      </div>
+
+      <label for="mc-company">
+        {f.company.label}
+        <input id="mc-company" name="company" type="text" placeholder={f.company.placeholder} />
+      </label>
+
+      <label for="mc-message">
+        {f.message.label}
+        <textarea id="mc-message" name="message" rows={4} placeholder={f.message.placeholder} />
+      </label>
+
+      <div id="mc-turnstile-wrap">
+        {
+          siteKey ? (
+            <div class="cf-turnstile" data-sitekey={siteKey} />
+          ) : (
+            <div class="lp-turnstile-placeholder">{contact.turnstileDisabled}</div>
+          )
+        }
+      </div>
+
+      <div id="mc-alert" hidden></div>
+
+      <button type="submit" class="lp-btn lp-btn--primary" id="mc-submit" style="width:100%">
+        {contact.submit}
+      </button>
+
+      <p class="lp-form__hint">{contact.hint}</p>
+    </form>
+  </div>
+</section>
+
+{siteKey && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
+
+<script>
+  import { initMarketingContactForm } from '../../scripts/marketing-contact';
+
+  initMarketingContactForm();
+</script>

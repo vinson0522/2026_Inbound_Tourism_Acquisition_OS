@@ -7,6 +7,7 @@ import org.dromara.project.domain.bo.LeadQueryBo;
 import org.dromara.project.domain.bo.LeadUpdateBo;
 import org.dromara.project.domain.bo.PublicLeadEventBo;
 import org.dromara.project.domain.bo.PublicLeadSubmitBo;
+import org.dromara.project.domain.bo.PublicMarketingContactBo;
 import org.dromara.project.domain.vo.LeadAiSuggestionVo;
 import org.dromara.project.domain.vo.LeadDetailVo;
 import org.dromara.project.domain.vo.LeadFollowupVo;
@@ -19,6 +20,8 @@ import java.util.List;
 public interface ILeadService {
 
     PublicLeadSubmitVo submitPublic(PublicLeadSubmitBo bo, String turnstileToken);
+
+    PublicLeadSubmitVo submitMarketingContact(PublicMarketingContactBo bo, String turnstileToken);
 
     PublicLeadEventVo recordPublicEvent(PublicLeadEventBo bo);
 

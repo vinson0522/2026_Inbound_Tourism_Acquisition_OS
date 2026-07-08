@@ -1,0 +1,57 @@
+---
+import type { Dictionary } from '../../i18n/ui';
+
+interface Props {
+  pricing: Dictionary['pricing'];
+  contactHref: string;
+}
+
+const { pricing, contactHref } = Astro.props;
+---
+
+<section class="mk-section" aria-labelledby="pricing-title">
+  <div class="mk-section__inner">
+    <h1 id="pricing-title" class="mk-pricing__heading">{pricing.heading}</h1>
+    <p class="mk-pricing__sub">{pricing.subheading}</p>
+
+    <div class="mk-pricing-grid">
+      {
+        pricing.tiers.map((tier) => (
+          <article class={`mk-tier${tier.featured ? ' mk-tier--featured' : ''}`}>
+            <h2 class="mk-tier__name">{tier.name}</h2>
+            <p class="mk-tier__price">
+              <span class="mk-tier__amount">{tier.price}</span>
+              <span class="mk-tier__period">/ {tier.period}</span>
+            </p>
+            <p class="mk-tier__tagline">{tier.tagline}</p>
+            <ul class="mk-tier__features">
+              {tier.features.map((f) => <li>{f}</li>)}
+            </ul>
+            <a
+              class={`lp-btn ${tier.featured ? 'lp-btn--primary' : 'lp-btn--outline'} mk-tier__cta`}
+              href={contactHref}
+            >
+              {tier.cta}
+            </a>
+          </article>
+        ))
+      }
+    </div>
+
+    <p class="mk-pricing__note">{pricing.note}</p>
+  </div>
+</section>
+
+<section class="mk-section lp-section--alt" aria-labelledby="pricing-faq-title">
+  <div class="mk-section__inner mk-faq">
+    <h2 id="pricing-faq-title" class="mk-section__title">{pricing.faqTitle}</h2>
+    {
+      pricing.faqs.map((item) => (
+        <details class="mk-faq__item">
+          <summary>{item.q}</summary>
+          <p>{item.a}</p>
+        </details>
+      ))
+    }
+  </div>
+</section>
