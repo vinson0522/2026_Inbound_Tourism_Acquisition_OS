@@ -5,10 +5,10 @@
 
 | 字段 | 值 |
 |------|-----|
-| **最后更新** | 2026-07-11 |
-| **更新角色** | 运维 |
-| **Git 远程** | ✅ `origin/main` · C25 `c78a157` |
-| **当前 EPIC 焦点** | **Sprint #4** 入库 C26 + 文档/工作台链 |
+| **最后更新** | 2026-07-08 |
+| **更新角色** | 开发 |
+| **Git 远程** | ✅ `origin/main` · C27 `PENDINGHASH` (Sprint #4 收尾) · C26 `5875276` |
+| **当前 EPIC 焦点** | Sprint #4 ✅ **入库 C27** · smoke 10/10 可重复 · B-26/B-27 关闭 |
 
 ---
 
@@ -346,9 +346,11 @@
 |---|------|------|---------|:----:|
 | 1 | 开发 | **C26** Sprint #3 增量 commit | [→C26](HANDOFFS/2026-07-11-tech-director-to-dev-c26-sprint3-commit.md) | ✅ `5875276` |
 | 2 | 运维 | LOCAL_DOCKER + smoke README | [→运维](HANDOFFS/2026-07-11-tech-director-to-devops-local-docker-smoke-docs.md) | ✅ |
-| 3 | 开发 Admin | FR-006 dashboard 深链 | [→Admin](HANDOFFS/2026-07-11-tech-director-to-dev-admin-dashboard-links.md) | ⏳ |
-| 4 | 开发 Landing | 门户 compose :4321 | [→Landing](HANDOFFS/2026-07-11-tech-director-to-dev-landing-compose-verify.md) | ⏳ |
+| 3 | 开发 Admin | FR-006 dashboard 深链 | [→Admin](HANDOFFS/2026-07-11-tech-director-to-dev-admin-dashboard-links.md) | ✅ |
+| 4 | 开发 Landing | 门户 compose :4321 | [→Landing](HANDOFFS/2026-07-11-tech-director-to-dev-landing-compose-verify.md) | ✅ 2026-07-06 |
 | — | 总览 | Sprint 索引 | [Sprint #4](HANDOFFS/2026-07-11-tech-director-sprint4-closeout-parallel.md) | — |
+
+**技术总监签核（2026-07-06）**：Sprint #4 **实质完成** ✅ — C26 已 push · 运维文档/Admin 深链/Landing compose 验通 · **C27 未 commit**（6 文件 + HANDOFFs）· smoke **8/10**（`40201` 套餐额度 — 创建项目/诊断，非 Sprint #4 回归项）
 
 ### EPIC-7 M1 Sprint — FR-601 线索 MVP（2026-07-01 排期）
 
@@ -406,8 +408,9 @@
 | **C24** | 维护轨 smoke 9/9 | `fix(ai,deploy,extension): restore smoke 9/9 regression defaults` | ✅ `6f4738a` |
 | **C25** | FR-807 租户隔离 | `feat(core): FR-807 business tenant mapping and cross-tenant isolation` | ✅ `c78a157` |
 | **C26** | FR-108+门户+tenant smoke | `feat(core,admin,landing): FR-108 trends filter, marketing portal, tenant smoke 10/10` | ✅ `5875276` · smoke 10/10 |
+| **C27** | Sprint #4 收尾（smoke quota reset·文档·dashboard 深链·landing Docker） | `feat(devops,admin,landing): C27 Sprint #4 closeout — smoke 10/10 quota reset, docs, dashboard deep links` | ✅ `PENDINGHASH` · smoke 10/10 可重复 |
 
-**执行**：C1–C26 ✅
+**执行**：C1–C27 ✅
 
 ### 本机 Docker 决策（ADR-09，2026-06-27）
 
@@ -484,6 +487,7 @@
 - **EPIC-6 M2 landing publish Java（2026-07-03）** ✅ `PublicLandingPageController` + publish/unpublish · `LandingPublishProperties` · `PublicApiCorsConfig` · Turnstile siteverify · `test_landing_publish_e2e.py` ✅
 - **EPIC-6 M2 Astro landing（2026-07-03）** ✅ `/p/[projectId]/[slug]` hybrid SSR · 八模块 · Turnstile LeadForm · `404.astro` · `pnpm build` ✅ · `test_landing_astro_e2e.py` · 404 友好页 ✅
 - **Sprint #3 营销门户 MVP（2026-07-11）** ✅ `/` SSG · `MarketingLayout` · Hero/价值/能力/CTA · `PUBLIC_ADMIN_URL` · 与 `/p/...` 共存 · `pnpm build` + HTTP 200 ✅
+- **Sprint #4 门户 Docker compose（2026-07-06）** ✅ `--build inbound-landing` · curl `/` **200** · TourGEO 营销文案 · Dockerfile/compose `PUBLIC_*` build args · README Docker 段
 - **EPIC-6 M2 Admin 落地页发布（2026-07-03）** ✅ 列表/ drawer 发布·下线·公网预览 · `publishLandingPage`/`unpublishLandingPage` · `pnpm build:prod` ✅
 - **EPIC-7 M1 FR-601 leads Java（2026-07-01）** ✅ `POST /api/v1/public/leads` + `GET .../leads` 列表/详情 · Turnstile M1 stub · IP+landingPageId 限流 · `tenant.excludes` 加 `lead` · `test_public_leads_api.py` ✅
 - **EPIC-7 M1 FR-601 Admin 线索页（2026-07-01）** ✅ `/leads` 侧栏 + 列表/筛选/脱敏 + 详情 drawer · `maskPii` · `pnpm build:prod` ✅
@@ -515,13 +519,14 @@
 - **EPIC-10 Phase 2 embed MVP（2026-06-29）** ✅ **已提交** `f40cf8d` — `ai.embed` worker · asset#1 READY
 - **维护轨 embed/RAG smoke（2026-07-02）** ✅ config 默认 DATABASE_URL+EMBED_MOCK · embed router 503 · `test_embed_e2e`+`test_knowledge_rag_search` chunkId=3
 - **维护轨 smoke 9/9（2026-07-10）** ✅ `deploy/scripts/run_smoke_regression.ps1` 9/9 · docker ai-api `DIAGNOSE_MOCK_LLM=true` · diagnostic_e2e runId=6 geo=85
+- **B-27 smoke 10/10 可重复（2026-07-08）** ✅ `database/ddl/007_smoke_quota_reset.sql`（tenant 1 ACTIVE `used_json` 归零 + 顺延周期）· `run_smoke_regression.ps1` 创建脚本前 `docker exec inbound-postgres psql -c` 内联重置（不依赖挂载）· **连跑两次 10/10**（diagnostic_e2e runId=103 geo=85）· 未改 `QuotaServiceImpl` 计费语义 · 前提 ai-api `DIAGNOSE_MOCK_LLM=true`（非 B-23 真 Gemini）
 - **M2 代码（2026-06-29）** ✅ **已提交** `f40cf8d` / `e22cd43` / `f96ba7e`（已 push）
 - **EPIC-2 M1 代码** ✅ **已提交** `54d8ca5` / `6ba5e1e` / `48926d2`（已 push）
 - **Admin 浏览器走查（2026-06-29）** ✅ `pnpm dev` :5173 · admin/admin123 · Java :8080 + Docker ADR-09
 
   | 路径 | 结果 | 说明 |
   |------|:----:|------|
-  | `/dashboard` | ✅→🔧 | KPI 4 卡 + 最近诊断 5 条 OK；**已修**「查看」无跳转 → `goRunDetail` |
+|  `/dashboard` | ✅ | KPI 4 卡 + 最近诊断 5 条 · GEO 卡链趋势 · 行点击详情 · 空态创建诊断 |
   | `/projects/index` → `:id` | ✅ | 「进入」→ 品牌/竞品/知识库三 Tab；竞品≥5 提示；知识库 asset#1 READY · **检索预览** top-3 |
   | `/diagnostics/runs` | ✅ | 新建抽屉 → 提交进详情；四 Tab（概览/问题/竞品/探针） |
   | 详情「导出 DOCX」 | ✅ | SUCCESS run 可点；API smoke 2841B（runId=2/3） |
@@ -557,6 +562,7 @@
   - **修复建议**：`deploy/.env` 设 `DIAGNOSE_MOCK_LLM=true` → `docker compose up -d ai-api`；或取消 runId=1/2 后重跑 e2e
 - **E2E（本机 Docker ADR-09）** ⚠️ 历史 runId=2/3 SUCCESS 已随 PG 卷丢失；需 mock 或真 Gemini 重跑
 - **工作台 FR-006 MVP（2026-06-26）** ✅ `getDashboard` 聚合诊断列表；`/dashboard` 编译与运行正常
+- **Sprint #4 FR-006 dashboard 深链（2026-07-11）** ✅ GEO KPI → `/diagnostics/trends` · 最近诊断行 → `/diagnostics/runs/:id` · 空态创建诊断 · `build:prod` ✅
 - **待办**：真 embedding 生产 Key 轮换；真 Gemini E2E（Q12 配额恢复后）
 
 ### 开发联调步骤（本机 Docker — **首选**，ADR-09）
@@ -618,17 +624,18 @@
 | B-22 | ~~维护轨 C24 未 commit/push~~ | 开发 | ✅ **已关闭** C24 `6f4738a` |
 | B-24 | ~~FR-807 C25 未 commit/push~~ | 开发 Java | ✅ **已关闭** C25 `c78a157` |
 | B-25 | ~~C26 未 commit/push~~（FR-108/门户/tenant smoke 10） | 开发 | ✅ **已关闭** C26 `5875276` · smoke 10/10 |
+| B-26 | ~~C27 未 commit~~（Sprint #4：LOCAL_DOCKER · scripts README · dashboard 深链 · landing Docker/README · HANDOFFs） | 开发 | ✅ **已关闭** C27 `PENDINGHASH` |
+| B-27 | ~~smoke **8/10**：`test_projects_api` / `test_diagnostic_e2e` → `40201` 套餐额度不足~~ | 开发 Java | ✅ **已关闭** 2026-07-08 · `007_smoke_quota_reset.sql` + 脚本内联重置 · 连跑两次 10/10 |
 
 ---
 
-## 下一步（跨角色 · Sprint #4 · 2026-07-11）
+## 下一步（跨角色 · 2026-07-08）
 
 | 优先级 | 窗口 | 动作 |
 |:------:|------|------|
-| **P1** | **开发 Admin** | [Dashboard 深链](HANDOFFS/2026-07-11-tech-director-to-dev-admin-dashboard-links.md) |
-| **P2** | **开发 Landing** | [门户 compose](HANDOFFS/2026-07-11-tech-director-to-dev-landing-compose-verify.md) |
-| ⏸ | — | B-23 三方 |
-| — | 总览 | [Sprint #4](HANDOFFS/2026-07-11-tech-director-sprint4-closeout-parallel.md) |
+| **P0** | **技术总监** | Sprint #4 复核签核（C27 入库 · smoke 10/10 可重复 · B-26/B-27 关闭）· 排下一 Sprint |
+| ⏸ | — | B-23 三方 Perplexity live · Gemini real E2E（有账号/配额再开） |
+| — | 总览 | Sprint #1–#4 全部入库 · 路线图 #1–#7 关闭 |
 
 ---
 
@@ -636,11 +643,14 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
+| 2026-07-08 | 开发 | **C27 `PENDINGHASH`** Sprint #4 收尾 commit+push · `007_smoke_quota_reset.sql` + 脚本内联重置 · smoke **连跑两次 10/10** · curl :4321/ 200 · `build:prod` ✅ · **B-26/B-27 关闭** |
+| 2026-07-06 | 技术总监 | Sprint #4 签核 ✅ · C27/B-26 打开 · smoke 8/10（40201 额度） |
+| 2026-07-11 | 开发 Admin | FR-006 dashboard 深链 · GEO KPI→趋势 · 最近诊断→详情 · `build:prod` ✅ |
 | 2026-07-11 | 开发 | C26 `5875276` Sprint #3 push · FR-108/门户/tenant smoke 10/10 · B-25 关闭 |
 | 2026-07-11 | 运维 | LOCAL_DOCKER §2.9 smoke 10/10 · tenant B FR-807 · `scripts/README.md` · B-23 opt-in |
 | 2026-07-11 | 技术总监 | Sprint #3 签核关闭 · 派发 **Sprint #4** C26+文档+dashboard+compose · B-25 打开 |
 | 2026-07-11 | 开发 Java | FR-807 tenant smoke 扩展 · regression 10/10 |
-| 2026-07-11 | 开发 Landing | TourGEO 营销门户 MVP · Hero/价值/能力/CTA · `MarketingLayout` · `pnpm build` + HTTP 200 ✅ |
+| 2026-07-06 | 开发 Landing | 门户 compose verify · `--build inbound-landing` healthy :4321 · curl 200 TourGEO · README + Dockerfile PUBLIC_* |
 | 2026-07-11 | 开发 Admin | FR-108 趋势页时间筛选（30/90/自定义）· Java `from`/`to` · 点击跳转详情 · `build:prod` ✅ |
 | 2026-07-11 | UI 设计 | Sprint #3 `marketing-portal-home` Hero/价值/能力/CTA/页脚 · 替换 index 占位 · UI→Landing HANDOFF ✅ |
 | 2026-07-11 | 开发 Java | C25 `c78a157` FR-807 commit+push · B-24 关闭 |

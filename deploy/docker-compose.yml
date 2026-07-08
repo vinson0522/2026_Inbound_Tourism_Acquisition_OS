@@ -166,10 +166,18 @@ services:
       args:
         PUBLIC_API_BASE_URL: ${PUBLIC_API_BASE_URL:-http://localhost:8080}
         PUBLIC_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+        PUBLIC_LANDING_BASE_URL: ${PUBLIC_LANDING_BASE_URL:-http://localhost:4321}
+        PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-http://localhost:4321}
+        PUBLIC_ADMIN_URL: ${PUBLIC_ADMIN_URL:-http://localhost:5173}
+        PUBLIC_DEMO_URL: ${PUBLIC_DEMO_URL:-mailto:hello@tourgeo.ai}
     container_name: inbound-landing
     environment:
       PUBLIC_API_BASE_URL: ${PUBLIC_API_BASE_URL:-http://host.docker.internal:8080}
       PUBLIC_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+      PUBLIC_LANDING_BASE_URL: ${PUBLIC_LANDING_BASE_URL:-http://localhost:4321}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-http://localhost:4321}
+      PUBLIC_ADMIN_URL: ${PUBLIC_ADMIN_URL:-http://localhost:5173}
+      PUBLIC_DEMO_URL: ${PUBLIC_DEMO_URL:-mailto:hello@tourgeo.ai}
     ports:
       - "4321:4321"
     extra_hosts:

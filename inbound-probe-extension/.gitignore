@@ -5,3 +5,6 @@ build/
 .env.local
 *.log
 .DS_Store
+
+# B-23 live probe local Chrome profile (never commit)
+.chrome-live-profile/

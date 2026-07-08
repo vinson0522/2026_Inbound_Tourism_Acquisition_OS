@@ -19,37 +19,51 @@ Astro 4 落地页站点（SSG/SSR），SEO/GEO 友好。
 |------|------|------|
 | `PUBLIC_API_BASE_URL` | `http://localhost:8080` | Astro → Java 公网 API（浏览器与 SSR fetch） |
 | `PUBLIC_TURNSTILE_SITE_KEY` | `0x***` | Cloudflare Turnstile **站点**公钥；空则跳过 widget |
+| `PUBLIC_LANDING_BASE_URL` | `http://localhost:4321` | 已发布页 canonical 基址 |
+| `PUBLIC_SITE_URL` | `http://localhost:4321` | 营销首页 `/` canonical 与 OG |
+| `PUBLIC_ADMIN_URL` | `http://localhost:5173` | 营销页「Sign in / Admin」跳转 Admin |
+| `PUBLIC_DEMO_URL` | `mailto:hello@tourgeo.ai` | 营销页「Book a demo」链接 |
 | `LANDING_PUBLIC_BASE_URL` | `http://localhost:4321` | **Java 侧**生成 `published_url`（非 Astro 运行时变量） |
 | `TURNSTILE_SECRET_KEY` | `0x***` | **Java 侧** Turnstile 服务端校验（`CLOUDFLARE_TURNSTILE_SECRET`） |
 
 本地复制：`cp .env.example .env`
 
-Docker 使用 `deploy/.env` 中的 `PUBLIC_API_BASE_URL` / `TURNSTILE_SITE_KEY`（compose 映射为 `PUBLIC_TURNSTILE_SITE_KEY`）。
+Docker 使用 `deploy/.env`（或 compose 默认值）中的上述 `PUBLIC_*`；营销首页在 **build 阶段** bake 进 SSG，改 URL 后需 `--build`。
 
 ## 本地开发
 
 ```bash
 cd inbound-landing
 pnpm install
-pnpm dev          # http://localhost:4321
+pnpm dev          # http://localhost:4321 — 营销首页 /
+pnpm build        # hybrid SSG + Node SSR（/p/...）
 ```
 
-已发布页（M2）：`http://localhost:4321/p/{projectId}/{slug}`
+| 路由 | 说明 |
+|------|------|
+| `/` | 营销门户（TourGEO Hero / 能力 / CTA） |
+| `/p/{projectId}/{slug}` | 已发布客户落地页（M2 SSR + LeadForm） |
 
-## Docker（运维）
+## Docker（本地 :4321）
 
 ```bash
 cd deploy
 docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d --build inbound-landing
-curl.exe http://localhost:4321/
+curl.exe -s -o NUL -w "HTTP %%{http_code}\n" http://localhost:4321/
+curl.exe -s http://localhost:4321/ | findstr /i "TourGEO Win overseas"
 ```
+
+- 容器内访问 Java：`PUBLIC_API_BASE_URL=http://host.docker.internal:8080`（`docker-compose.local-d.yml` 默认）
+- 营销 CTA 默认 Admin：`PUBLIC_ADMIN_URL=http://localhost:5173`（compose build args）
+- 若 Docker Hub 拉取 `node:20-alpine` 超时，可先：`docker pull docker.m.daocloud.io/library/node:20-alpine && docker tag docker.m.daocloud.io/library/node:20-alpine node:20-alpine`
 
 详见 `deploy/LOCAL_DOCKER.md` § EPIC-6 M2 落地页。
 
 ## 对应 EPIC
 
-EPIC-6 落地页 Agent（M2 发布阶段）
+EPIC-6 落地页 Agent（M2 发布阶段 + 营销门户 `/`）
 
 ## 状态
 
-✅ **M2** — `/p/{projectId}/{slug}` SSR · 八模块 · Turnstile LeadForm → `POST /api/v1/public/leads`
+✅ **M2** — `/p/{projectId}/{slug}` SSR · 八模块 · Turnstile LeadForm → `POST /api/v1/public/leads`  
+✅ **营销门户** — `/` SSG · TourGEO 首页 · 与 `/p/...` 共存

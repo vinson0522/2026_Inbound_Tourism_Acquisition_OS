@@ -22,10 +22,24 @@
     <template v-else>
       <el-row :gutter="20" class="mb-[10px]">
         <el-col v-for="card in kpiCards" :key="card.key" :xs="24" :md="12" :lg="6">
-          <el-card shadow="hover" class="kpi-card">
+          <el-card
+            shadow="hover"
+            class="kpi-card"
+            :class="{ 'kpi-card--clickable': card.linkTo }"
+            @click="card.linkTo ? goTrends() : undefined"
+          >
             <div class="kpi-card__label">{{ card.label }}</div>
             <div class="kpi-card__value" :style="card.valueStyle">{{ card.display }}</div>
             <div v-if="card.hint" class="kpi-card__hint">{{ card.hint }}</div>
+            <el-button
+              v-if="card.linkLabel"
+              link
+              type="primary"
+              class="kpi-card__link"
+              @click.stop="goTrends"
+            >
+              {{ card.linkLabel }}
+            </el-button>
             <el-tag v-if="card.trend != null" size="small" :type="card.trend >= 0 ? 'success' : 'danger'" class="kpi-card__trend">
               {{ card.trend >= 0 ? '↑' : '↓' }} {{ Math.abs(card.trend) }} 较上周
             </el-tag>
@@ -85,7 +99,13 @@
             <el-button link type="primary" @click="router.push('/diagnostics/runs')">查看全部</el-button>
           </div>
         </template>
-        <el-table v-loading="tableLoading" :data="data?.recentRuns ?? []" border empty-text="暂无诊断记录">
+        <el-table
+          v-loading="tableLoading"
+          :data="data?.recentRuns ?? []"
+          border
+          class="recent-runs-table"
+          @row-click="goRunDetail"
+        >
           <el-table-column label="任务名称" prop="name" min-width="180" show-overflow-tooltip />
           <el-table-column label="状态" width="110" align="center">
             <template #default="{ row }">
@@ -102,9 +122,14 @@
           </el-table-column>
           <el-table-column label="操作" width="100" align="center">
             <template #default="{ row }">
-              <el-button link type="primary" @click="goRunDetail(row)">查看</el-button>
+              <el-button link type="primary" @click.stop="goRunDetail(row)">查看</el-button>
             </template>
           </el-table-column>
+          <template #empty>
+            <el-empty description="暂无诊断记录">
+              <el-button type="primary" @click="goCreateDiagnostic">创建诊断</el-button>
+            </el-empty>
+          </template>
         </el-table>
       </el-card>
     </template>
@@ -136,7 +161,9 @@ const kpiCards = computed(() => {
       display: score != null ? score.toFixed(1) : '—',
       hint: k?.geoScoreDate ? `最近诊断 ${k.geoScoreDate}` : undefined,
       valueStyle: { color: scoreColor, fontSize: 'var(--tg-font-size-xl)' },
-      trend: null
+      trend: null,
+      linkTo: '/diagnostics/trends',
+      linkLabel: '查看趋势 →'
     },
     {
       key: 'content',
@@ -179,6 +206,10 @@ async function loadData() {
 
 function goCreateDiagnostic() {
   router.push({ path: '/diagnostics/runs', query: { create: '1' } });
+}
+
+function goTrends() {
+  router.push('/diagnostics/trends');
 }
 
 function goRunDetail(row: { id: number }) {
@@ -230,6 +261,20 @@ onMounted(async () => {
 .kpi-card {
   background: var(--tg-color-bg-surface);
 
+  &--clickable {
+    cursor: pointer;
+    transition: box-shadow 0.15s ease;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(22, 119, 160, 0.12);
+    }
+  }
+
+  &__link {
+    margin-top: var(--tg-space-2);
+    padding: 0;
+  }
+
   &__label {
     font-size: var(--tg-font-size-sm);
     color: var(--tg-color-text-secondary);
@@ -279,5 +324,9 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.recent-runs-table :deep(.el-table__row) {
+  cursor: pointer;
 }
 </style>

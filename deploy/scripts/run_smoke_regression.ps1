@@ -13,6 +13,21 @@ Set-Location $Root
 $env:EMBED_MOCK = "true"
 $env:DIAGNOSE_MOCK_LLM = "true"
 
+# B-27: reset demo tenant quota BEFORE create scripts so 10/10 is repeatable.
+# Inline SQL (does not rely on ddl bind mount). QuotaServiceImpl semantics untouched.
+$PgContainer = $env:SMOKE_PG_CONTAINER; if (-not $PgContainer) { $PgContainer = "inbound-postgres" }
+$PgUser = $env:SMOKE_PG_USER; if (-not $PgUser) { $PgUser = "inbound" }
+$PgDb = $env:SMOKE_PG_DB; if (-not $PgDb) { $PgDb = "inbound_growth" }
+$QuotaResetSql = "UPDATE subscription SET used_json = '{}'::jsonb, period_start = CURRENT_DATE, period_end = CURRENT_DATE + INTERVAL '1 month', updated_at = now() WHERE tenant_id = 1 AND status = 'ACTIVE'::subscription_status;"
+
+Write-Host "=== quota reset (demo tenant 1) ===" -ForegroundColor Cyan
+docker exec $PgContainer psql -U $PgUser -d $PgDb -c $QuotaResetSql
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "WARN: quota reset failed (container '$PgContainer' down?). smoke create steps may hit 40201." -ForegroundColor Yellow
+} else {
+    Write-Host "quota reset OK (used_json -> {}, period rolled to current month)" -ForegroundColor Green
+}
+
 $scripts = @(
     "test_projects_api.py",
     "test_diagnostic_e2e.py",

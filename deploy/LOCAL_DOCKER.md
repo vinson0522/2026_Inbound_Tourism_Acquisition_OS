@@ -149,6 +149,77 @@ python deploy/scripts/test_projects_api.py
 python deploy/scripts/test_diagnostic_e2e.py
 ```
 
+### 2.9 一键 smoke 回归（10/10）
+
+维护轨默认验收：`deploy/scripts/run_smoke_regression.ps1` — **10 项** Python smoke（含 FR-807 租户隔离）。
+
+**前提（全部满足后再跑）**：
+
+| 项 | 要求 |
+|----|------|
+| Docker 服务 | `postgres` · `redis` · `rabbitmq` · `ai-api` **healthy**（建议加 `gotenberg`，PDF 导出 smoke 时需要） |
+| Compose 文件 | `-f docker-compose.yml -f docker-compose.local-d.yml` |
+| Java | `inbound-core` 宿主机 **`:8080`**（`spring-boot:run -Dspring-boot.run.profiles=dev`） |
+| 若依 + 业务 seed | 首次：`import_ruoyi_pg_local.ps1`；库已存在但无 tenant B 时执行 `006_fr807_tenant_mapping.sql` |
+| Python | 3.11+ · `cryptography`（projects smoke 加密登录） |
+
+**启动 compose（smoke 最小集）**：
+
+```powershell
+cd deploy
+docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgres redis rabbitmq ai-api gotenberg
+curl.exe http://localhost:8090/health
+```
+
+**Mock 模式（默认，无需真实 LLM Key）**：
+
+| 变量 | 作用 | 本地默认 |
+|------|------|----------|
+| `DIAGNOSE_MOCK_LLM` | GEO 诊断 worker 走 mock，不耗 Gemini/Perplexity | `docker-compose.local-d.yml` → **`true`** |
+| `EMBED_MOCK` | embed worker 不写真实向量 | **`true`** |
+| `KEYWORDS_MOCK_LLM` / `RERANKER_MOCK` | 关键词/RAG rerank mock | **`true`** |
+
+`run_smoke_regression.ps1` 会在当前 PowerShell 会话再设 `DIAGNOSE_MOCK_LLM=true` · `EMBED_MOCK=true`（与容器一致）。  
+若改过 ai-api 镜像且未用 `local-d.yml`，在 `deploy/.env` 显式设上述变量后 `docker compose ... up -d --build ai-api`。
+
+**一键执行**：
+
+```powershell
+# 仓库根目录；Java :8080 已起
+.\deploy\scripts\run_smoke_regression.ps1
+# 期望：10/10 passed
+```
+
+**FR-807 租户隔离（第 10 项 · `test_tenant_isolation.py`）**：
+
+- 用 **tenant A** 登录（`admin` / `admin123` · RuoYi `000000`）访问 **tenant B** 资源 → API `code=403`
+- Tenant B 账号（手动验登录 / 对拍）：`tenantb` / `admin123` · RuoYi `000001`
+- Seed 资源（默认 id，可用 env 覆盖）：
+
+| 变量 | 默认 | 说明 |
+|------|------|------|
+| `TENANT_B_PROJECT_ID` | `8` | tenant B 的 `customer_project.id` |
+| `TENANT_B_RUN_ID` | `100` | tenant B 的 `diagnostic_run.id` |
+
+单独跑：
+
+```powershell
+python deploy/scripts/test_tenant_isolation.py --verbose
+```
+
+**Opt-in：B-23 三方 live（不在 10/10 内）**
+
+Perplexity Chrome live · Gemini grounded 真 E2E 已 **挂起 B-23**，有账号/配额时 **手动 opt-in**，失败不阻塞 MVP：
+
+| 脚本 | 用途 | 恢复条件 |
+|------|------|----------|
+| `verify_perplexity_live.py` | 真 Chrome + 扩展 hook | perplexity.ai 可登录 |
+| （开发）Gemini E2E | `DIAGNOSE_MOCK_LLM=false` + 真实 Key | Gemini 配额可用 |
+
+Fixture 路径仍绿：`test_probe_extension_e2e.py`（mock hook，**含在扩展 smoke**，非 regression 10/10）。
+
+脚本索引见 [`deploy/scripts/README.md`](scripts/README.md)。
+
 ---
 
 ## 3. 日常命令
@@ -157,7 +228,10 @@ python deploy/scripts/test_diagnostic_e2e.py
 cd deploy
 
 # 启动（EPIC-2 最小集 + Gotenberg FR-106 PDF）
-docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgres redis rabbitmq ai-api gotenberg gotenberg
+docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgres redis rabbitmq ai-api gotenberg
+
+# 一键 smoke 10/10（前提：§2.9 · Java :8080）
+# .\scripts\run_smoke_regression.ps1
 
 # 停止（保留 D 盘数据）
 docker compose -f docker-compose.yml -f docker-compose.local-d.yml stop
@@ -380,6 +454,12 @@ A：`Get-Service PostgreSQL*` 确认已 Stop；或临时改 compose 端口映射
 **Q：ai-api worker callback 失败？**  
 A：确认 Java 在宿主机 `:8080`，且 `.env` 中 `CORE_CALLBACK_BASE_URL=http://host.docker.internal:8080`。
 
+**Q：smoke 诊断卡在 RUNNING / embed 500？**  
+A：确认 `local-d.yml` 已加载且 ai-api `DIAGNOSE_MOCK_LLM=true` · `EMBED_MOCK=true`；Java 在 `:8080`；再跑 `run_smoke_regression.ps1`。
+
+**Q：tenant isolation 403 失败？**  
+A：执行 `database/ddl/006_fr807_tenant_mapping.sql`；核对 `TENANT_B_PROJECT_ID` / `TENANT_B_RUN_ID` 与库中 tenant B 数据一致。
+
 **Q：和 SSH 隧道混用？**  
 A：不要混用。本地 Docker 模式下关掉所有隧道，Redis 用 **6379**（不是 6380）。
 
@@ -394,7 +474,9 @@ A：不要混用。本地 Docker 模式下关掉所有隧道，Redis 用 **6379*
 | `scripts/local_docker_bootstrap.ps1` | 一键启动 |
 | `scripts/local_docker_cleanup.ps1` | 分级清理 |
 | `scripts/import_ruoyi_pg_local.ps1` | 本机导入若依表 |
+| `scripts/run_smoke_regression.ps1` | 一键 smoke **10/10** |
+| [`scripts/README.md`](scripts/README.md) | smoke / 运维脚本索引 |
 
 ---
 
-*Last updated: 2026-07-03*
+*Last updated: 2026-07-11*
