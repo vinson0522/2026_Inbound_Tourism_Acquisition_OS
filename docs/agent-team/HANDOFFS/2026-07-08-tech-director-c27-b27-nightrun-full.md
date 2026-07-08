@@ -141,7 +141,7 @@ docker compose -f docker-compose.yml -f docker-compose.local-d.yml up -d postgre
     关键项：`test_projects_api` id=12（额度重置后不再 40201）· `test_diagnostic_e2e` runId=103 SUCCESS geo_score=85.00（mock）· `test_tenant_isolation` 4 端点 403。
   - **未改** `QuotaServiceImpl` 计费语义（仅 smoke 侧可重复化 + demo 额度重置）。
   - 说明：修复 40201 后曾遇 `test_diagnostic_e2e` FAILED —— 根因 ai-api 容器 `DIAGNOSE_MOCK_LLM=false`（`deploy/.env` 覆盖）调真 Gemini 触发配额（B-23 域）。按文档前提以 `DIAGNOSE_MOCK_LLM=true` 重建 ai-api 容器（会话级，未改任何入库文件）后稳定 10/10。
-- **T2 C27 hash**：`PENDINGHASH`（`git push origin main` 非 force）
+- **T2 C27 hash**：`d7f042a`（`git push origin main` 非 force）
   - `git add` 仅 Sprint #4 + T1 相关；**排除** `inbound-probe-extension/.chrome-live-profile/`（并已加入 `.gitignore`）与 `deploy/scripts/verify_perplexity_live.py`（B-23，留工作区）。
 - **T3 curl / build:prod 结果**：
   - `curl :4321/` → **HTTP 200** · 含 `TourGEO` 营销文案。

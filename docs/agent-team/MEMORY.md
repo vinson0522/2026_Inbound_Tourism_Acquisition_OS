@@ -7,7 +7,7 @@
 |------|-----|
 | **最后更新** | 2026-07-08 |
 | **更新角色** | 开发 |
-| **Git 远程** | ✅ `origin/main` · C27 `PENDINGHASH` (Sprint #4 收尾) · C26 `5875276` |
+| **Git 远程** | ✅ `origin/main` · C27 `d7f042a` (Sprint #4 收尾) · C26 `5875276` |
 | **当前 EPIC 焦点** | Sprint #4 ✅ **入库 C27** · smoke 10/10 可重复 · B-26/B-27 关闭 |
 
 ---
@@ -408,7 +408,7 @@
 | **C24** | 维护轨 smoke 9/9 | `fix(ai,deploy,extension): restore smoke 9/9 regression defaults` | ✅ `6f4738a` |
 | **C25** | FR-807 租户隔离 | `feat(core): FR-807 business tenant mapping and cross-tenant isolation` | ✅ `c78a157` |
 | **C26** | FR-108+门户+tenant smoke | `feat(core,admin,landing): FR-108 trends filter, marketing portal, tenant smoke 10/10` | ✅ `5875276` · smoke 10/10 |
-| **C27** | Sprint #4 收尾（smoke quota reset·文档·dashboard 深链·landing Docker） | `feat(devops,admin,landing): C27 Sprint #4 closeout — smoke 10/10 quota reset, docs, dashboard deep links` | ✅ `PENDINGHASH` · smoke 10/10 可重复 |
+| **C27** | Sprint #4 收尾（smoke quota reset·文档·dashboard 深链·landing Docker） | `feat(devops,admin,landing): C27 Sprint #4 closeout — smoke 10/10 quota reset, docs, dashboard deep links` | ✅ `d7f042a` · smoke 10/10 可重复 |
 
 **执行**：C1–C27 ✅
 
@@ -624,7 +624,7 @@
 | B-22 | ~~维护轨 C24 未 commit/push~~ | 开发 | ✅ **已关闭** C24 `6f4738a` |
 | B-24 | ~~FR-807 C25 未 commit/push~~ | 开发 Java | ✅ **已关闭** C25 `c78a157` |
 | B-25 | ~~C26 未 commit/push~~（FR-108/门户/tenant smoke 10） | 开发 | ✅ **已关闭** C26 `5875276` · smoke 10/10 |
-| B-26 | ~~C27 未 commit~~（Sprint #4：LOCAL_DOCKER · scripts README · dashboard 深链 · landing Docker/README · HANDOFFs） | 开发 | ✅ **已关闭** C27 `PENDINGHASH` |
+| B-26 | ~~C27 未 commit~~（Sprint #4：LOCAL_DOCKER · scripts README · dashboard 深链 · landing Docker/README · HANDOFFs） | 开发 | ✅ **已关闭** C27 `d7f042a` |
 | B-27 | ~~smoke **8/10**：`test_projects_api` / `test_diagnostic_e2e` → `40201` 套餐额度不足~~ | 开发 Java | ✅ **已关闭** 2026-07-08 · `007_smoke_quota_reset.sql` + 脚本内联重置 · 连跑两次 10/10 |
 
 ---
@@ -643,7 +643,7 @@
 
 | 日期 | 角色 | 摘要 |
 |------|------|------|
-| 2026-07-08 | 开发 | **C27 `PENDINGHASH`** Sprint #4 收尾 commit+push · `007_smoke_quota_reset.sql` + 脚本内联重置 · smoke **连跑两次 10/10** · curl :4321/ 200 · `build:prod` ✅ · **B-26/B-27 关闭** |
+| 2026-07-08 | 开发 | **C27 `d7f042a`** Sprint #4 收尾 commit+push · `007_smoke_quota_reset.sql` + 脚本内联重置 · smoke **连跑两次 10/10** · curl :4321/ 200 · `build:prod` ✅ · **B-26/B-27 关闭** |
 | 2026-07-06 | 技术总监 | Sprint #4 签核 ✅ · C27/B-26 打开 · smoke 8/10（40201 额度） |
 | 2026-07-11 | 开发 Admin | FR-006 dashboard 深链 · GEO KPI→趋势 · 最近诊断→详情 · `build:prod` ✅ |
 | 2026-07-11 | 开发 | C26 `5875276` Sprint #3 push · FR-108/门户/tenant smoke 10/10 · B-25 关闭 |
